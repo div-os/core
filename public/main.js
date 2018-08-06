@@ -1,0 +1,1 @@
+require('junior-ui/browserGlobal');

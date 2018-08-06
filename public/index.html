@@ -1,0 +1,242 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<title>divOS</title>
+<link rel="stylesheet" href="icons.css">
+<script src="bundle.js"></script>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    --desktopMenuHeight: 14px;
+    --desktopMenuBg: #1d1f21;
+
+    --workspaceSwitcherHPadding: 1px;
+    --workspaceSwitcherVPadding: 1px;
+    --workspaceSwitcherPaddingLeft: 0px;
+    --workspaceSwitcherPaddingRight: 0px;
+    --workspaceSwitcherPaddingTop: 0px;
+    --workspaceSwitcherPaddingBottom: 0px;
+
+    height: 100vh;
+    margin: 0;
+  }
+
+  .desktopBg {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    background-image: url('wallpaper.jpg');
+    background-size: 100%;
+  }
+
+  .desktopMenu {
+    display: flex;
+    align-items: center;
+    height: var(--desktopMenuHeight);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    font-family: monospace;
+    font-size: calc(var(--desktopMenuHeight) - 6px);
+    color: rgba(255, 255, 255, 0.84);
+    background-color: var(--desktopMenuBg);
+  }
+
+  .workspaceSwitcher {
+    --workspaceSwitcherCPaddingTop: calc(
+      var(--workspaceSwitcherPaddingTop, 0px)
+      + var(--workspaceSwitcherVPadding, 0px)
+    );
+
+    --workspaceSwitcherCPaddingBottom: calc(
+      var(--workspaceSwitcherPaddingBottom, 0px)
+      + var(--workspaceSwitcherVPadding, 0px)
+    );
+
+    --workspaceSwitcherCPaddingLeft: calc(
+      var(--workspaceSwitcherPaddingLeft, 0px)
+      + var(--workspaceSwitcherHPadding, 0px)
+    );
+
+    --workspaceSwitcherCPaddingRight: calc(
+      var(--workspaceSwitcherPaddingRight, 0px)
+      + var(--workspaceSwitcherHPadding, 0px)
+    );
+
+    --workspaceSwitcherTCVPadding: calc(
+      var(--workspaceSwitcherPaddingTop, 0px)
+      + var(--workspaceSwitcherPaddingBottom, 0px)
+      + calc(var(--workspaceSwitcherVPadding, 0px) * 2)
+    );
+
+    --workspaceSwitcherTCHPadding: calc(
+      var(--workspaceSwitcherPaddingLeft, 0px)
+      + var(--workspaceSwitcherPaddingRight, 0px)
+      + calc(var(--workspaceSwitcherHPadding, 0px) * 2)
+    );
+
+    --workspaceSwitcherIconSize: calc(
+      var(--desktopMenuHeight)
+      - var(--workspaceSwitcherTCVPadding)
+      - 2px
+    );
+
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-top: var(--workspaceSwitcherCPaddingTop);
+    padding-bottom: var(--workspaceSwitcherCPaddingBottom);
+    padding-left: var(--workspaceSwitcherCPaddingLeft);
+    padding-right: var(--workspaceSwitcherCPaddingRight);
+  }
+
+  .workspaceSwitcher-btn:not(:first-child) {
+    margin-left: 1px;
+  }
+
+  .workspaceSwitcher-btn {
+    display: flex;
+    outline: none;
+    border: 1px solid transparent;
+    border-radius: 1px;
+    padding: 0;
+    background-color: transparent;
+  }
+
+  .workspaceSwitcher-btn--hi {
+    background-color: rgba(72, 61, 139, 0.4);
+  }
+
+  .workspaceSwitcher-btnIcon {
+    opacity: 0.3;
+    width: var(--workspaceSwitcherIconSize);
+    height: var(--workspaceSwitcherIconSize);
+  }
+
+  .workspaceSwitcher-btnIcon--hi {
+    opacity: 0.5;
+  }
+
+  .workspaceSwitcher-btnIcon--active {
+    opacity: 0.84;
+  }
+
+  .helloWorldDesktopMenu {
+    margin-left: 2px;
+  }
+
+  .desktopWorkspaces {
+    position: relative;
+    flex-grow: 1;
+  }
+
+  .desktopWorkspace {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: none;
+  }
+
+  .desktopWorkspace--active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    font-size: 200px;
+    color: #c4c2d6;
+    -webkit-text-stroke: 1px black;
+    text-stroke: 1px black;
+    text-shadow: 0 0 30px black;
+  }
+</style>
+
+<div class="desktopBg"></div>
+
+<div style="
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+">
+  <div class="desktopMenu">
+    <div
+      class="workspaceSwitcher"
+      jr-list="for w of desktopWorkspaces.all"
+    >
+      <button
+        jr-class="
+          workspaceSwitcher-btn
+
+          ${desktopWorkspaces.isActive(w)
+            ? 'workspaceSwitcher-btn--active' : ''}
+
+          ${w.highlight ? 'workspaceSwitcher-btn--hi' : ''}
+        "
+
+        jr-on-click="desktopWorkspaces.switchTo(w)"
+      >
+        <i jr-class="
+          workspaceSwitcher-btnIcon
+
+          ${desktopWorkspaces.isActive(w)
+            ? 'workspaceSwitcher-btnIcon--active' : ''}
+
+          ${w.highlight
+            ? 'workspaceSwitcher-btnIcon--hi' : ''}
+
+          icon-${w.icon}
+        "></i>
+      </button>
+    </div>
+
+    <div class="helloWorldDesktopMenu">
+      Hello, wwworld!
+    </div>
+  </div>
+
+  <div
+    class="desktopWorkspaces"
+    jr-list="for w of desktopWorkspaces.all"
+  >
+    <div
+      jr-class="
+        desktopWorkspace
+
+        ${desktopWorkspaces.isActive(w)
+          ? 'desktopWorkspace--active' : ''}
+      "
+
+      jr-textcontent.bind="w.id"
+    ></div>
+  </div>
+</div>
+
+<script>
+  jr.findFirst('body').jr.setScope({
+    desktopWorkspaces: {
+      all: [
+        { id: 'web', icon: 'world', highlight: true },
+        { id: 'term', icon: 'term', highlight: true },
+        { id: 'game', icon: 'game' },
+      ],
+
+      activeId: 'web',
+
+      isActive(w) {
+        return this.activeId === w.id;
+      },
+
+      switchTo(w) {
+        this.activeId = w.id;
+      },
+    },
+  });
+
+  jr.init();
+</script>
