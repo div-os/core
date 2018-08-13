@@ -11,6 +11,7 @@
     "junior-ui": "0.0.1",
     "map-stream": "0.0.7",
     "moment": "^2.22.2",
+    "qs": "^6.5.2",
     "through2": "^2.0.3",
     "vinyl": "^2.2.0",
     "vinyl-fs": "^3.0.3"
