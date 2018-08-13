@@ -4,6 +4,7 @@ module.exports = window.vfs = {
   backendClient: require('./backendClient'),
 
   mountPointAdapters: {
+    '/localStorage': require('./localStorage'),
     '/backend': require('./backendClient'),
   },
 
