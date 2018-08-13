@@ -2,7 +2,8 @@
   "name": "divos",
   "version": "0.0.0",
   "scripts": {
-    "build": "browserify public/main.js -o public/bundle.js"
+    "build": "browserify public/main.js -o public/bundle.js",
+    "start": "npm run build && node app.js"
   },
   "dependencies": {
     "browserify": "^16.2.2",
