@@ -1,29 +1,32 @@
 let Vinyl = require('vinyl');
 let base64 = require('base64-js');
 let fromFile = require('../helper/fromFile');
+let lf = require('localforage');
 let minimatch = require('minimatch');
 let path = require('path');
 let through2 = require('through2');
 
 div.fs.browser = exports;
 
-exports.storage = localStorage;
 exports.storagePrefix = 'vinyl:';
 
 exports.src = (glob, opt) => {
   let ret = through2.obj();
 
-  for (let k of exports.getKeys(glob)) {
-    let filePath = k.slice(exports.storagePrefix.length);
-    let e = JSON.parse(exports.storage.getItem(k));
+  (async () => {
+    for (let k of await exports.getKeys(glob)) {
+      let filePath = k.slice(exports.storagePrefix.length);
+      let e = await lf.getItem(k);
 
-    ret.push(new Vinyl({
-      path: filePath,
-      contents: Buffer.from(base64.toByteArray(e.contents)),
-    }));
-  }
+      ret.push(new Vinyl({
+        path: filePath,
+        contents: e.contents,
+      }));
+    }
 
-  ret.end();
+    ret.end();
+  })()
+  .catch(err => ret.destroy(err));
 
   return ret;
 };
@@ -34,39 +37,23 @@ exports.dest =
       .catch(err => console.error(err));
   });
 
-exports.getKeys = glob => {
-  let keys = [];
-
-  for (let i = 0; i < exports.storage.length; ++i) {
-    let k = exports.storage.key(i);
-
+exports.getKeys = async glob => {
+  return (await lf.keys()).filter(k => {
     if (!k.startsWith(exports.storagePrefix)) {
-      continue;
+      return false;
     }
 
     let filePath = k.slice(exports.storagePrefix.length);
 
-    if (glob && !minimatch(filePath, glob)) {
-      continue;
-    }
-
-    keys.push(k);
-  }
-
-  return keys;
+    return !glob || minimatch(filePath, glob);
+  });
 };
 
 exports.storeFile = async (dirPath, file) => {
-  exports.storeBuf(
-    path.resolve(dirPath, file.basename),
-    await fromFile(file),
-  );
-};
+  let filePath = path.resolve(dirPath, file.basename);
+  let k = `${exports.storagePrefix}${filePath}`;
 
-exports.storeBuf = (filePath, bytes) => {
-  exports.storage.setItem(
-    `${exports.storagePrefix}${filePath}`, JSON.stringify({
-      contents: base64.fromByteArray(bytes),
-    }),
-  );
+  await lf.setItem(k, {
+    contents: await fromFile(file),
+  });
 };
