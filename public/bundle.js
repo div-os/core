@@ -23073,6 +23073,12 @@ Crc32Watcher.prototype._transform = function(chunk, encoding, cb) {
 
 }).call(this,require("buffer").Buffer,require("timers").setImmediate)
 },{"buffer":25,"buffer-crc32":24,"events":40,"fs":23,"stream":101,"timers":109,"util":112,"zlib":22}],119:[function(require,module,exports){
+div.apps = exports;
+
+exports.install = pkg => {
+};
+
+},{}],120:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let qs = require('qs');
 let through2 = require('through2');
@@ -23181,11 +23187,11 @@ async function getContentsStream(filePath) {
   return ret;
 }
 
-},{"qs":81,"through2":106,"vinyl":113}],120:[function(require,module,exports){
+},{"qs":81,"through2":106,"vinyl":113}],121:[function(require,module,exports){
 (function (Buffer){
 let Vinyl = require('vinyl');
 let base64 = require('base64-js');
-let bufFromStream = require('../helper/bufFromStream');
+let fromFile = require('../helper/fromFile');
 let minimatch = require('minimatch');
 let path = require('path');
 let through2 = require('through2');
@@ -23241,16 +23247,11 @@ exports.getKeys = glob => {
   return keys;
 };
 
-exports.storeFile = (dirPath, file) => {
-  let filePath = path.resolve(dirPath, file.basename);
-
-  if (file.isBuffer()) {
-    storeBuf(filePath, file.contents);
-    return;
-  }
-
-  return bufFromStream(file.contents)
-    .then(buf => storeBuf(filePath, buf));
+exports.storeFile = async (dirPath, file) => {
+  exports.storeBuf(
+    path.resolve(dirPath, file.basename),
+    await fromFile(file),
+  );
 };
 
 exports.storeBuf = (filePath, bytes) => {
@@ -23262,10 +23263,14 @@ exports.storeBuf = (filePath, bytes) => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../helper/bufFromStream":123,"base64-js":18,"buffer":25,"minimatch":60,"path":75,"through2":106,"vinyl":113}],121:[function(require,module,exports){
+},{"../helper/fromFile":125,"base64-js":18,"buffer":25,"minimatch":60,"path":75,"through2":106,"vinyl":113}],122:[function(require,module,exports){
 let through2 = require('through2');
 
 div.fs = exports;
+
+exports.gulpDebug = require('gulp-debug');
+//exports.gulpUnzip = require('gulp-unzip');
+exports.gulpZip = require('gulp-zip');
 
 require('./browserAdapter');
 require('./backendAdapter');
@@ -23290,10 +23295,10 @@ exports.src = (glob, opt) => {
   return adapter.src(glob.slice(mountPoint.length), opt);
 };
 
-},{"./backendAdapter":119,"./browserAdapter":120,"through2":106}],122:[function(require,module,exports){
+},{"./backendAdapter":120,"./browserAdapter":121,"gulp-debug":46,"gulp-zip":47,"through2":106}],123:[function(require,module,exports){
 module.exports = div.allFromStream = require('stream-to-array');
 
-},{"stream-to-array":102}],123:[function(require,module,exports){
+},{"stream-to-array":102}],124:[function(require,module,exports){
 (function (Buffer){
 let allFromStream = require('./allFromStream');
 
@@ -23316,24 +23321,46 @@ module.exports = div.bufFromStream = async stream => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./allFromStream":122,"buffer":25}],124:[function(require,module,exports){
+},{"./allFromStream":123,"buffer":25}],125:[function(require,module,exports){
+let bufFromStream = require('./bufFromStream');
+
+module.exports = div.fromFile = async (file, enc) => {
+  if (file.isBuffer()) {
+    return decode(file.contents, enc);
+  }
+
+  return decode(
+    await bufFromStream(file.contents), enc,
+  );
+};
+
+function decode(buf, enc) {
+  if (!enc) {
+    return buf;
+  }
+
+  return new TextDecoder(enc).decode(buf);
+}
+
+},{"./bufFromStream":124}],126:[function(require,module,exports){
 let allFromStream = require('./allFromStream');
 
 module.exports = div.oneFromStream =
   stream => allFromStream(stream).then(xs => xs[0]);
 
-},{"./allFromStream":122}],125:[function(require,module,exports){
+},{"./allFromStream":123}],127:[function(require,module,exports){
 require('junior-ui/browserGlobal');
 
 window.div = exports;
 
-require('./helper/allFromStream');
-require('./helper/oneFromStream');
+require('./apps');
 require('./fs');
+require('./helper/allFromStream');
+require('./helper/bufFromStream');
+require('./helper/fromFile');
+require('./helper/oneFromStream');
 
 div.base64 = require('base64-js');
-div.gulpDebug = require('gulp-debug');
-div.gulpZip = require('gulp-zip');
 div.through2 = require('through2');
 
-},{"./fs":121,"./helper/allFromStream":122,"./helper/oneFromStream":124,"base64-js":18,"gulp-debug":46,"gulp-zip":47,"junior-ui/browserGlobal":56,"through2":106}]},{},[125]);
+},{"./apps":119,"./fs":122,"./helper/allFromStream":123,"./helper/bufFromStream":124,"./helper/fromFile":125,"./helper/oneFromStream":126,"base64-js":18,"junior-ui/browserGlobal":56,"through2":106}]},{},[127]);

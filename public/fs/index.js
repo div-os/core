@@ -2,6 +2,9 @@ let through2 = require('through2');
 
 div.fs = exports;
 
+exports.gulpDebug = require('gulp-debug');
+exports.gulpZip = require('gulp-zip');
+
 require('./browserAdapter');
 require('./backendAdapter');
 

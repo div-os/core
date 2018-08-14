@@ -1,6 +1,6 @@
 let Vinyl = require('vinyl');
 let base64 = require('base64-js');
-let bufFromStream = require('../helper/bufFromStream');
+let fromFile = require('../helper/fromFile');
 let minimatch = require('minimatch');
 let path = require('path');
 let through2 = require('through2');
@@ -56,16 +56,11 @@ exports.getKeys = glob => {
   return keys;
 };
 
-exports.storeFile = (dirPath, file) => {
-  let filePath = path.resolve(dirPath, file.basename);
-
-  if (file.isBuffer()) {
-    storeBuf(filePath, file.contents);
-    return;
-  }
-
-  return bufFromStream(file.contents)
-    .then(buf => storeBuf(filePath, buf));
+exports.storeFile = async (dirPath, file) => {
+  exports.storeBuf(
+    path.resolve(dirPath, file.basename),
+    await fromFile(file),
+  );
 };
 
 exports.storeBuf = (filePath, bytes) => {
