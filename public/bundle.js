@@ -47890,6 +47890,21 @@ div.windowManager = module.exports = exports = {
   },
 };
 
+document.addEventListener('mousedown', ev => {
+  let wnd = ev.target.closest('.window');
+
+  if (!wnd) {
+    return;
+  }
+
+  if (
+    !wnd.style.zIndex ||
+    Number(wnd.style.zIndex) < exports.lastZIndex
+  ) {
+    wnd.style.zIndex = ++exports.lastZIndex;
+  }
+});
+
 },{"resizable":233}],"browserify-fs":[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
 },{"dup":27}]},{},[286]);
