@@ -43814,6 +43814,11 @@ exports.launch = async (appPath, ...appArgs) => {
   return await appCtrl.launch(...appArgs);
 };
 
+exports.reloadAndLaunch = async (appPath, ...appArgs) => {
+  await exports.reload(appPath);
+  return await exports.launch(appPath, ...appArgs);
+};
+
 },{}],204:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let qs = require('qs');

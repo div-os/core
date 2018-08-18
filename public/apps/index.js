@@ -93,3 +93,8 @@ exports.launch = async (appPath, ...appArgs) => {
   let appCtrl = await exports.load(appPath);
   return await appCtrl.launch(...appArgs);
 };
+
+exports.reloadAndLaunch = async (appPath, ...appArgs) => {
+  await exports.reload(appPath);
+  return await exports.launch(appPath, ...appArgs);
+};
