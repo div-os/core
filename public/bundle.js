@@ -43820,6 +43820,37 @@ exports.reloadAndLaunch = async (appPath, ...appArgs) => {
 };
 
 },{}],204:[function(require,module,exports){
+div.desktopWorkspaces = module.exports = exports = {
+  all: [
+    { id: 'web', icon: 'world', highlight: true },
+    { id: 'term', icon: 'term', highlight: true },
+    { id: 'game', icon: 'game' },
+  ],
+
+  activeId: 'web',
+
+  isActive(w) {
+    return this.activeId === w.id;
+  },
+
+  switchTo(w) {
+    this.activeId = w.id;
+    this.update();
+  },
+
+  update() {
+    let { activeId } = this;
+
+    for (let wnd of jr.find('[div-workspace]')) {
+      wnd.classList.toggle(
+        'workspaceItem--hidden',
+        wnd.getAttribute('div-workspace') !== activeId,
+      );
+    }
+  },
+};
+
+},{}],205:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let qs = require('qs');
 let through2 = require('through2');
@@ -43928,7 +43959,7 @@ async function getContentsStream(filePath) {
   return ret;
 }
 
-},{"qs":145,"through2":172,"vinyl":196}],205:[function(require,module,exports){
+},{"qs":145,"through2":172,"vinyl":196}],206:[function(require,module,exports){
 (function (Buffer){
 let Vinyl = require('vinyl');
 let base64 = require('base64-js');
@@ -43991,7 +44022,7 @@ exports.storeFile = async (dirPath, file) => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../helper/fromFile":209,"base64-js":22,"buffer":33,"localforage":120,"minimatch":121,"path":138,"through2":172,"vinyl":196}],206:[function(require,module,exports){
+},{"../helper/fromFile":210,"base64-js":22,"buffer":33,"localforage":120,"minimatch":121,"path":138,"through2":172,"vinyl":196}],207:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let through2 = require('through2');
 
@@ -44030,10 +44061,10 @@ exports.src = (glob, opt) => {
   return adapter.src(glob.slice(mountPoint.length), opt);
 };
 
-},{"./backendAdapter":204,"./browserAdapter":205,"gulp-debug":80,"gulp-unzip":81,"gulp-zip":105,"through2":172,"vinyl":196}],207:[function(require,module,exports){
+},{"./backendAdapter":205,"./browserAdapter":206,"gulp-debug":80,"gulp-unzip":81,"gulp-zip":105,"through2":172,"vinyl":196}],208:[function(require,module,exports){
 module.exports = div.allFromStream = require('stream-to-array');
 
-},{"stream-to-array":168}],208:[function(require,module,exports){
+},{"stream-to-array":168}],209:[function(require,module,exports){
 (function (Buffer){
 let allFromStream = require('./allFromStream');
 
@@ -44056,7 +44087,7 @@ module.exports = div.bufFromStream = async stream => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./allFromStream":207,"buffer":33}],209:[function(require,module,exports){
+},{"./allFromStream":208,"buffer":33}],210:[function(require,module,exports){
 let bufFromStream = require('./bufFromStream');
 
 module.exports = div.fromFile = async (file, enc) => {
@@ -44077,22 +44108,31 @@ function decode(buf, enc) {
   return new TextDecoder(enc).decode(buf);
 }
 
-},{"./bufFromStream":208}],210:[function(require,module,exports){
+},{"./bufFromStream":209}],211:[function(require,module,exports){
 let allFromStream = require('./allFromStream');
 
 module.exports = div.oneFromStream =
   stream => allFromStream(stream).then(xs => xs[0]);
 
-},{"./allFromStream":207}],211:[function(require,module,exports){
+},{"./allFromStream":208}],212:[function(require,module,exports){
 require('junior-ui/browserGlobal');
 
 window.div = exports;
 
 (async () => {
-  div.swReg = await navigator.serviceWorker.register('sw-bundle.js');
+  div.swReg = await navigator.serviceWorker
+    .register('sw-bundle.js');
 })()
 .catch(err => console.error(err));
 
+exports.bodyScope = {};
+
+// Non-UI 3rd-party modules.
+div.base64 = require('base64-js');
+div.lf = require('localforage');
+div.through2 = require('through2');
+
+// Non-UI modules.
 require('./apps');
 require('./fs');
 require('./helper/allFromStream');
@@ -44100,10 +44140,15 @@ require('./helper/bufFromStream');
 require('./helper/fromFile');
 require('./helper/oneFromStream');
 
-div.base64 = require('base64-js');
-div.lf = require('localforage');
-div.through2 = require('through2');
+// UI modules.
+require('./desktopWorkspaces');
+require('./windowManager');
 
-},{"./apps":203,"./fs":206,"./helper/allFromStream":207,"./helper/bufFromStream":208,"./helper/fromFile":209,"./helper/oneFromStream":210,"base64-js":22,"junior-ui/browserGlobal":115,"localforage":120,"through2":172}],"browserify-fs":[function(require,module,exports){
+},{"./apps":203,"./desktopWorkspaces":204,"./fs":207,"./helper/allFromStream":208,"./helper/bufFromStream":209,"./helper/fromFile":210,"./helper/oneFromStream":211,"./windowManager":213,"base64-js":22,"junior-ui/browserGlobal":115,"localforage":120,"through2":172}],213:[function(require,module,exports){
+div.windowManager = module.exports = exports = {
+  lastZIndex: 0,
+};
+
+},{}],"browserify-fs":[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}]},{},[211]);
+},{"dup":27}]},{},[212]);

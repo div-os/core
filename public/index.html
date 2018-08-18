@@ -3,6 +3,8 @@
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <title>divOS</title>
 <link rel="stylesheet" href="icons.css">
+<link rel="stylesheet" href="desktopWorkspaces/styles.css">
+<link rel="stylesheet" href="windowManager/styles.css">
 <script src="bundle.js"></script>
 
 <style>
@@ -130,23 +132,6 @@
     margin-left: 2px;
   }
 
-  .windowManager {
-    position: relative;
-    flex-grow: 1;
-  }
-
-  .window {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-  }
-
-  .window--hidden {
-    display: none !important;
-  }
-
   .window--workspaceName {
     display: flex;
     align-items: center;
@@ -170,24 +155,24 @@
   <div class="desktopMenu">
     <div
       class="workspaceSwitcher"
-      jr-list="for w of desktopWorkspaces.all"
+      jr-list="for w of div.desktopWorkspaces.all"
     >
       <button
         jr-class="
           workspaceSwitcher-btn
 
-          ${desktopWorkspaces.isActive(w)
+          ${div.desktopWorkspaces.isActive(w)
             ? 'workspaceSwitcher-btn--active' : ''}
 
           ${w.highlight ? 'workspaceSwitcher-btn--hi' : ''}
         "
 
-        jr-on-click="desktopWorkspaces.switchTo(w)"
+        jr-on-click="div.desktopWorkspaces.switchTo(w)"
       >
         <i jr-class="
           workspaceSwitcher-btnIcon
 
-          ${desktopWorkspaces.isActive(w)
+          ${div.desktopWorkspaces.isActive(w)
             ? 'workspaceSwitcher-btnIcon--active' : ''}
 
           ${w.highlight
@@ -205,7 +190,7 @@
 
   <div
     class="windowManager"
-    jr-list="for w of desktopWorkspaces.all"
+    jr-list="for w of div.desktopWorkspaces.all"
   >
     <div
       class="window window--workspaceName"
@@ -216,38 +201,8 @@
 </div>
 
 <script>
-  jr.findFirst('body').jr.setScope(div.rootScope = {
-    desktopWorkspaces: {
-      all: [
-        { id: 'web', icon: 'world', highlight: true },
-        { id: 'term', icon: 'term', highlight: true },
-        { id: 'game', icon: 'game' },
-      ],
-
-      activeId: 'web',
-
-      isActive(w) {
-        return this.activeId === w.id;
-      },
-
-      switchTo(w) {
-        this.activeId = w.id;
-        this.update();
-      },
-
-      update() {
-        let { activeId } = this;
-
-        for (let wnd of jr.find('[div-workspace]')) {
-          wnd.classList.toggle(
-            'window--hidden',
-            wnd.getAttribute('div-workspace') !== activeId,
-          );
-        }
-      },
-    },
-  });
-
+  jr.findFirst('body').jr.setScope({ div });
   jr.init();
-  div.rootScope.desktopWorkspaces.update();
+
+  div.desktopWorkspaces.update();
 </script>
