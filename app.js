@@ -9,6 +9,7 @@ let port = process.env.PORT || 3200;
 fsMiddleware.register(app);
 globMiddleware.register(app);
 
+app.use('/backend', express.static('/'));
 app.use(express.static(`${__dirname}/public`));
 
 app.listen(port);
