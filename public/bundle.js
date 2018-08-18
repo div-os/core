@@ -43833,6 +43833,7 @@ async function getContentsStream(filePath) {
 }
 
 },{"qs":145,"through2":172,"vinyl":196}],205:[function(require,module,exports){
+(function (Buffer){
 let Vinyl = require('vinyl');
 let base64 = require('base64-js');
 let fromFile = require('../helper/fromFile');
@@ -43855,7 +43856,7 @@ exports.src = (glob, opt) => {
 
       ret.push(new Vinyl({
         path: filePath,
-        contents: e.contents,
+        contents: Buffer.from(e.contents),
       }));
     }
 
@@ -43893,7 +43894,8 @@ exports.storeFile = async (dirPath, file) => {
   });
 };
 
-},{"../helper/fromFile":209,"base64-js":22,"localforage":120,"minimatch":121,"path":138,"through2":172,"vinyl":196}],206:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"../helper/fromFile":209,"base64-js":22,"buffer":33,"localforage":120,"minimatch":121,"path":138,"through2":172,"vinyl":196}],206:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let through2 = require('through2');
 

@@ -20,7 +20,7 @@ exports.src = (glob, opt) => {
 
       ret.push(new Vinyl({
         path: filePath,
-        contents: e.contents,
+        contents: Buffer.from(e.contents),
       }));
     }
 
