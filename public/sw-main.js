@@ -1,4 +1,4 @@
-importScripts('sw-toolbox.js');
+importScripts('deps/sw-toolbox.js');
 
 let extName = require('ext-name');
 let fileType = require('file-type');
