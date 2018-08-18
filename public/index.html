@@ -130,21 +130,24 @@
     margin-left: 2px;
   }
 
-  .desktopWorkspaces {
+  .windowManager {
     position: relative;
     flex-grow: 1;
   }
 
-  .desktopWorkspace {
+  .window {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
-    display: none;
   }
 
-  .desktopWorkspace--active {
+  .window--hidden {
+    display: none !important;
+  }
+
+  .window--workspaceName {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -201,24 +204,19 @@
   </div>
 
   <div
-    class="desktopWorkspaces"
+    class="windowManager"
     jr-list="for w of desktopWorkspaces.all"
   >
     <div
-      jr-class="
-        desktopWorkspace
-
-        ${desktopWorkspaces.isActive(w)
-          ? 'desktopWorkspace--active' : ''}
-      "
-
+      class="window window--workspaceName"
+      jr-div-workspace.bind="w.id"
       jr-textcontent.bind="w.id"
     ></div>
   </div>
 </div>
 
 <script>
-  jr.findFirst('body').jr.setScope({
+  jr.findFirst('body').jr.setScope(div.rootScope = {
     desktopWorkspaces: {
       all: [
         { id: 'web', icon: 'world', highlight: true },
@@ -234,9 +232,22 @@
 
       switchTo(w) {
         this.activeId = w.id;
+        this.update();
+      },
+
+      update() {
+        let { activeId } = this;
+
+        for (let wnd of jr.find('[div-workspace]')) {
+          wnd.classList.toggle(
+            'window--hidden',
+            wnd.getAttribute('div-workspace') !== activeId,
+          );
+        }
       },
     },
   });
 
   jr.init();
+  div.rootScope.desktopWorkspaces.update();
 </script>
