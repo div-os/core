@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <title>divOS</title>
+<link rel="stylesheet" href="deps/photonkit/css/photon.css">
 <link rel="stylesheet" href="icons.css">
 <link rel="stylesheet" href="desktopWorkspaces/styles.css">
 <link rel="stylesheet" href="windowManager/styles.css">
@@ -132,7 +133,7 @@
     margin-left: 2px;
   }
 
-  .window--workspaceName {
+  .workspaceNamePanel {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -193,10 +194,16 @@
     jr-list="for w of div.desktopWorkspaces.all"
   >
     <div
-      class="window window--workspaceName"
+      class="window window--floating"
       jr-div-workspace.bind="w.id"
-      jr-textcontent.bind="w.id"
-    ></div>
+    >
+      <div class="window-handle toolbar toolbar-header">
+        <div
+          class="title"
+          jr-textcontent.bind="w.id"
+        ></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -205,4 +212,5 @@
   jr.init();
 
   div.desktopWorkspaces.update();
+  div.windowManager.update();
 </script>

@@ -290,7 +290,7 @@ function retry () {
 }
 
 }).call(this,require('_process'))
-},{"./fs.js":1,"./legacy-streams.js":3,"./polyfills.js":4,"_process":143,"assert":17,"fs":"browserify-fs","util":195}],3:[function(require,module,exports){
+},{"./fs.js":1,"./legacy-streams.js":3,"./polyfills.js":4,"_process":212,"assert":17,"fs":"browserify-fs","util":268}],3:[function(require,module,exports){
 (function (process){
 var Stream = require('stream').Stream
 
@@ -412,7 +412,7 @@ function legacy (fs) {
 }
 
 }).call(this,require('_process'))
-},{"_process":143,"stream":167}],4:[function(require,module,exports){
+},{"_process":212,"stream":240}],4:[function(require,module,exports){
 (function (process){
 var fs = require('./fs.js')
 var constants = require('constants')
@@ -746,7 +746,7 @@ function chownErOk (er) {
 }
 
 }).call(this,require('_process'))
-},{"./fs.js":1,"_process":143,"constants":48}],5:[function(require,module,exports){
+},{"./fs.js":1,"_process":212,"constants":48}],5:[function(require,module,exports){
 /*!
  * ansi-cyan <https://github.com/jonschlinkert/ansi-cyan>
  *
@@ -2340,7 +2340,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":19,"_process":143,"inherits":18}],21:[function(require,module,exports){
+},{"./support/isBuffer":19,"_process":212,"inherits":18}],21:[function(require,module,exports){
 'use strict';
 module.exports = balanced;
 function balanced(a, b, str) {
@@ -2955,7 +2955,7 @@ function words (decode) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./lib/vars.js":24,"buffer":33,"buffers":34,"chainsaw":35,"events":54,"stream":167}],24:[function(require,module,exports){
+},{"./lib/vars.js":24,"buffer":33,"buffers":34,"chainsaw":35,"events":60,"stream":240}],24:[function(require,module,exports){
 module.exports = function (store) {
     function getset (name, value) {
         var node = vars.store;
@@ -8569,7 +8569,7 @@ module.exports = ret;
 },{"./es5":13}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
-},{"_process":143,"timers":175}],26:[function(require,module,exports){
+},{"_process":212,"timers":248}],26:[function(require,module,exports){
 var concatMap = require('concat-map');
 var balanced = require('balanced-match');
 
@@ -9186,7 +9186,7 @@ Zlib.prototype._reset = function () {
 
 exports.Zlib = Zlib;
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":143,"assert":17,"buffer":33,"pako/lib/zlib/constants":129,"pako/lib/zlib/deflate.js":131,"pako/lib/zlib/inflate.js":133,"pako/lib/zlib/zstream":137}],29:[function(require,module,exports){
+},{"_process":212,"assert":17,"buffer":33,"pako/lib/zlib/constants":198,"pako/lib/zlib/deflate.js":200,"pako/lib/zlib/inflate.js":202,"pako/lib/zlib/zstream":206}],29:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -9798,7 +9798,7 @@ util.inherits(DeflateRaw, Zlib);
 util.inherits(InflateRaw, Zlib);
 util.inherits(Unzip, Zlib);
 }).call(this,require('_process'))
-},{"./binding":28,"_process":143,"assert":17,"buffer":33,"stream":167,"util":195}],30:[function(require,module,exports){
+},{"./binding":28,"_process":212,"assert":17,"buffer":33,"stream":240,"util":268}],30:[function(require,module,exports){
 var Buffer = require('buffer').Buffer;
 
 var CRC_TABLE = [
@@ -11878,7 +11878,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":22,"ieee754":106}],34:[function(require,module,exports){
+},{"base64-js":22,"ieee754":115}],34:[function(require,module,exports){
 (function (Buffer){
 module.exports = Buffers;
 
@@ -12300,7 +12300,7 @@ function upgradeChainsaw(saw) {
 };
 
 }).call(this,require('_process'))
-},{"_process":143,"events":54,"traverse":176}],36:[function(require,module,exports){
+},{"_process":212,"events":60,"traverse":249}],36:[function(require,module,exports){
 (function (process){
 'use strict';
 const escapeStringRegexp = require('escape-string-regexp');
@@ -12532,7 +12532,7 @@ module.exports.supportsColor = stdoutColor;
 module.exports.default = module.exports; // For TypeScript
 
 }).call(this,require('_process'))
-},{"./templates.js":37,"_process":143,"ansi-styles":8,"escape-string-regexp":53,"supports-color":171}],37:[function(require,module,exports){
+},{"./templates.js":37,"_process":212,"ansi-styles":8,"escape-string-regexp":59,"supports-color":244}],37:[function(require,module,exports){
 'use strict';
 const TEMPLATE_REGEX = /(?:\\(u[a-f\d]{4}|x[a-f\d]{2}|.))|(?:\{(~)?(\w+(?:\([^)]*\))?(?:\.\w+(?:\([^)]*\))?)*)(?:[ \t]|(?=\r?\n)))|(\})|((?:.|[\r\n\f])+?)/gi;
 const STYLE_REGEX = /(?:^|\.)(\w+)(?:\(([^)]*)\))?/g;
@@ -13122,7 +13122,7 @@ Clone.prototype._destroy = function (err, cb) {
 
 module.exports = Cloneable
 
-},{"inherits":108,"process-nextick-args":142,"readable-stream":159}],42:[function(require,module,exports){
+},{"inherits":117,"process-nextick-args":211,"readable-stream":228}],42:[function(require,module,exports){
 /* MIT license */
 var cssKeywords = require('color-name');
 
@@ -14675,7 +14675,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":111}],50:[function(require,module,exports){
+},{"../../is-buffer/index.js":144}],50:[function(require,module,exports){
 var clone = require('clone');
 
 module.exports = function(options, defaults) {
@@ -14860,6 +14860,1031 @@ if (typeof module === 'object' && module.exports) {
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":33}],52:[function(require,module,exports){
+/**
+ * Define stateful property on an object
+ */
+module.exports = defineState;
+
+var State = require('st8');
+
+
+/**
+ * Define stateful property on a target
+ *
+ * @param {object} target Any object
+ * @param {string} property Property name
+ * @param {object} descriptor State descriptor
+ *
+ * @return {object} target
+ */
+function defineState (target, property, descriptor, isFn) {
+	//define accessor on a target
+	if (isFn) {
+		target[property] = function () {
+			if (arguments.length) {
+				return state.set(arguments[0]);
+			}
+			else {
+				return state.get();
+			}
+		};
+	}
+
+	//define setter/getter on a target
+	else {
+		Object.defineProperty(target, property, {
+			set: function (value) {
+				return state.set(value);
+			},
+			get: function () {
+				return state.get();
+			}
+		});
+	}
+
+	//define state controller
+	var state = new State(descriptor, target);
+
+	return target;
+}
+},{"st8":239}],53:[function(require,module,exports){
+/**
+ * Simple draggable component
+ *
+ * @module draggy
+ */
+
+
+//work with css
+const css = require('mucss/css');
+const parseCSSValue = require('mucss/parse-value');
+const selection = require('mucss/selection');
+const offsets = require('mucss/offset');
+const getTranslate = require('mucss/translate');
+const intersect = require('intersects');
+const isFixed = require('mucss/is-fixed');
+
+//events
+const on = require('emmy/on');
+const off = require('emmy/off');
+const emit = require('emmy/emit');
+const Emitter = require('events');
+const getClientX = require('get-client-xy').x;
+const getClientY = require('get-client-xy').y;
+
+//utils
+const isArray = require('mutype/is-array');
+const isNumber = require('mutype/is-number');
+const isString = require('mutype/is-string');
+const isFn = require('mutype/is-fn');
+const defineState = require('define-state');
+const extend = require('xtend/mutable');
+const round = require('mumath/round');
+const between = require('mumath/clamp');
+const loop = require('mumath/mod');
+const getUid = require('get-uid');
+const inherits =  require('inherits');
+
+
+const win = window, doc = document, root = doc.documentElement;
+
+
+/**
+ * Draggable controllers associated with elements.
+ *
+ * Storing them on elements is
+ * - leak-prone,
+ * - pollutes element’s namespace,
+ * - requires some artificial key to store,
+ * - unable to retrieve controller easily.
+ *
+ * That is why weakmap.
+ */
+const draggableCache = Draggable.cache = new WeakMap;
+
+
+
+/**
+ * Make an element draggable.
+ *
+ * @constructor
+ *
+ * @param {HTMLElement} target An element whether in/out of DOM
+ * @param {Object} options An draggable options
+ *
+ * @return {HTMLElement} Target element
+ */
+function Draggable(target, options) {
+	if (!(this instanceof Draggable)) {
+		return new Draggable(target, options);
+	}
+
+	var that = this;
+
+	//ignore existing instance
+	var instance = draggableCache.get(target);
+	if (instance) {
+		instance.state = 'reset';
+
+		//take over options
+		extend(instance, options);
+
+		instance.update();
+
+		return instance;
+	}
+
+	else {
+		//get unique id for instance
+		//needed to track event binders
+		that.id = getUid();
+		that._ns = '.draggy_' + that.id;
+
+		//save element passed
+		that.element = target;
+
+		draggableCache.set(target, that);
+	}
+
+	//define state behaviour
+	defineState(that, 'state', that.state);
+
+	//preset handles
+	that.currentHandles = [];
+
+	//take over options
+	extend(that, options);
+
+	//define handle
+	if (that.handle === undefined) {
+		that.handle = that.element;
+	}
+
+	//setup droppable
+	if (that.droppable) {
+		that.initDroppable();
+	}
+
+	//try to calc out basic limits
+	that.update();
+
+	//go to initial state
+	that.state = 'idle';
+}
+
+
+/** Inherit draggable from Emitter */
+inherits(Draggable, Emitter);
+
+
+//enable css3 by default
+Draggable.prototype.css3 = true;
+
+//both axes by default
+Draggable.prototype.axis = null;
+
+
+/** Init droppable "plugin" */
+Draggable.prototype.initDroppable = function () {
+	var that = this;
+
+	on(that, 'dragstart', function () {
+		var that = this;
+		that.dropTargets = q(that.droppable);
+	});
+
+	on(that, 'drag', function () {
+		var that = this;
+
+		if (!that.dropTargets) {
+			return;
+		}
+
+		var thatRect = offsets(that.element);
+
+		that.dropTargets.forEach(function (dropTarget) {
+			var targetRect = offsets(dropTarget);
+
+			if (intersect(thatRect, targetRect, that.droppableTolerance)) {
+				if (that.droppableClass) {
+					dropTarget.classList.add(that.droppableClass);
+				}
+				if (!that.dropTarget) {
+					that.dropTarget = dropTarget;
+
+					emit(that, 'dragover', dropTarget);
+					emit(dropTarget, 'dragover', that);
+				}
+			}
+			else {
+				if (that.dropTarget) {
+					emit(that, 'dragout', dropTarget);
+					emit(dropTarget, 'dragout', that);
+
+					that.dropTarget = null;
+				}
+				if (that.droppableClass) {
+					dropTarget.classList.remove(that.droppableClass);
+				}
+			}
+		});
+	});
+
+	on(that, 'dragend', function () {
+		var that = this;
+
+		//emit drop, if any
+		if (that.dropTarget) {
+			emit(that.dropTarget, 'drop', that);
+			emit(that, 'drop', that.dropTarget);
+			that.dropTarget.classList.remove(that.droppableClass);
+			that.dropTarget = null;
+		}
+	});
+};
+
+
+/**
+ * Draggable behaviour
+ * @enum {string}
+ * @default is 'idle'
+ */
+Draggable.prototype.state = {
+	//idle
+	_: {
+		before: function () {
+			var that = this;
+
+			that.element.classList.add('draggy-idle');
+
+			//emit drag evts on element
+			emit(that.element, 'idle', null, true);
+			that.emit('idle');
+
+			//reset keys
+			that.ctrlKey = false;
+			that.shiftKey = false;
+			that.metaKey = false;
+			that.altKey = false;
+
+			//reset movement params
+			that.movementX = 0;
+			that.movementY = 0;
+			that.deltaX = 0;
+			that.deltaY = 0;
+
+			on(doc, 'mousedown' + that._ns + ' touchstart' + that._ns, function (e) {
+				//ignore non-draggy events
+				if (!e.draggies) {
+					return;
+				}
+
+				//ignore dragstart for not registered draggies
+				if (e.draggies.indexOf(that) < 0) {
+					return;
+				}
+
+				//if target is focused - ignore drag
+				//FIXME: detect focused by whitelist of tags, name supposition may be wrong (idk, form elements have names, so likely to be focused by click)
+				if (e.target.name !== undefined) {
+					return;
+				}
+
+				//multitouch has multiple starts
+				that.setTouch(e);
+
+				//update movement params
+				that.update(e);
+
+				//go to threshold state
+				that.state = 'threshold';
+			});
+		},
+		after: function () {
+			var that = this;
+
+			that.element.classList.remove('draggy-idle');
+
+			off(doc, that._ns);
+
+			//set up tracking
+			if (that.release) {
+				that._trackingInterval = setInterval(function (e) {
+					var now = Date.now();
+					var elapsed = now - that.timestamp;
+
+					//get delta movement since the last track
+					var dX = that.prevX - that.frame[0];
+					var dY = that.prevY - that.frame[1];
+					that.frame[0] = that.prevX;
+					that.frame[1] = that.prevY;
+
+					var delta = Math.sqrt(dX * dX + dY * dY);
+
+					//get speed as average of prev and current (prevent div by zero)
+					var v = Math.min(that.velocity * delta / (1 + elapsed), that.maxSpeed);
+					that.speed = 0.8 * v + 0.2 * that.speed;
+
+					//get new angle as a last diff
+					//NOTE: vector average isn’t the same as speed scalar average
+					that.angle = Math.atan2(dY, dX);
+
+					that.emit('track');
+
+					return that;
+				}, that.framerate);
+			}
+		}
+	},
+
+	threshold: {
+		before: function () {
+			var that = this;
+
+			//ignore threshold state, if threshold is none
+			if (isZeroArray(that.threshold)) {
+				that.state = 'drag';
+				return;
+			}
+
+			that.element.classList.add('draggy-threshold');
+
+			//emit drag evts on element
+			that.emit('threshold');
+			emit(that.element, 'threshold');
+
+			//listen to doc movement
+			on(doc, 'touchmove' + that._ns + ' mousemove' + that._ns, function (e) {
+				e.preventDefault();
+
+				//compare movement to the threshold
+				var clientX = getClientX(e, that.touchIdx);
+				var clientY = getClientY(e, that.touchIdx);
+				var difX = that.prevMouseX - clientX;
+				var difY = that.prevMouseY - clientY;
+
+				if (difX < that.threshold[0] || difX > that.threshold[2] || difY < that.threshold[1] || difY > that.threshold[3]) {
+					that.update(e);
+					that.state = 'drag';
+				}
+			});
+			on(doc, 'mouseup' + that._ns + ' touchend' + that._ns + '', function (e) {
+				e.preventDefault();
+
+				//forget touches
+				that.resetTouch();
+
+				that.state = 'idle';
+			});
+		},
+
+		after: function () {
+			var that = this;
+
+			that.element.classList.remove('draggy-threshold');
+
+			off(doc, that._ns);
+		}
+	},
+
+	drag: {
+		before: function () {
+			var that = this;
+
+			//reduce dragging clutter
+			selection.disable(root);
+
+			that.element.classList.add('draggy-drag');
+
+			//emit drag evts on element
+			that.emit('dragstart');
+			emit(that.element, 'dragstart', null, true);
+
+			//emit drag events on that
+			that.emit('drag');
+			emit(that.element, 'drag', null, true);
+
+			//stop drag on leave
+			on(doc, 'touchend' + that._ns + ' mouseup' + that._ns + ' mouseleave' + that._ns, function (e) {
+				e.preventDefault();
+
+				//forget touches - dragend is called once
+				that.resetTouch();
+
+				//manage release movement
+				if (that.speed > 1) {
+					that.state = 'release';
+				}
+
+				else {
+					that.state = 'idle';
+				}
+			});
+
+			//move via transform
+			on(doc, 'touchmove' + that._ns + ' mousemove' + that._ns, function (e) {
+				that.drag(e);
+			});
+		},
+
+		after: function () {
+			var that = this;
+
+			//enable document interactivity
+			selection.enable(root);
+
+			that.element.classList.remove('draggy-drag');
+
+			//emit dragend on element, this
+			that.emit('dragend');
+			emit(that.element, 'dragend', null, true);
+
+			//unbind drag events
+			off(doc, that._ns);
+
+			clearInterval(that._trackingInterval);
+		}
+	},
+
+	release: {
+		before: function () {
+			var that = this;
+
+			that.element.classList.add('draggy-release');
+
+			//enter animation mode
+			clearTimeout(that._animateTimeout);
+
+			//set proper transition
+			css(that.element, {
+				'transition': (that.releaseDuration) + 'ms ease-out ' + (that.css3 ? 'transform' : 'position')
+			});
+
+			//plan leaving anim mode
+			that._animateTimeout = setTimeout(function () {
+				that.state = 'idle';
+			}, that.releaseDuration);
+
+
+			//calc target point & animate to it
+			that.move(
+				that.prevX + that.speed * Math.cos(that.angle),
+				that.prevY + that.speed * Math.sin(that.angle)
+			);
+
+			that.speed = 0;
+			that.emit('track');
+		},
+
+		after: function () {
+			var that = this;
+
+			that.element.classList.remove('draggy-release');
+
+			css(this.element, {
+				'transition': null
+			});
+		}
+	},
+
+	reset: function () {
+		var that = this;
+
+		that.currentHandles.forEach(function (handle) {
+			off(handle, that._ns);
+		});
+
+		clearTimeout(that._animateTimeout);
+
+		off(doc, that._ns);
+		off(that.element, that._ns);
+
+		return '_';
+	}
+};
+
+
+/** Drag handler. Needed to provide drag movement emulation via API */
+Draggable.prototype.drag = function (e) {
+	var that = this;
+
+	e.preventDefault();
+
+	var mouseX = getClientX(e, that.touchIdx),
+		mouseY = getClientY(e, that.touchIdx);
+
+	//calc mouse movement diff
+	var diffMouseX = mouseX - that.prevMouseX,
+		diffMouseY = mouseY - that.prevMouseY;
+
+	//absolute mouse coordinate
+	var mouseAbsX = mouseX,
+		mouseAbsY = mouseY;
+
+	//if we are not fixed, our absolute position is relative to the doc
+	if (!that._isFixed) {
+		mouseAbsX += win.pageXOffset;
+		mouseAbsY += win.pageYOffset;
+	}
+
+	//calc sniper offset, if any
+	if (e.ctrlKey || e.metaKey) {
+		that.sniperOffsetX += diffMouseX * that.sniperSlowdown;
+		that.sniperOffsetY += diffMouseY * that.sniperSlowdown;
+	}
+
+	//save refs to the meta keys
+	that.ctrlKey = e.ctrlKey;
+	that.shiftKey = e.shiftKey;
+	that.metaKey = e.metaKey;
+	that.altKey = e.altKey;
+
+	//calc movement x and y
+	//take absolute placing as it is the only reliable way (2x proved)
+	var x = (mouseAbsX - that.initOffsetX) - that.innerOffsetX - that.sniperOffsetX,
+		y = (mouseAbsY - that.initOffsetY) - that.innerOffsetY - that.sniperOffsetY;
+
+	//move element
+	that.move(x, y);
+
+	//save prevClientXY for calculating diff
+	that.prevMouseX = mouseX;
+	that.prevMouseY = mouseY;
+
+	//emit drag
+	that.emit('drag');
+	emit(that.element, 'drag', null, true);
+};
+
+
+/** Current number of draggable touches */
+var touches = 0;
+
+
+/** Manage touches */
+Draggable.prototype.setTouch = function (e) {
+	if (!e.touches || this.isTouched()) return this;
+
+	//current touch index
+	this.touchIdx = touches;
+	touches++;
+
+	return this;
+};
+Draggable.prototype.resetTouch = function () {
+	touches = 0;
+	this.touchIdx = null;
+
+	return this;
+};
+Draggable.prototype.isTouched = function () {
+	return this.touchIdx !== null;
+};
+
+
+/** Index to fetch touch number from event */
+Draggable.prototype.touchIdx = null;
+
+
+/**
+ * Update movement limits.
+ * Refresh that.withinOffsets and that.limits.
+ */
+Draggable.prototype.update = function (e) {
+	var that = this;
+
+	that._isFixed = isFixed(that.element);
+
+	//enforce abs position
+	if (!that.css3) {
+		css(this.element, 'position', 'absolute');
+	}
+
+	//update handles
+	that.currentHandles.forEach(function (handle) {
+		off(handle, that._ns);
+	});
+
+	var cancelEls = q(that.cancel);
+
+	that.currentHandles = q(that.handle);
+
+	that.currentHandles.forEach(function (handle) {
+		on(handle, 'mousedown' + that._ns + ' touchstart' + that._ns, function (e) {
+			//mark event as belonging to the draggy
+			if (!e.draggies) {
+				e.draggies = [];
+			}
+
+			//ignore draggies containing other draggies
+			if (e.draggies.some(function (draggy) {
+				return that.element.contains(draggy.element);
+			})) {
+				return;
+			}
+			//ignore events happened within cancelEls
+			if (cancelEls.some(function (cancelEl) {
+				return cancelEl.contains(e.target);
+			})) {
+				return;
+			}
+
+			//register draggy
+			e.draggies.push(that);
+		});
+	});
+
+	//update limits
+	that.updateLimits();
+
+	//preset inner offsets
+	that.innerOffsetX = that.pin[0];
+	that.innerOffsetY = that.pin[1];
+
+	var thatClientRect = that.element.getBoundingClientRect();
+
+	//if event passed - update acc to event
+	if (e) {
+		//take last mouse position from the event
+		that.prevMouseX = getClientX(e, that.touchIdx);
+		that.prevMouseY = getClientY(e, that.touchIdx);
+
+		//if mouse is within the element - take offset normally as rel displacement
+		that.innerOffsetX = -thatClientRect.left + getClientX(e, that.touchIdx);
+		that.innerOffsetY = -thatClientRect.top + getClientY(e, that.touchIdx);
+	}
+	//if no event - suppose pin-centered event
+	else {
+		//take mouse position & inner offset as center of pin
+		var pinX = (that.pin[0] + that.pin[2] ) * 0.5;
+		var pinY = (that.pin[1] + that.pin[3] ) * 0.5;
+		that.prevMouseX = thatClientRect.left + pinX;
+		that.prevMouseY = thatClientRect.top + pinY;
+		that.innerOffsetX = pinX;
+		that.innerOffsetY = pinY;
+	}
+
+	//set initial kinetic props
+	that.speed = 0;
+	that.amplitude = 0;
+	that.angle = 0;
+	that.timestamp = +new Date();
+	that.frame = [that.prevX, that.prevY];
+
+	//set sniper offset
+	that.sniperOffsetX = 0;
+	that.sniperOffsetY = 0;
+};
+
+/**
+ * Update limits only from current position
+ */
+Draggable.prototype.updateLimits = function () {
+	var that = this;
+
+	//initial translation offsets
+	var initXY = that.getCoords();
+
+	//calc initial coords
+	that.prevX = initXY[0];
+	that.prevY = initXY[1];
+	that.initX = initXY[0];
+	that.initY = initXY[1];
+
+	//container rect might be outside the vp, so calc absolute offsets
+	//zero-position offsets, with translation(0,0)
+	var thatOffsets = offsets(that.element);
+
+	that.initOffsetX = thatOffsets.left - that.prevX;
+	that.initOffsetY = thatOffsets.top - that.prevY;
+	that.offsets = thatOffsets;
+
+	//handle parent case
+	var within = that.within;
+	if (that.within === 'parent' || that.within === true) {
+		within = that.element.parentNode;
+	}
+	within = within || doc;
+
+	//absolute offsets of a container
+	var withinOffsets = offsets(within);
+
+	if (within === win && that._isFixed) {
+		withinOffsets.top -= win.pageYOffset;
+		withinOffsets.left -= win.pageXOffset;
+		withinOffsets.bottom -= win.pageYOffset;
+		withinOffsets.right -= win.pageXOffset;
+	}
+	that.withinOffsets = withinOffsets;
+
+	//calculate movement limits - pin width might be wider than constraints
+	that.overflowX = that.pin.width - withinOffsets.width;
+	that.overflowY = that.pin.height - withinOffsets.height;
+
+	that.limits = {
+		left: withinOffsets.left - that.initOffsetX - that.pin[0] - (that.overflowX < 0 ? 0 : that.overflowX),
+		top: withinOffsets.top - that.initOffsetY - that.pin[1] - (that.overflowY < 0 ? 0 : that.overflowY),
+		right: that.overflowX > 0 ? 0 : withinOffsets.right - that.initOffsetX - that.pin[2],
+		bottom: (that.overflowY > 0 ? 0 : withinOffsets.bottom - that.initOffsetY - that.pin[3])
+	};
+};
+
+/**
+ * Update info regarding of movement
+ */
+Draggable.prototype.updateInfo = function (x, y) {
+	var that = this;
+
+	//provide delta from prev state
+	that.deltaX = x - that.prevX;
+	that.deltaY = y - that.prevY;
+
+	//save prev coords to use as a start point next time
+	that.prevX = x;
+	that.prevY = y;
+
+	//provide movement delta from initial state
+	that.movementX = x - that.initX;
+	that.movementY = y - that.initY;
+
+}
+
+
+/**
+ * Way of placement:
+ * - css3 === false (slower but more precise and cross-browser)
+ * - css3 === true (faster but may cause blurs on linux systems)
+ */
+Draggable.prototype.getCoords = function () {
+	if (!this.css3) {
+		// return [this.element.offsetLeft, this.element.offsetTop];
+		return [parseCSSValue(css(this.element,'left')), parseCSSValue(css(this.element, 'top'))];
+	}
+	else {
+		return getTranslate(this.element).slice(0, 2) || [0,0];
+	}
+};
+Draggable.prototype.setCoords = function (x, y) {
+	if (this.css3) {
+		if (x == null) x = this.prevX;
+		if (y == null) y = this.prevY;
+
+		x = round(x, this.precision);
+		y = round(y, this.precision);
+
+		css(this.element, 'transform', ['translate3d(', x, 'px,', y, 'px, 0)'].join(''));
+
+		this.updateInfo(x, y);
+	}
+	else {
+		if (x == null) x = this.prevX;
+		if (y == null) y = this.prevY;
+
+		x = round(x, this.precision);
+		y = round(y, this.precision);
+
+		css(this.element, {
+			left: x,
+			top: y
+		});
+
+		//update movement info
+		this.updateInfo(x, y);
+	}
+};
+
+
+/**
+ * Restricting container
+ * @type {Element|object}
+ * @default doc.documentElement
+ */
+Draggable.prototype.within = doc;
+
+
+/** Handle to drag */
+Draggable.prototype.handle;
+
+
+Object.defineProperties(Draggable.prototype, {
+	/**
+	 * Which area of draggable should not be outside the restriction area.
+	 * @type {(Array|number)}
+	 * @default [0,0,this.element.offsetWidth, this.element.offsetHeight]
+	 */
+	pin: {
+		set: function (value) {
+			if (isArray(value)) {
+				if (value.length === 2) {
+					this._pin = [value[0], value[1], value[0], value[1]];
+				} else if (value.length === 4) {
+					this._pin = value;
+				}
+			}
+
+			else if (isNumber(value)) {
+				this._pin = [value, value, value, value];
+			}
+
+			else {
+				this._pin = value;
+			}
+
+			//calc pin params
+			this._pin.width = this._pin[2] - this._pin[0];
+			this._pin.height = this._pin[3] - this._pin[1];
+		},
+
+		get: function () {
+			if (this._pin) return this._pin;
+
+			//returning autocalculated pin, if private pin is none
+			var pin = [0,0, this.offsets.width, this.offsets.height];
+			pin.width = this.offsets.width;
+			pin.height = this.offsets.height;
+			return pin;
+		}
+	},
+
+	/** Avoid initial mousemove */
+	threshold: {
+		set: function (val) {
+			if (isNumber(val)) {
+				this._threshold = [-val*0.5, -val*0.5, val*0.5, val*0.5];
+			} else if (val.length === 2) {
+				//Array(w,h)
+				this._threshold = [-val[0]*0.5, -val[1]*0.5, val[0]*0.5, val[1]*0.5];
+			} else if (val.length === 4) {
+				//Array(x1,y1,x2,y2)
+				this._threshold = val;
+			} else if (isFn(val)) {
+				//custom val funciton
+				this._threshold = val();
+			} else {
+				this._threshold = [0,0,0,0];
+			}
+		},
+
+		get: function () {
+			return this._threshold || [0,0,0,0];
+		}
+	}
+});
+
+
+
+/**
+ * For how long to release movement
+ *
+ * @type {(number|false)}
+ * @default false
+ * @todo
+ */
+Draggable.prototype.release = false;
+Draggable.prototype.releaseDuration = 500;
+Draggable.prototype.velocity = 1000;
+Draggable.prototype.maxSpeed = 250;
+Draggable.prototype.framerate = 50;
+
+
+/** To what extent round position */
+Draggable.prototype.precision = 1;
+
+
+/** Droppable params */
+Draggable.prototype.droppable = null;
+Draggable.prototype.droppableTolerance = 0.5;
+Draggable.prototype.droppableClass = null;
+
+
+/** Slow down movement by pressing ctrl/cmd */
+Draggable.prototype.sniper = true;
+
+
+/** How much to slow sniper drag */
+Draggable.prototype.sniperSlowdown = .85;
+
+
+/**
+ * Restrict movement by axis
+ *
+ * @default undefined
+ * @enum {string}
+ */
+Draggable.prototype.move = function (x, y) {
+	if (this.axis === 'x') {
+		if (x == null) x = this.prevX;
+		if (y == null) y = this.prevY;
+
+		var limits = this.limits;
+
+		if (this.repeat) {
+			var w = (limits.right - limits.left);
+			var oX = - this.initOffsetX + this.withinOffsets.left - this.pin[0] - Math.max(0, this.overflowX);
+			x = loop(x - oX, w) + oX;
+		} else {
+			x = between(x, limits.left, limits.right);
+		}
+
+		this.setCoords(x);
+	}
+	else if (this.axis === 'y') {
+		if (x == null) x = this.prevX;
+		if (y == null) y = this.prevY;
+
+		var limits = this.limits;
+
+		if (this.repeat) {
+			var h = (limits.bottom - limits.top);
+			var oY = - this.initOffsetY + this.withinOffsets.top - this.pin[1] - Math.max(0, this.overflowY);
+			y = loop(y - oY, h) + oY;
+		} else {
+			y = between(y, limits.top, limits.bottom);
+		}
+
+		this.setCoords(null, y);
+	}
+	else {
+		if (x == null) x = this.prevX;
+		if (y == null) y = this.prevY;
+
+		var limits = this.limits;
+
+		if (this.repeat) {
+			var w = (limits.right - limits.left);
+			var h = (limits.bottom - limits.top);
+			var oX = - this.initOffsetX + this.withinOffsets.left - this.pin[0] - Math.max(0, this.overflowX);
+			var oY = - this.initOffsetY + this.withinOffsets.top - this.pin[1] - Math.max(0, this.overflowY);
+			if (this.repeat === 'x') {
+				x = loop(x - oX, w) + oX;
+			}
+			else if (this.repeat === 'y') {
+				y = loop(y - oY, h) + oY;
+			}
+			else {
+				x = loop(x - oX, w) + oX;
+				y = loop(y - oY, h) + oY;
+			}
+		}
+
+		x = between(x, limits.left, limits.right);
+		y = between(y, limits.top, limits.bottom);
+
+		this.setCoords(x, y);
+	}
+};
+
+
+/** Repeat movement by one of axises */
+Draggable.prototype.repeat = false;
+
+
+/** Check whether arr is filled with zeros */
+function isZeroArray(arr) {
+	if (!arr[0] && !arr[1] && !arr[2] && !arr[3]) return true;
+}
+
+
+
+/** Clean all memory-related things */
+Draggable.prototype.destroy = function () {
+	var that = this;
+
+	that.currentHandles.forEach(function (handle) {
+		off(handle, that._ns);
+	});
+
+	that.state = 'destroy';
+
+	clearTimeout(that._animateTimeout);
+
+	off(doc, that._ns);
+	off(that.element, that._ns);
+
+
+	that.element = null;
+	that.within = null;
+};
+
+
+
+//little helpers
+
+function q (str) {
+	if (Array.isArray(str)) {
+		return str.map(q).reduce(function(prev, curr) { return prev.concat(curr); }, [] );
+	}
+	else if (str instanceof HTMLElement) {
+		return [str];
+	}
+	else {
+		return [].slice.call(document.querySelectorAll(str));
+	}
+}
+
+
+module.exports = Draggable;
+},{"define-state":52,"emmy/emit":55,"emmy/off":57,"emmy/on":58,"events":60,"get-client-xy":80,"get-uid":84,"inherits":117,"intersects":118,"mucss/css":160,"mucss/is-fixed":163,"mucss/offset":165,"mucss/parse-value":167,"mucss/selection":171,"mucss/translate":172,"mumath/clamp":173,"mumath/mod":174,"mumath/round":176,"mutype/is-array":182,"mutype/is-fn":186,"mutype/is-number":187,"mutype/is-string":192,"xtend/mutable":275}],54:[function(require,module,exports){
 "use strict";
 
 var stream = require("readable-stream");
@@ -14937,7 +15962,454 @@ module.exports = function duplex2(options, writable, readable) {
 
 module.exports.DuplexWrapper = DuplexWrapper;
 
-},{"readable-stream":159}],53:[function(require,module,exports){
+},{"readable-stream":228}],55:[function(require,module,exports){
+/**
+ * @module emmy/emit
+ */
+var icicle = require('icicle');
+var slice = require('sliced');
+var listeners = require('./listeners');
+var isBrowser = require('is-browser');
+
+
+/**
+ * A simple wrapper to handle stringy/plain events
+ */
+module.exports = function(target, evt){
+	if (!target) return;
+
+	var args = arguments;
+	if (typeof evt === 'string') {
+		args = slice(arguments, 2);
+		evt.split(/\s+/).forEach(function(evt){
+			evt = evt.split('.')[0];
+
+			emit.apply(this, [target, evt].concat(args));
+		});
+	} else {
+		return emit.apply(this, args);
+	}
+};
+
+
+/** detect env */
+var $ = typeof jQuery === 'undefined' ? undefined : jQuery;
+var doc = typeof document === 'undefined' ? undefined : document;
+var win = typeof window === 'undefined' ? undefined : window;
+
+
+/**
+ * Emit an event, optionally with data or bubbling
+ * Accept only single elements/events
+ *
+ * @param {string} eventName An event name, e. g. 'click'
+ * @param {*} data Any data to pass to event.details (DOM) or event.data (elsewhere)
+ * @param {bool} bubbles Whether to trigger bubbling event (DOM)
+ *
+ *
+ * @return {target} a target
+ */
+function emit(target, eventName, data, bubbles){
+	var emitMethod, evt = eventName;
+
+	//Create proper event for DOM objects
+	if (isBrowser && (target instanceof Node || target === win)) {
+		//NOTE: this doesnot bubble on off-DOM elements
+
+		if (isBrowser && eventName instanceof Event) {
+			evt = eventName;
+		} else {
+			//IE9-compliant constructor
+			evt = doc.createEvent('CustomEvent');
+			evt.initCustomEvent(eventName, bubbles, true, data);
+
+			//a modern constructor would be:
+			// var evt = new CustomEvent(eventName, { detail: data, bubbles: bubbles })
+		}
+
+		emitMethod = target.dispatchEvent;
+	}
+
+	//create event for jQuery object
+	else if ($ && target instanceof $) {
+		//TODO: decide how to pass data
+		evt = $.Event( eventName, data );
+		evt.detail = data;
+
+		//FIXME: reference case where triggerHandler needed (something with multiple calls)
+		emitMethod = bubbles ? targte.trigger : target.triggerHandler;
+	}
+
+	//detect target events
+	else {
+		//emit - default
+		//trigger - jquery
+		//dispatchEvent - DOM
+		//raise - node-state
+		//fire - ???
+		emitMethod = target['dispatchEvent'] || target['emit'] || target['trigger'] || target['fire'] || target['raise'];
+	}
+
+
+	var args = slice(arguments, 2);
+
+
+	//use locks to avoid self-recursion on objects wrapping this method
+	if (emitMethod) {
+		if (icicle.freeze(target, 'emit' + eventName)) {
+			//use target event system, if possible
+			emitMethod.apply(target, [evt].concat(args));
+			icicle.unfreeze(target, 'emit' + eventName);
+
+			return target;
+		}
+
+		//if event was frozen - probably it is emitter instance
+		//so perform normal callback
+	}
+
+
+	//fall back to default event system
+	var evtCallbacks = listeners(target, evt);
+
+	//copy callbacks to fire because list can be changed by some callback (like `off`)
+	var fireList = slice(evtCallbacks);
+	for (var i = 0; i < fireList.length; i++ ) {
+		fireList[i] && fireList[i].apply(target, args);
+	}
+
+	return target;
+}
+
+},{"./listeners":56,"icicle":114,"is-browser":143,"sliced":237}],56:[function(require,module,exports){
+/**
+ * A storage of per-target callbacks.
+ * WeakMap is the most safe solution.
+ *
+ * @module emmy/listeners
+ */
+
+
+/**
+ * Property name to provide on targets.
+ *
+ * Can’t use global WeakMap -
+ * it is impossible to provide singleton global cache of callbacks for targets
+ * not polluting global scope. So it is better to pollute target scope than the global.
+ *
+ * Otherwise, each emmy instance will create it’s own cache, which leads to mess.
+ *
+ * Also can’t use `._events` property on targets, as it is done in `events` module,
+ * because it is incompatible. Emmy targets universal events wrapper, not the native implementation.
+ *
+ */
+//FIXME: new npm forces flat modules structure, so weakmaps are better providing that there’s the one emmy across the project.
+var cbPropName = '_callbacks';
+
+
+/**
+ * Get listeners for the target/evt (optionally).
+ *
+ * @param {object} target a target object
+ * @param {string}? evt an evt name, if undefined - return object with events
+ *
+ * @return {(object|array)} List/set of listeners
+ */
+function listeners(target, evt, tags){
+	var cbs = target[cbPropName];
+	var result;
+
+	if (!evt) {
+		result = cbs || {};
+
+		//filter cbs by tags
+		if (tags) {
+			var filteredResult = {};
+			for (var evt in result) {
+				filteredResult[evt] = result[evt].filter(function (cb) {
+					return hasTags(cb, tags);
+				});
+			}
+			result = filteredResult;
+		}
+
+		return result;
+	}
+
+	if (!cbs || !cbs[evt]) {
+		return [];
+	}
+
+	result = cbs[evt];
+
+	//if there are evt namespaces specified - filter callbacks
+	if (tags && tags.length) {
+		result = result.filter(function (cb) {
+			return hasTags(cb, tags);
+		});
+	}
+
+	return result;
+}
+
+
+/**
+ * Remove listener, if any
+ */
+listeners.remove = function(target, evt, cb, tags){
+	//get callbacks for the evt
+	var evtCallbacks = target[cbPropName];
+	if (!evtCallbacks || !evtCallbacks[evt]) return false;
+
+	var callbacks = evtCallbacks[evt];
+
+	//if tags are passed - make sure callback has some tags before removing
+	if (tags && tags.length && !hasTags(cb, tags)) return false;
+
+	//remove specific handler
+	for (var i = 0; i < callbacks.length; i++) {
+		//once method has original callback in .cb
+		if (callbacks[i] === cb || callbacks[i].fn === cb) {
+			callbacks.splice(i, 1);
+			break;
+		}
+	}
+};
+
+
+/**
+ * Add a new listener
+ */
+listeners.add = function(target, evt, cb, tags){
+	if (!cb) return;
+
+	var targetCallbacks = target[cbPropName];
+
+	//ensure set of callbacks for the target exists
+	if (!targetCallbacks) {
+		targetCallbacks = {};
+		Object.defineProperty(target, cbPropName, {
+			value: targetCallbacks
+		});
+	}
+
+	//save a new callback
+	(targetCallbacks[evt] = targetCallbacks[evt] || []).push(cb);
+
+	//save ns for a callback, if any
+	if (tags && tags.length) {
+		cb._ns = tags;
+	}
+};
+
+
+/** Detect whether an cb has at least one tag from the list */
+function hasTags(cb, tags){
+	if (cb._ns) {
+		//if cb is tagged with a ns and includes one of the ns passed - keep it
+		for (var i = tags.length; i--;){
+			if (cb._ns.indexOf(tags[i]) >= 0) return true;
+		}
+	}
+}
+
+
+module.exports = listeners;
+},{}],57:[function(require,module,exports){
+/**
+ * @module emmy/off
+ */
+module.exports = off;
+
+var icicle = require('icicle');
+var slice = require('sliced');
+var listeners = require('./listeners');
+
+
+/**
+ * Remove listener[s] from the target
+ *
+ * @param {[type]} evt [description]
+ * @param {Function} fn [description]
+ *
+ * @return {[type]} [description]
+ */
+function off(target, evt, fn) {
+	if (!target) return target;
+
+	var callbacks, i;
+
+	//unbind all listeners if no fn specified
+	if (fn === undefined) {
+		var args = slice(arguments, 1);
+
+		//try to use target removeAll method, if any
+		var allOff = target['removeAll'] || target['removeAllListeners'];
+
+		//call target removeAll
+		if (allOff) {
+			allOff.apply(target, args);
+		}
+
+
+		//then forget own callbacks, if any
+
+		//unbind all evts
+		if (!evt) {
+			callbacks = listeners(target);
+			for (evt in callbacks) {
+				off(target, evt);
+			}
+		}
+		//unbind all callbacks for an evt
+		else {
+			evt = '' + evt;
+
+			//invoke method for each space-separated event from a list
+			evt.split(/\s+/).forEach(function (evt) {
+				var evtParts = evt.split('.');
+				evt = evtParts.shift();
+				callbacks = listeners(target, evt, evtParts);
+
+				//returned array of callbacks (as event is defined)
+				if (evt) {
+					var obj = {};
+					obj[evt] = callbacks;
+					callbacks = obj;
+				}
+
+				//for each group of callbacks - unbind all
+				for (var evtName in callbacks) {
+					slice(callbacks[evtName]).forEach(function (cb) {
+						off(target, evtName, cb);
+					});
+				}
+			});
+		}
+
+		return target;
+	}
+
+
+	//target events (string notation to advanced_optimizations)
+	var offMethod = target['removeEventListener'] || target['removeListener'] || target['detachEvent'] || target['off'];
+
+	//invoke method for each space-separated event from a list
+	evt.split(/\s+/).forEach(function (evt) {
+		var evtParts = evt.split('.');
+		evt = evtParts.shift();
+
+		//use target `off`, if possible
+		if (offMethod) {
+			//avoid self-recursion from the outside
+			if (icicle.freeze(target, 'off' + evt)) {
+				offMethod.call(target, evt, fn);
+				icicle.unfreeze(target, 'off' + evt);
+			}
+
+			//if it’s frozen - ignore call
+			else {
+				return target;
+			}
+		}
+
+		if (fn.closedCall) fn.closedCall = false;
+
+		//forget callback
+		listeners.remove(target, evt, fn, evtParts);
+	});
+
+
+	return target;
+}
+
+},{"./listeners":56,"icicle":114,"sliced":237}],58:[function(require,module,exports){
+/**
+ * @module emmy/on
+ */
+
+
+var icicle = require('icicle');
+var listeners = require('./listeners');
+var isObject = require('is-plain-obj');
+
+module.exports = on;
+
+
+/**
+ * Bind fn to a target.
+ *
+ * @param {*} targte A single target to bind evt
+ * @param {string} evt An event name
+ * @param {Function} fn A callback
+ * @param {Function}? condition An optional filtering fn for a callback
+ *                              which accepts an event and returns callback
+ *
+ * @return {object} A target
+ */
+function on(target, evt, fn){
+	if (!target) return target;
+
+	//consider object of events
+	if (isObject(evt)) {
+		for(var evtName in evt) {
+			on(target, evtName, evt[evtName]);
+		}
+		return target;
+	}
+
+	//get target `on` method, if any
+	//prefer native-like method name
+	//user may occasionally expose `on` to the global, in case of browserify
+	//but it is unlikely one would replace native `addEventListener`
+	var onMethod =  target['addEventListener'] || target['addListener'] || target['attachEvent'] || target['on'];
+
+	var cb = fn;
+
+	evt = '' + evt;
+
+	//invoke method for each space-separated event from a list
+	evt.split(/\s+/).forEach(function(evt){
+		var evtParts = evt.split('.');
+		evt = evtParts.shift();
+
+		//use target event system, if possible
+		if (onMethod) {
+			//avoid self-recursions
+			//if it’s frozen - ignore call
+			if (icicle.freeze(target, 'on' + evt)){
+				onMethod.call(target, evt, cb);
+				icicle.unfreeze(target, 'on' + evt);
+			}
+			else {
+				return target;
+			}
+		}
+
+		//save the callback anyway
+		listeners.add(target, evt, cb, evtParts);
+	});
+
+	return target;
+}
+
+
+/**
+ * Wrap an fn with condition passing
+ */
+on.wrap = function(target, evt, fn, condition){
+	var cb = function() {
+		if (condition.apply(target, arguments)) {
+			return fn.apply(target, arguments);
+		}
+	};
+
+	cb.fn = fn;
+
+	return cb;
+};
+
+},{"./listeners":56,"icicle":114,"is-plain-obj":146}],59:[function(require,module,exports){
 'use strict';
 
 var matchOperatorsRe = /[|\\{}()[\]^$+*?.]/g;
@@ -14950,7 +16422,7 @@ module.exports = function (str) {
 	return str.replace(matchOperatorsRe, '\\$&');
 };
 
-},{}],54:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -15475,7 +16947,7 @@ function functionBindPolyfill(context) {
   };
 }
 
-},{}],55:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 'use strict';
 
 var typeOf = require('kind-of');
@@ -15513,7 +16985,7 @@ function extend(o) {
   return o;
 };
 
-},{"kind-of":118}],56:[function(require,module,exports){
+},{"kind-of":154}],62:[function(require,module,exports){
 (function (process){
 'use strict';
 /*
@@ -15589,7 +17061,7 @@ module.exports.warn = warn;
 module.exports.error = error;
 
 }).call(this,require('_process'))
-},{"_process":143,"ansi-gray":6,"color-support":46,"time-stamp":174}],57:[function(require,module,exports){
+},{"_process":212,"ansi-gray":6,"color-support":46,"time-stamp":247}],63:[function(require,module,exports){
 (function (process){
 module.exports = realpath
 realpath.realpath = realpath
@@ -15659,7 +17131,7 @@ function unmonkeypatch () {
 }
 
 }).call(this,require('_process'))
-},{"./old.js":58,"_process":143,"fs":"browserify-fs"}],58:[function(require,module,exports){
+},{"./old.js":64,"_process":212,"fs":"browserify-fs"}],64:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -15966,7 +17438,7 @@ exports.realpath = function realpath(p, cache, cb) {
 };
 
 }).call(this,require('_process'))
-},{"_process":143,"fs":"browserify-fs","path":138}],59:[function(require,module,exports){
+},{"_process":212,"fs":"browserify-fs","path":207}],65:[function(require,module,exports){
 exports.Abstract = require('./lib/abstract.js')
 exports.Reader = require('./lib/reader.js')
 exports.Writer = require('./lib/writer.js')
@@ -16003,7 +17475,7 @@ exports.Writer.Proxy = exports.ProxyWriter = exports.Proxy.Writer
 
 exports.collect = require('./lib/collect.js')
 
-},{"./lib/abstract.js":60,"./lib/collect.js":61,"./lib/dir-reader.js":62,"./lib/dir-writer.js":63,"./lib/file-reader.js":64,"./lib/file-writer.js":65,"./lib/link-reader.js":67,"./lib/link-writer.js":68,"./lib/proxy-reader.js":69,"./lib/proxy-writer.js":70,"./lib/reader.js":71,"./lib/writer.js":73}],60:[function(require,module,exports){
+},{"./lib/abstract.js":66,"./lib/collect.js":67,"./lib/dir-reader.js":68,"./lib/dir-writer.js":69,"./lib/file-reader.js":70,"./lib/file-writer.js":71,"./lib/link-reader.js":73,"./lib/link-writer.js":74,"./lib/proxy-reader.js":75,"./lib/proxy-writer.js":76,"./lib/reader.js":77,"./lib/writer.js":79}],66:[function(require,module,exports){
 (function (process){
 // the parent class for all fstreams.
 
@@ -16092,7 +17564,7 @@ function decorate (er, code, self) {
 }
 
 }).call(this,require('_process'))
-},{"_process":143,"inherits":108,"stream":167}],61:[function(require,module,exports){
+},{"_process":212,"inherits":117,"stream":240}],67:[function(require,module,exports){
 (function (Buffer){
 module.exports = collect
 
@@ -16166,7 +17638,7 @@ function collect (stream) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":33}],62:[function(require,module,exports){
+},{"buffer":33}],68:[function(require,module,exports){
 // A thing that emits "entry" events with Reader objects
 // Pausing it causes it to stop emitting entry events, and also
 // pauses the current entry if there is one.
@@ -16420,7 +17892,7 @@ DirReader.prototype.emitEntry = function (entry) {
   this.emit('child', entry)
 }
 
-},{"./reader.js":71,"assert":17,"graceful-fs":2,"inherits":108,"path":138}],63:[function(require,module,exports){
+},{"./reader.js":77,"assert":17,"graceful-fs":2,"inherits":117,"path":207}],69:[function(require,module,exports){
 // It is expected that, when .add() returns false, the consumer
 // of the DirWriter will pause until a "drain" event occurs. Note
 // that this is *almost always going to be the case*, unless the
@@ -16596,7 +18068,7 @@ DirWriter.prototype._process = function () {
   }
 }
 
-},{"./collect.js":61,"./writer.js":73,"inherits":108,"mkdirp":122,"path":138}],64:[function(require,module,exports){
+},{"./collect.js":67,"./writer.js":79,"inherits":117,"mkdirp":158,"path":207}],70:[function(require,module,exports){
 // Basically just a wrapper around an fs.ReadStream
 
 module.exports = FileReader
@@ -16748,7 +18220,7 @@ FileReader.prototype.resume = function (who) {
   self._read()
 }
 
-},{"./reader.js":71,"graceful-fs":2,"inherits":108}],65:[function(require,module,exports){
+},{"./reader.js":77,"graceful-fs":2,"inherits":117}],71:[function(require,module,exports){
 (function (Buffer){
 module.exports = FileWriter
 
@@ -16859,7 +18331,7 @@ FileWriter.prototype._finish = function () {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":111,"./writer.js":73,"graceful-fs":2,"inherits":108}],66:[function(require,module,exports){
+},{"../../is-buffer/index.js":144,"./writer.js":79,"graceful-fs":2,"inherits":117}],72:[function(require,module,exports){
 module.exports = getType
 
 function getType (st) {
@@ -16894,7 +18366,7 @@ function getType (st) {
   return null
 }
 
-},{}],67:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 // Basically just a wrapper around an fs.readlink
 //
 // XXX: Enhance this to support the Link type, by keeping
@@ -16949,7 +18421,7 @@ LinkReader.prototype._read = function () {
   }
 }
 
-},{"./reader.js":71,"graceful-fs":2,"inherits":108}],68:[function(require,module,exports){
+},{"./reader.js":77,"graceful-fs":2,"inherits":117}],74:[function(require,module,exports){
 (function (process){
 module.exports = LinkWriter
 
@@ -17048,7 +18520,7 @@ LinkWriter.prototype.end = function () {
 }
 
 }).call(this,require('_process'))
-},{"./writer.js":73,"_process":143,"graceful-fs":2,"inherits":108,"path":138,"rimraf":164}],69:[function(require,module,exports){
+},{"./writer.js":79,"_process":212,"graceful-fs":2,"inherits":117,"path":207,"rimraf":234}],75:[function(require,module,exports){
 // A reader for when we don't yet know what kind of thing
 // the thing is.
 
@@ -17145,7 +18617,7 @@ ProxyReader.prototype.resume = function () {
   return this._proxyTarget ? this._proxyTarget.resume() : false
 }
 
-},{"./get-type.js":66,"./reader.js":71,"graceful-fs":2,"inherits":108}],70:[function(require,module,exports){
+},{"./get-type.js":72,"./reader.js":77,"graceful-fs":2,"inherits":117}],76:[function(require,module,exports){
 // A writer for when we don't know what kind of thing
 // the thing is.  That is, it's not explicitly set,
 // so we're going to make it whatever the thing already
@@ -17258,7 +18730,7 @@ ProxyWriter.prototype.end = function (c) {
   return this._proxy.end(c)
 }
 
-},{"./collect.js":61,"./get-type.js":66,"./writer.js":73,"fs":"browserify-fs","inherits":108}],71:[function(require,module,exports){
+},{"./collect.js":67,"./get-type.js":72,"./writer.js":79,"fs":"browserify-fs","inherits":117}],77:[function(require,module,exports){
 (function (process){
 module.exports = Reader
 
@@ -17517,7 +18989,7 @@ Reader.prototype._read = function () {
 }
 
 }).call(this,require('_process'))
-},{"./abstract.js":60,"./dir-reader.js":62,"./file-reader.js":64,"./get-type.js":66,"./link-reader.js":67,"./proxy-reader.js":69,"./socket-reader.js":72,"_process":143,"graceful-fs":2,"inherits":108,"path":138,"stream":167}],72:[function(require,module,exports){
+},{"./abstract.js":66,"./dir-reader.js":68,"./file-reader.js":70,"./get-type.js":72,"./link-reader.js":73,"./proxy-reader.js":75,"./socket-reader.js":78,"_process":212,"graceful-fs":2,"inherits":117,"path":207,"stream":240}],78:[function(require,module,exports){
 // Just get the stats, and then don't do anything.
 // You can't really "read" from a socket.  You "connect" to it.
 // Mostly, this is here so that reading a dir with a socket in it
@@ -17555,7 +19027,7 @@ SocketReader.prototype._read = function () {
   }
 }
 
-},{"./reader.js":71,"inherits":108}],73:[function(require,module,exports){
+},{"./reader.js":77,"inherits":117}],79:[function(require,module,exports){
 (function (process){
 module.exports = Writer
 
@@ -17949,14 +19421,73 @@ function isDate (d) {
 }
 
 }).call(this,require('_process'))
-},{"./abstract.js":60,"./dir-writer.js":63,"./file-writer.js":65,"./get-type.js":66,"./link-writer.js":68,"./proxy-writer.js":70,"_process":143,"graceful-fs":2,"inherits":108,"mkdirp":122,"path":138,"rimraf":164}],74:[function(require,module,exports){
+},{"./abstract.js":66,"./dir-writer.js":69,"./file-writer.js":71,"./get-type.js":72,"./link-writer.js":74,"./proxy-writer.js":76,"_process":212,"graceful-fs":2,"inherits":117,"mkdirp":158,"path":207,"rimraf":234}],80:[function(require,module,exports){
+/**
+ * Get clientY/clientY from an event.
+ * If index is passed, treat it as index of global touches, not the targetTouches.
+ * Global touches include target touches.
+ *
+ * @module get-client-xy
+ *
+ * @param {Event} e Event raised, like mousemove
+ *
+ * @return {number} Coordinate relative to the screen
+ */
+function getClientY (e, idx) {
+	// touch event
+	if (e.touches) {
+		if (arguments.length > 1) {
+			return findTouch(e.touches, idx).clientY
+		}
+		else {
+			return e.targetTouches[0].clientY;
+		}
+	}
+
+	// mouse event
+	return e.clientY;
+}
+function getClientX (e, idx) {
+	// touch event
+	if (e.touches) {
+		if (arguments.length > idx) {
+			return findTouch(e.touches, idx).clientX;
+		}
+		else {
+			return e.targetTouches[0].clientX;
+		}
+	}
+
+	// mouse event
+	return e.clientX;
+}
+
+function getClientXY (e, idx) {
+	return [getClientX.apply(this, arguments), getClientY.apply(this, arguments)];
+}
+
+function findTouch (touchList, idx) {
+	for (var i = 0; i < touchList.length; i++) {
+		if (touchList[i].identifier === idx) {
+			return touchList[i];
+		}
+	}
+}
+
+
+getClientXY.x = getClientX;
+getClientXY.y = getClientY;
+getClientXY.findTouch = findTouch;
+
+module.exports = getClientXY;
+},{}],81:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = function (object) { return Object
     .getOwnPropertySymbols(object)
     .filter(function (keySymbol) { return object.propertyIsEnumerable(keySymbol); }); };
 
-},{}],75:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 const PassThrough = require('stream').PassThrough;
@@ -18011,7 +19542,7 @@ module.exports = opts => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":33,"stream":167}],76:[function(require,module,exports){
+},{"buffer":33,"stream":240}],83:[function(require,module,exports){
 'use strict';
 const bufferStream = require('./buffer-stream');
 
@@ -18064,7 +19595,14 @@ module.exports = getStream;
 module.exports.buffer = (stream, opts) => getStream(stream, Object.assign({}, opts, {encoding: 'buffer'}));
 module.exports.array = (stream, opts) => getStream(stream, Object.assign({}, opts, {array: true}));
 
-},{"./buffer-stream":75}],77:[function(require,module,exports){
+},{"./buffer-stream":82}],84:[function(require,module,exports){
+/** generate unique id for selector */
+var counter = Date.now() % 1e9;
+
+module.exports = function getUid(){
+	return (Math.random() * 1e9 >>> 0) + (counter++);
+};
+},{}],85:[function(require,module,exports){
 (function (process){
 exports.alphasort = alphasort
 exports.alphasorti = alphasorti
@@ -18308,7 +19846,7 @@ function childrenIgnored (self, path) {
 }
 
 }).call(this,require('_process'))
-},{"_process":143,"minimatch":121,"path":138,"path-is-absolute":139}],78:[function(require,module,exports){
+},{"_process":212,"minimatch":157,"path":207,"path-is-absolute":208}],86:[function(require,module,exports){
 (function (process){
 // Approach:
 //
@@ -19102,7 +20640,7 @@ Glob.prototype._stat2 = function (f, abs, er, stat, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./common.js":77,"./sync.js":79,"_process":143,"assert":17,"events":54,"fs":"browserify-fs","fs.realpath":57,"inflight":107,"inherits":108,"minimatch":121,"once":124,"path":138,"path-is-absolute":139,"util":195}],79:[function(require,module,exports){
+},{"./common.js":85,"./sync.js":87,"_process":212,"assert":17,"events":60,"fs":"browserify-fs","fs.realpath":63,"inflight":116,"inherits":117,"minimatch":157,"once":193,"path":207,"path-is-absolute":208,"util":268}],87:[function(require,module,exports){
 (function (process){
 module.exports = globSync
 globSync.GlobSync = GlobSync
@@ -19592,7 +21130,7 @@ GlobSync.prototype._makeAbs = function (f) {
 }
 
 }).call(this,require('_process'))
-},{"./common.js":77,"./glob.js":78,"_process":143,"assert":17,"fs":"browserify-fs","fs.realpath":57,"minimatch":121,"path":138,"path-is-absolute":139,"util":195}],80:[function(require,module,exports){
+},{"./common.js":85,"./glob.js":86,"_process":212,"assert":17,"fs":"browserify-fs","fs.realpath":63,"minimatch":157,"path":207,"path-is-absolute":208,"util":268}],88:[function(require,module,exports){
 (function (process){
 'use strict';
 const path = require('path');
@@ -19650,7 +21188,7 @@ module.exports = options => {
 };
 
 }).call(this,require('_process'))
-},{"_process":143,"chalk":36,"fancy-log":56,"path":138,"plur":141,"stringify-object":170,"through2":172,"tildify":173}],81:[function(require,module,exports){
+},{"_process":212,"chalk":36,"fancy-log":62,"path":207,"plur":210,"stringify-object":243,"through2":245,"tildify":246}],89:[function(require,module,exports){
 (function (Buffer){
 var through = require('through2');
 var unzip = require('unzipper')
@@ -19704,16 +21242,16 @@ module.exports = function(options){
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":33,"defaults":50,"fancy-log":56,"fs":"browserify-fs","through2":96,"unzipper":192,"vinyl":97}],82:[function(require,module,exports){
+},{"buffer":33,"defaults":50,"fancy-log":62,"fs":"browserify-fs","through2":104,"unzipper":265,"vinyl":105}],90:[function(require,module,exports){
 arguments[4][39][0].apply(exports,arguments)
-},{"dup":39,"fs":"browserify-fs"}],83:[function(require,module,exports){
+},{"dup":39,"fs":"browserify-fs"}],91:[function(require,module,exports){
 arguments[4][51][0].apply(exports,arguments)
-},{"buffer":33,"dup":51}],84:[function(require,module,exports){
+},{"buffer":33,"dup":51}],92:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],85:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 
@@ -19755,11 +21293,11 @@ module.exports = function forEach(obj, fn) {
 };
 
 
-},{}],86:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 module.exports = Object.keys || require('./shim');
 
 
-},{"./shim":88}],87:[function(require,module,exports){
+},{"./shim":96}],95:[function(require,module,exports){
 var toString = Object.prototype.toString;
 
 module.exports = function isArguments(value) {
@@ -19777,7 +21315,7 @@ module.exports = function isArguments(value) {
 };
 
 
-},{}],88:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 (function () {
 	"use strict";
 
@@ -19841,7 +21379,7 @@ module.exports = function isArguments(value) {
 }());
 
 
-},{"./foreach":85,"./isArguments":87}],89:[function(require,module,exports){
+},{"./foreach":93,"./isArguments":95}],97:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -19934,7 +21472,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":90,"./_stream_writable":92,"_process":143,"core-util-is":49,"inherits":108}],90:[function(require,module,exports){
+},{"./_stream_readable":98,"./_stream_writable":100,"_process":212,"core-util-is":49,"inherits":117}],98:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -20920,7 +22458,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"_process":143,"buffer":33,"core-util-is":49,"events":54,"inherits":108,"isarray":84,"stream":167,"string_decoder/":95}],91:[function(require,module,exports){
+},{"_process":212,"buffer":33,"core-util-is":49,"events":60,"inherits":117,"isarray":92,"stream":240,"string_decoder/":103}],99:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -21132,7 +22670,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":89,"core-util-is":49,"inherits":108}],92:[function(require,module,exports){
+},{"./_stream_duplex":97,"core-util-is":49,"inherits":117}],100:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -21522,10 +23060,10 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":89,"_process":143,"buffer":33,"core-util-is":49,"inherits":108,"stream":167}],93:[function(require,module,exports){
+},{"./_stream_duplex":97,"_process":212,"buffer":33,"core-util-is":49,"inherits":117,"stream":240}],101:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":91}],94:[function(require,module,exports){
+},{"./lib/_stream_transform.js":99}],102:[function(require,module,exports){
 var path = require('path');
 
 module.exports = function(npath, ext) {
@@ -21535,7 +23073,7 @@ module.exports = function(npath, ext) {
   var nFileName = path.basename(npath, path.extname(npath))+ext;
   return path.join(path.dirname(npath), nFileName);
 };
-},{"path":138}],95:[function(require,module,exports){
+},{"path":207}],103:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -21758,7 +23296,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":33}],96:[function(require,module,exports){
+},{"buffer":33}],104:[function(require,module,exports){
 var Transform = require('readable-stream/transform')
   , inherits  = require('util').inherits
   , xtend     = require('xtend')
@@ -21838,7 +23376,7 @@ module.exports.obj = through2(function (options, transform, flush) {
   return t2
 })
 
-},{"readable-stream/transform":93,"util":195,"xtend":104}],97:[function(require,module,exports){
+},{"readable-stream/transform":101,"util":268,"xtend":112}],105:[function(require,module,exports){
 (function (process){
 var path = require('path');
 var clone = require('clone');
@@ -22112,7 +23650,7 @@ Object.defineProperty(File.prototype, 'path', {
 module.exports = File;
 
 }).call(this,require('_process'))
-},{"./lib/cloneBuffer":98,"./lib/inspectStream":99,"./lib/isBuffer":100,"./lib/isNull":101,"./lib/isStream":102,"_process":143,"clone":83,"clone-stats":82,"path":138,"replace-ext":94,"stream":167}],98:[function(require,module,exports){
+},{"./lib/cloneBuffer":106,"./lib/inspectStream":107,"./lib/isBuffer":108,"./lib/isNull":109,"./lib/isStream":110,"_process":212,"clone":91,"clone-stats":90,"path":207,"replace-ext":102,"stream":240}],106:[function(require,module,exports){
 var Buffer = require('buffer').Buffer;
 
 module.exports = function(buf) {
@@ -22121,7 +23659,7 @@ module.exports = function(buf) {
   return out;
 };
 
-},{"buffer":33}],99:[function(require,module,exports){
+},{"buffer":33}],107:[function(require,module,exports){
 var isStream = require('./isStream');
 
 module.exports = function(stream) {
@@ -22138,22 +23676,22 @@ module.exports = function(stream) {
   return '<' + streamType + 'Stream>';
 };
 
-},{"./isStream":102}],100:[function(require,module,exports){
+},{"./isStream":110}],108:[function(require,module,exports){
 module.exports = require('buffer').Buffer.isBuffer;
 
-},{"buffer":33}],101:[function(require,module,exports){
+},{"buffer":33}],109:[function(require,module,exports){
 module.exports = function(v) {
   return v === null;
 };
 
-},{}],102:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 var Stream = require('stream').Stream;
 
 module.exports = function(o) {
   return !!o && o instanceof Stream;
 };
 
-},{"stream":167}],103:[function(require,module,exports){
+},{"stream":240}],111:[function(require,module,exports){
 module.exports = hasKeys
 
 function hasKeys(source) {
@@ -22162,7 +23700,7 @@ function hasKeys(source) {
         typeof source === "function")
 }
 
-},{}],104:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 var Keys = require("object-keys")
 var hasKeys = require("./has-keys")
 
@@ -22189,7 +23727,7 @@ function extend() {
     return target
 }
 
-},{"./has-keys":103,"object-keys":86}],105:[function(require,module,exports){
+},{"./has-keys":111,"object-keys":94}],113:[function(require,module,exports){
 'use strict';
 const path = require('path');
 const Vinyl = require('vinyl');
@@ -22266,7 +23804,79 @@ module.exports = (filename, opts) => {
 	});
 };
 
-},{"get-stream":76,"path":138,"plugin-error":140,"through2":172,"vinyl":196,"yazl":202}],106:[function(require,module,exports){
+},{"get-stream":83,"path":207,"plugin-error":209,"through2":245,"vinyl":269,"yazl":276}],114:[function(require,module,exports){
+/**
+ * @module Icicle
+ */
+module.exports = {
+	freeze: lock,
+	unfreeze: unlock,
+	isFrozen: isLocked
+};
+
+
+/** Set of targets  */
+var lockCache = new WeakMap;
+
+
+/**
+ * Set flag on target with the name passed
+ *
+ * @return {bool} Whether lock succeeded
+ */
+function lock(target, name){
+	var locks = lockCache.get(target);
+	if (locks && locks[name]) return false;
+
+	//create lock set for a target, if none
+	if (!locks) {
+		locks = {};
+		lockCache.set(target, locks);
+	}
+
+	//set a new lock
+	locks[name] = true;
+
+	//return success
+	return true;
+}
+
+
+/**
+ * Unset flag on the target with the name passed.
+ *
+ * Note that if to return new value from the lock/unlock,
+ * then unlock will always return false and lock will always return true,
+ * which is useless for the user, though maybe intuitive.
+ *
+ * @param {*} target Any object
+ * @param {string} name A flag name
+ *
+ * @return {bool} Whether unlock failed.
+ */
+function unlock(target, name){
+	var locks = lockCache.get(target);
+	if (!locks || !locks[name]) return false;
+
+	locks[name] = null;
+
+	return true;
+}
+
+
+/**
+ * Return whether flag is set
+ *
+ * @param {*} target Any object to associate lock with
+ * @param {string} name A flag name
+ *
+ * @return {Boolean} Whether locked or not
+ */
+function isLocked(target, name){
+	var locks = lockCache.get(target);
+	return (locks && locks[name]);
+}
+},{}],115:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -22352,7 +23962,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],107:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 (function (process){
 var wrappy = require('wrappy')
 var reqs = Object.create(null)
@@ -22410,9 +24020,576 @@ function slice (args) {
 }
 
 }).call(this,require('_process'))
-},{"_process":143,"once":124,"wrappy":200}],108:[function(require,module,exports){
+},{"_process":212,"once":193,"wrappy":273}],117:[function(require,module,exports){
 arguments[4][18][0].apply(exports,arguments)
-},{"dup":18}],109:[function(require,module,exports){
+},{"dup":18}],118:[function(require,module,exports){
+'use strict'
+
+module.exports = {
+    circlePoint: require('./src/circle-point'),
+    circleCircle: require('./src/circle-circle'),
+    circleLine: require('./src/circle-line'),
+    circleBox: require('./src/circle-box'),
+    circlePolygon: require('./src/circle-polygon'),
+
+    polygonPoint: require('./src/polygon-point'),
+    polygonLine: require('./src/polygon-line'),
+    polygonPolygon: require('./src/polygon-polygon'),
+    polygonBox: require('./src/polygon-box'),
+    polygonCircle: require('./src/polygon-circle'),
+
+    boxPoint: require('./src/box-point'),
+    boxBox: require('./src/box-box'),
+    boxLine: require('./src/box-line'),
+    boxPolygon: require('./src/box-polygon'),
+    boxCircle: require('./src/box-circle'),
+
+    pointBox: require('./src/point-box'),
+    pointPolygon: require('./src/point-polygon'),
+    pointCircle: require('./src/point-circle'),
+
+    lineLine: require('./src/line-line'),
+    lineBox: require('./src/line-box'),
+    linePolygon: require('./src/line-polygon'),
+    lineCircle: require('./src/line-circle')
+}
+
+},{"./src/box-box":119,"./src/box-circle":120,"./src/box-line":121,"./src/box-point":122,"./src/box-polygon":123,"./src/circle-box":124,"./src/circle-circle":125,"./src/circle-line":126,"./src/circle-point":127,"./src/circle-polygon":128,"./src/line-box":129,"./src/line-circle":130,"./src/line-line":131,"./src/line-polygon":132,"./src/point-box":133,"./src/point-circle":134,"./src/point-polygon":135,"./src/polygon-box":136,"./src/polygon-circle":137,"./src/polygon-line":138,"./src/polygon-point":139,"./src/polygon-polygon":140}],119:[function(require,module,exports){
+'use strict'
+
+/**
+ * box-box collision
+ * @param {number} x1 top-left corner of first box
+ * @param {number} y1 top-left corner of first box
+ * @param {number} w1 width of first box
+ * @param {number} h1 height of first box
+ * @param {number} x2 top-left corner of second box
+ * @param {number} y2 top-left corner of second box
+ * @param {number} w2 width of second box
+ * @param {number} h2 height of second box
+ */
+module.exports = function boxBox(x1, y1, w1, h1, x2, y2, w2, h2)
+{
+    return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2
+}
+
+},{}],120:[function(require,module,exports){
+'use strict'
+
+/**
+ * box-circle collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
+ */
+module.exports = function boxCircle(xb, yb, wb, hb, xc, yc, rc)
+{
+    var hw = wb / 2
+    var hh = hb / 2
+    var distX = Math.abs(xc - (xb + wb / 2))
+    var distY = Math.abs(yc - (yb + hb / 2))
+
+    if (distX > hw + rc || distY > hh + rc)
+    {
+        return false
+    }
+
+    if (distX <= hw || distY <= hh)
+    {
+        return true
+    }
+
+    var x = distX - hw
+    var y = distY - hh
+    return x * x + y * y <= rc * rc
+}
+
+},{}],121:[function(require,module,exports){
+'use strict'
+
+var lineBox = require('./line-box')
+
+/**
+ * box-line collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number} x1 first point of line
+ * @param {number} y1 first point of line
+ * @param {number} x2 second point of line
+ * @param {number} y2 second point of line
+ */
+module.exports = function boxLine(xb, yb, wb, hb, x1, y1, x2, y2)
+{
+    return lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
+}
+
+},{"./line-box":129}],122:[function(require,module,exports){
+'use strict'
+
+/**
+ * box-point collision
+ * @param {number} x1 top-left corner of box
+ * @param {number} y1 top-left corner of box
+ * @param {number} w1 width of box
+ * @param {number} h1 height of box
+ * @param {number} x2 of point
+ * @param {number} y2 of point
+ * @return {boolean}
+ */
+module.exports = function boxPoint(x1, y1, w1, h1, x2, y2)
+{
+    return x2 >= x1 && x2 <= x1 + w1 && y2 >= y1 && y2 <= y1 + h1
+}
+
+},{}],123:[function(require,module,exports){
+'use strict'
+
+var polygonBox = require('./polygon-box')
+
+/**
+ * box-polygon collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number[]} points of polygon
+ */
+module.exports = function boxPolygon(xb, yb, wb, hb, points)
+{
+    return polygonBox(points, xb, yb, wb, hb)
+}
+
+},{"./polygon-box":136}],124:[function(require,module,exports){
+'use strict'
+
+var boxCircle = require('./box-circle')
+
+/**
+ * circle-box (axis-oriented rectangle) collision
+ * from http://stackoverflow.com/a/402010/1955997
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
+ * @param {number} xb top-left corner of rectangle
+ * @param {number} yb top-left corner of rectangle
+ * @param {number} wb width of rectangle
+ * @param {number} hb height of rectangle
+ */
+module.exports = function circleBox(xc, yc, rc, xb, yb, wb, hb)
+{
+    return boxCircle(xb, yb, wb, hb, xc, yc, rc)
+}
+
+},{"./box-circle":120}],125:[function(require,module,exports){
+'use strict'
+
+
+/**
+ * circle-circle collision
+ * @param {number} x1 center of circle 1
+ * @param {number} y1 center of circle 1
+ * @param {number} r1 radius of circle 1
+ * @param {number} x2 center of circle 2
+ * @param {number} y2 center of circle 2
+ * @param {number} r2 radius of circle 2
+ * @return {boolean}
+ */
+module.exports = function circleCircle(x1, y1, r1, x2, y2, r2)
+{
+    var x = x1 - x2
+    var y = y2 - y1
+    var radii = r1 + r2
+    return x * x + y * y <= radii * radii
+}
+
+},{}],126:[function(require,module,exports){
+'use strict'
+
+var lineCircle = require('./line-circle')
+
+/**
+ * circle-line collision
+ * from http://stackoverflow.com/a/10392860/1955997
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
+ * @param {number} x1 first point of line
+ * @param {number} y1 first point of line
+ * @param {number} x2 second point of line
+ * @param {number} y2 second point of line
+ * @return {boolean}
+ */
+module.exports = function circleLine(xc, yc, rc, x1, y1, x2, y2)
+{
+    return lineCircle(x1, y1, x2, y2, xc, yc, rc)
+}
+
+},{"./line-circle":130}],127:[function(require,module,exports){
+'use strict'
+
+/**
+ * circle-point collision
+ * @param {number} x1 center of circle
+ * @param {number} y1 center of circle
+ * @param {radius} r1 radius of circle
+ * @param {number} x2 point
+ * @param {number} y2 point
+ * @return {boolean}
+ */
+module.exports = function circlePoint(x1, y1, r1, x2, y2)
+{
+    var x = x2 - x1
+    var y = y2 - y1
+    return x * x + y * y <= r1 * r1
+}
+
+},{}],128:[function(require,module,exports){
+'use strict'
+
+var polygonCircle = require('./polygon-circle')
+
+/**
+ * circle-polygon collision
+ * from http://stackoverflow.com/a/402019/1955997
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ */
+module.exports = function circlePolygon(xc, yc, rc, points)
+{
+    return polygonCircle(points, xc, yc, rc)
+}
+
+},{"./polygon-circle":137}],129:[function(require,module,exports){
+'use strict'
+
+var boxPoint = require('./box-point')
+var lineLine = require('./line-line')
+
+/**
+ * line-box collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number} xb top-left of box
+ number @param {number} yb top-left of box
+ number @param {number} wb width of box
+ number @param {number} hb height of box
+ */
+module.exports = function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
+{
+    if (boxPoint(xb, yb, wb, hb, x1, y1) || boxPoint(xb, yb, wb, hb, x2, y2))
+    {
+        return true
+    }
+    return lineLine(x1, y1, x2, y2, xb, yb, xb + wb, yb) ||
+        lineLine(x1, y1, x2, y2, xb + wb, yb, xb + wb, yb + hb) ||
+        lineLine(x1, y1, x2, y2, xb, yb + hb, xb + wb, yb + hb) ||
+        lineLine(x1, y1, x2, y2, xb, yb, xb, yb + hb)
+}
+
+},{"./box-point":122,"./line-line":131}],130:[function(require,module,exports){
+'use strict'
+
+/**
+ * line-circle collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number} xc center of circle
+ number @param {number} yc center of circle
+ number @param {number} rc radius of circle
+ */
+module.exports = function lineCircle(x1, y1, x2, y2, xc, yc, rc)
+{
+    var ac = [xc - x1, yc - y1]
+    var ab = [x2 - x1, y2 - y1]
+    var ab2 = dot(ab, ab)
+    var acab = dot(ac, ab)
+    var t = acab / ab2
+    t = (t < 0) ? 0 : t
+    t = (t > 1) ? 1 : t
+    var h = [(ab[0] * t + x1) - xc, (ab[1] * t + y1) - yc]
+    var h2 = dot(h, h)
+    return h2 <= rc * rc
+}
+
+function dot(v1, v2)
+{
+    return (v1[0] * v2[0]) + (v1[1] * v2[1])
+}
+
+},{}],131:[function(require,module,exports){
+'use strict'
+
+/**
+ * line-line collision
+ * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+ * @param {number} x1 first point in line 1
+ * @param {number} y1 first point in line 1
+ * @param {number} x2 second point in line 1
+ * @param {number} y2 second point in line 1
+ * @param {number} x3 first point in line 2
+ * @param {number} y3 first point in line 2
+ * @param {number} x4 second point in line 2
+ * @param {number} y4 second point in line 2
+ * @return {boolean}
+ */
+module.exports = function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
+{
+    var s1_x = x2 - x1
+    var s1_y = y2 - y1
+    var s2_x = x4 - x3
+    var s2_y = y4 - y3
+    var s = (-s1_y * (x1 - x3) + s1_x * (y1 - y3)) / (-s2_x * s1_y + s1_x * s2_y)
+    var t = (s2_x * (y1 - y3) - s2_y * (x1 - x3)) / (-s2_x * s1_y + s1_x * s2_y)
+    return s >= 0 && s <= 1 && t >= 0 && t <= 1
+}
+
+},{}],132:[function(require,module,exports){
+'use strict'
+
+var polygonPoint = require('./polygon-point')
+var lineLine = require('./line-line')
+
+/**
+ * line-polygon collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number[]} points of polygon
+ */
+module.exports = function linePolygon(x1, y1, x2, y2, points)
+{
+    var length = points.length
+
+    // check if first point is inside the shape (this covers if the line is completely enclosed by the shape)
+    if (polygonPoint(points, x1, y1))
+    {
+        return true
+    }
+
+    // check for intersections for all of the sides
+    for (var i = 0; i < length; i += 2)
+    {
+        var j = (i + 2) % length
+        if (lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
+        {
+            return true
+        }
+    }
+    return false
+}
+
+},{"./line-line":131,"./polygon-point":139}],133:[function(require,module,exports){
+'use strict'
+
+var boxPoint = require('./box-point')
+
+/**
+ * point-box collision
+ * @param {number} x1 point
+ * @param {number} y1 point
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @return {boolean}
+ */
+module.exports = function pointBox(x1, y1, xb, yb, wb, hb)
+{
+    return boxPoint(xb, yb, wb, hb, x1, y1)
+}
+
+},{"./box-point":122}],134:[function(require,module,exports){
+'use strict'
+
+var circlePoint = require('./circle-point')
+
+module.exports = function pointCircle(x1, y1, xc, yc, rc)
+{
+    return circlePoint(xc, yc, rc, x1, y1)
+}
+
+},{"./circle-point":127}],135:[function(require,module,exports){
+'use strict'
+
+var polygonPoint = require('./polygon-point')
+
+/**
+ * point-polygon collision
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number[]} points
+ * @return {boolean}
+ */
+module.exports = function pointPolygon(x1, y1, points)
+{
+    return polygonPoint(points, x1, y1)
+}
+
+},{"./polygon-point":139}],136:[function(require,module,exports){
+'use strict'
+
+var polygonPolygon = require('./polygon-polygon')
+
+/**
+ * polygon-box collision
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} x of box
+ * @param {number} y of box
+ * @param {number} w of box
+ * @param {number} h of box
+ */
+module.exports = function polygonBox(points, x, y, w, h)
+{
+    var points2 = [x, y, x + w, y, x + w, y + h, x, y + h]
+    return polygonPolygon(points, points2)
+}
+
+},{"./polygon-polygon":140}],137:[function(require,module,exports){
+'use strict'
+
+var polygonPoint = require('./polygon-point')
+var lineCircle = require('./line-circle')
+
+
+/**
+ * polygon-circle collision
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
+ */
+module.exports = function polygonCircle(points, xc, yc, rc)
+{
+    if (polygonPoint(points, xc, yc))
+    {
+        return true
+    }
+    var count = points.length
+    for (var i = 0; i < count - 2; i += 2)
+    {
+        if (lineCircle(points[i], points[i + 1], points[i + 2], points[i + 3], xc, yc, rc))
+        {
+            return true
+        }
+    }
+    return lineCircle(points[0], points[1], points[count - 2], points[count - 1], xc, yc, rc)
+}
+
+},{"./line-circle":130,"./polygon-point":139}],138:[function(require,module,exports){
+'use strict'
+
+var linePolygon = require('./line-polygon')
+
+/**
+ * polygon-line collisions
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} x1 first point in line
+ * @param {number} y1 first point in line
+ * @param {number} x2 second point in line
+ * @param {number} y2 second point in line
+ * @return {boolean}
+ */
+module.exports = function polygonLine(points, x1, y1, x2, y2)
+{
+    return linePolygon(x1, y1, x2, y2, points)
+}
+
+},{"./line-polygon":132}],139:[function(require,module,exports){
+'use strict'
+
+/**
+ * polygon-point collision
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} x of point
+ * @param {number} y of point
+ */
+module.exports = function polygonPoint(points, x, y)
+{
+    var length = points.length
+    var c = false
+    for (var i = 0, j = length - 2; i < length; i += 2)
+    {
+        if (((points[i + 1] > y) !== (points[j + 1] > y)) && (x < (points[j] - points[i]) * (y - points[i + 1]) / (points[j + 1] - points[i + 1]) + points[i]))
+        {
+            c = !c
+        }
+        j = i
+    }
+    return c
+}
+
+},{}],140:[function(require,module,exports){
+'use strict'
+
+/**
+ * polygon-polygon collision
+ * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
+ * @param {number[]} points1 [x1, y1, x2, y2, ... xn, yn] of first polygon
+ * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
+ * @return {boolean}
+ */
+module.exports = function polygonPolygon(points1, points2)
+{
+    var a = points1
+    var b = points2
+    var polygons = [a, b]
+    var minA, maxA, projected, minB, maxB, j
+    for (var i = 0; i < polygons.length; i++)
+    {
+        var polygon = polygons[i]
+        for (var i1 = 0; i1 < polygon.length; i1 += 2)
+        {
+            var i2 = (i1 + 2) % polygon.length
+            var normal = { x: polygon[i2 + 1] - polygon[i1 + 1], y: polygon[i1] - polygon[i2] }
+            minA = maxA = null
+            for (j = 0; j < a.length; j += 2)
+            {
+                projected = normal.x * a[j] + normal.y * a[j + 1]
+                if (minA === null || projected < minA)
+                {
+                    minA = projected
+                }
+                if (maxA === null || projected > maxA)
+                {
+                    maxA = projected
+                }
+            }
+            minB = maxB = null
+            for (j = 0; j < b.length; j += 2)
+            {
+                projected = normal.x * b[j] + normal.y * b[j + 1]
+                if (minB === null || projected < minB)
+                {
+                    minB = projected
+                }
+                if (maxB === null || projected > maxB)
+                {
+                    maxB = projected
+                }
+            }
+            if (maxA < minB || maxB < minA)
+            {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+},{}],141:[function(require,module,exports){
 'use strict';
 const irregularPlurals = require('./irregular-plurals.json');
 
@@ -22429,7 +24606,7 @@ Object.defineProperty(module, 'exports', {
 	}
 });
 
-},{"./irregular-plurals.json":110}],110:[function(require,module,exports){
+},{"./irregular-plurals.json":142}],142:[function(require,module,exports){
 module.exports={
 	"addendum": "addenda",
 	"aircraft": "aircraft",
@@ -22577,7 +24754,9 @@ module.exports={
 	"woman": "women"
 }
 
-},{}],111:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
+module.exports = true;
+},{}],144:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -22600,30 +24779,92 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],112:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 'use strict';
 module.exports = function (x) {
 	var type = typeof x;
 	return x !== null && (type === 'object' || type === 'function');
 };
 
-},{}],113:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
+'use strict';
+var toString = Object.prototype.toString;
+
+module.exports = function (x) {
+	var prototype;
+	return toString.call(x) === '[object Object]' && (prototype = Object.getPrototypeOf(x), prototype === null || prototype === Object.getPrototypeOf({}));
+};
+
+},{}],147:[function(require,module,exports){
+/*!
+ * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
+ *
+ * Copyright (c) 2014-2017, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+'use strict';
+
+var isObject = require('isobject');
+
+function isObjectObject(o) {
+  return isObject(o) === true
+    && Object.prototype.toString.call(o) === '[object Object]';
+}
+
+module.exports = function isPlainObject(o) {
+  var ctor,prot;
+
+  if (isObjectObject(o) === false) return false;
+
+  // If has modified constructor
+  ctor = o.constructor;
+  if (typeof ctor !== 'function') return false;
+
+  // If has modified prototype
+  prot = ctor.prototype;
+  if (isObjectObject(prot) === false) return false;
+
+  // If constructor does not have an Object-specific method
+  if (prot.hasOwnProperty('isPrototypeOf') === false) {
+    return false;
+  }
+
+  // Most likely a plain Object
+  return true;
+};
+
+},{"isobject":150}],148:[function(require,module,exports){
 'use strict';
 module.exports = function (re) {
 	return Object.prototype.toString.call(re) === '[object RegExp]';
 };
 
-},{}],114:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],115:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
+/*!
+ * isobject <https://github.com/jonschlinkert/isobject>
+ *
+ * Copyright (c) 2014-2017, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+'use strict';
+
+module.exports = function isObject(val) {
+  return val != null && typeof val === 'object' && Array.isArray(val) === false;
+};
+
+},{}],151:[function(require,module,exports){
 window.jr = require('.');
 
-},{".":117}],116:[function(require,module,exports){
+},{".":153}],152:[function(require,module,exports){
 exports.arrayShuffle = a => {
   for (let i = a.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1));
@@ -22652,7 +24893,7 @@ exports.elAttrsToString = el => {
   return `<${tagName} ${attrs.join(' ')}>`;
 };
 
-},{}],117:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 let MutationSummary = require('mutation-summary');
 
 let jr = module.exports = exports = target => {
@@ -23439,7 +25680,7 @@ jr.update = () => {
   }
 };
 
-},{"./helpers":116,"mutation-summary":123}],118:[function(require,module,exports){
+},{"./helpers":152,"mutation-summary":178}],154:[function(require,module,exports){
 (function (Buffer){
 var toString = Object.prototype.toString;
 
@@ -23488,7 +25729,7 @@ module.exports = function kindOf(val) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":33}],119:[function(require,module,exports){
+},{"buffer":33}],155:[function(require,module,exports){
 'use strict'
 
 var listenerCount = require('events').listenerCount
@@ -23506,7 +25747,7 @@ listenerCount = listenerCount || function (ee, event) {
 
 module.exports = listenerCount
 
-},{"events":54}],120:[function(require,module,exports){
+},{"events":60}],156:[function(require,module,exports){
 (function (global){
 /*!
     localForage -- Offline Storage, Improved
@@ -26307,7 +28548,7 @@ module.exports = localforage_js;
 });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],121:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 module.exports = minimatch
 minimatch.Minimatch = Minimatch
 
@@ -27232,7 +29473,7 @@ function regExpEscape (s) {
   return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
 
-},{"brace-expansion":26,"path":138}],122:[function(require,module,exports){
+},{"brace-expansion":26,"path":207}],158:[function(require,module,exports){
 (function (process){
 var path = require('path');
 var fs = require('fs');
@@ -27334,7 +29575,570 @@ mkdirP.sync = function sync (p, opts, made) {
 };
 
 }).call(this,require('_process'))
-},{"_process":143,"fs":"browserify-fs","path":138}],123:[function(require,module,exports){
+},{"_process":212,"fs":"browserify-fs","path":207}],159:[function(require,module,exports){
+/**
+ * Parse element’s borders
+ *
+ * @module mucss/borders
+ */
+
+var Rect = require('./rect');
+var parse = require('./parse-value');
+
+/**
+ * Return border widths of an element
+ */
+module.exports = function(el){
+	if (el === window) return Rect();
+
+	if (!(el instanceof Element)) throw Error('Argument is not an element');
+
+	var style = window.getComputedStyle(el);
+
+	return Rect(
+		parse(style.borderLeftWidth),
+		parse(style.borderTopWidth),
+		parse(style.borderRightWidth),
+		parse(style.borderBottomWidth)
+	);
+};
+},{"./parse-value":167,"./rect":169}],160:[function(require,module,exports){
+/**
+ * Get or set element’s style, prefix-agnostic.
+ *
+ * @module  mucss/css
+ */
+var fakeStyle = require('./fake-element').style;
+var prefix = require('./prefix').lowercase;
+
+
+/**
+ * Apply styles to an element.
+ *
+ * @param    {Element}   el   An element to apply styles.
+ * @param    {Object|string}   obj   Set of style rules or string to get style rule.
+ */
+module.exports = function(el, obj){
+	if (!el || !obj) return;
+
+	var name, value;
+
+	//return value, if string passed
+	if (typeof obj === 'string') {
+		name = obj;
+
+		//return value, if no value passed
+		if (arguments.length < 3) {
+			return el.style[prefixize(name)];
+		}
+
+		//set style, if value passed
+		value = arguments[2] || '';
+		obj = {};
+		obj[name] = value;
+	}
+
+	for (name in obj){
+		//convert numbers to px
+		if (typeof obj[name] === 'number' && /left|right|bottom|top|width|height/i.test(name)) obj[name] += 'px';
+
+		value = obj[name] || '';
+
+		el.style[prefixize(name)] = value;
+	}
+};
+
+
+/**
+ * Return prefixized prop name, if needed.
+ *
+ * @param    {string}   name   A property name.
+ * @return   {string}   Prefixed property name.
+ */
+function prefixize(name){
+	var uName = name[0].toUpperCase() + name.slice(1);
+	if (fakeStyle[name] !== undefined) return name;
+	if (fakeStyle[prefix + uName] !== undefined) return prefix + uName;
+	return '';
+}
+
+},{"./fake-element":161,"./prefix":168}],161:[function(require,module,exports){
+/** Just a fake element to test styles
+ * @module mucss/fake-element
+ */
+
+module.exports = document.createElement('div');
+},{}],162:[function(require,module,exports){
+/**
+ * Window scrollbar detector.
+ *
+ * @module mucss/has-scroll
+ */
+
+//TODO: detect any element scroll, not only the window
+exports.x = function () {
+	return window.innerHeight > document.documentElement.clientHeight;
+};
+exports.y = function () {
+	return window.innerWidth > document.documentElement.clientWidth;
+};
+},{}],163:[function(require,module,exports){
+/**
+ * Detect whether element is placed to fixed container or is fixed itself.
+ *
+ * @module mucss/is-fixed
+ *
+ * @param {(Element|Object)} el Element to detect fixedness.
+ *
+ * @return {boolean} Whether element is nested.
+ */
+module.exports = function (el) {
+	var parentEl = el;
+
+	//window is fixed, btw
+	if (el === window) return true;
+
+	//unlike the doc
+	if (el === document) return false;
+
+	while (parentEl) {
+		if (getComputedStyle(parentEl).position === 'fixed') return true;
+		parentEl = parentEl.offsetParent;
+	}
+	return false;
+};
+},{}],164:[function(require,module,exports){
+/**
+ * Get margins of an element.
+ * @module mucss/margins
+ */
+
+var parse = require('./parse-value');
+var Rect = require('./rect');
+
+/**
+ * Return margins of an element.
+ *
+ * @param    {Element}   el   An element which to calc margins.
+ * @return   {Object}   Paddings object `{top:n, bottom:n, left:n, right:n}`.
+ */
+module.exports = function(el){
+	if (el === window) return Rect();
+
+	if (!(el instanceof Element)) throw Error('Argument is not an element');
+
+	var style = window.getComputedStyle(el);
+
+	return Rect(
+		parse(style.marginLeft),
+		parse(style.marginTop),
+		parse(style.marginRight),
+		parse(style.marginBottom)
+	);
+};
+
+},{"./parse-value":167,"./rect":169}],165:[function(require,module,exports){
+/**
+ * Calculate absolute offsets of an element, relative to the document.
+ *
+ * @module mucss/offsets
+ *
+ */
+var win = window;
+var doc = document;
+var Rect = require('./rect');
+var hasScroll = require('./has-scroll');
+var scrollbar = require('./scrollbar');
+var isFixedEl = require('./is-fixed');
+var getTranslate = require('./translate');
+
+
+/**
+ * Return absolute offsets of any target passed
+ *
+ * @param    {Element|window}   el   A target. Pass window to calculate viewport offsets
+ * @return   {Object}   Offsets object with trbl.
+ */
+module.exports = offsets;
+
+function offsets (el) {
+	if (!el) throw Error('Bad argument');
+
+	//calc client rect
+	var cRect, result;
+
+	//return vp offsets
+	if (el === win) {
+		result = Rect(
+			win.pageXOffset,
+			win.pageYOffset
+		);
+
+		result.width = win.innerWidth - (hasScroll.y() ? scrollbar : 0),
+		result.height = win.innerHeight - (hasScroll.x() ? scrollbar : 0)
+		result.right = result.left + result.width;
+		result.bottom = result.top + result.height;
+
+		return result;
+	}
+
+	//return absolute offsets if document requested
+	else if (el === doc) {
+		var res = offsets(doc.documentElement);
+		res.bottom = Math.max(window.innerHeight, res.bottom);
+		res.right = Math.max(window.innerWidth, res.right);
+		res.height = Math.max(window.innerHeight, res.height);
+		res.width = Math.max(window.innerHeight, res.width);
+		if (hasScroll.y(doc.documentElement)) res.right -= scrollbar;
+		if (hasScroll.x(doc.documentElement)) res.bottom -= scrollbar;
+		return res;
+	}
+
+	//FIXME: why not every element has getBoundingClientRect method?
+	try {
+		cRect = el.getBoundingClientRect();
+	} catch (e) {
+		cRect = Rect(
+			el.clientLeft,
+			el.clientTop
+		);
+	}
+
+	//whether element is or is in fixed
+	var isFixed = isFixedEl(el);
+	var xOffset = isFixed ? 0 : win.pageXOffset;
+	var yOffset = isFixed ? 0 : win.pageYOffset;
+
+	result = Rect(
+		cRect.left + xOffset,
+		cRect.top + yOffset,
+		cRect.left + xOffset + el.offsetWidth,
+		cRect.top + yOffset + el.offsetHeight
+	);
+
+	return result;
+};
+},{"./has-scroll":162,"./is-fixed":163,"./rect":169,"./scrollbar":170,"./translate":172}],166:[function(require,module,exports){
+/**
+ * Caclulate paddings of an element.
+ * @module  mucss/paddings
+ */
+
+
+var Rect = require('./rect');
+var parse = require('./parse-value');
+
+
+/**
+ * Return paddings of an element.
+ *
+ * @param    {Element}   el   An element to calc paddings.
+ * @return   {Object}   Paddings object `{top:n, bottom:n, left:n, right:n}`.
+ */
+module.exports = function(el){
+	if (el === window) return Rect();
+
+	if (!(el instanceof Element)) throw Error('Argument is not an element');
+
+	var style = window.getComputedStyle(el);
+
+	return Rect(
+		parse(style.paddingLeft),
+		parse(style.paddingTop),
+		parse(style.paddingRight),
+		parse(style.paddingBottom)
+	);
+};
+},{"./parse-value":167,"./rect":169}],167:[function(require,module,exports){
+/**
+ * Returns parsed css value.
+ *
+ * @module mucss/parse-value
+ *
+ * @param {string} str A string containing css units value
+ *
+ * @return {number} Parsed number value
+ */
+module.exports = function (str){
+	str += '';
+	return parseFloat(str.slice(0,-2)) || 0;
+};
+
+//FIXME: add parsing units
+},{}],168:[function(require,module,exports){
+/**
+ * Vendor prefixes
+ * Method of http://davidwalsh.name/vendor-prefix
+ * @module mucss/prefix
+ */
+
+var styles = getComputedStyle(document.documentElement, '');
+
+if (!styles) {
+	module.exports = {
+		dom: '', lowercase: '', css: '', js: ''
+	};
+}
+
+else {
+	var pre = (Array.prototype.slice.call(styles)
+		.join('')
+		.match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
+	)[1];
+
+	var dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+
+	module.exports = {
+		dom: dom,
+		lowercase: pre,
+		css: '-' + pre + '-',
+		js: pre[0].toUpperCase() + pre.substr(1)
+	};
+}
+
+},{}],169:[function(require,module,exports){
+/**
+ * Simple rect constructor.
+ * It is just faster and smaller than constructing an object.
+ *
+ * @module mucss/rect
+ *
+ * @param {number} l left
+ * @param {number} t top
+ * @param {number} r right
+ * @param {number} b bottom
+ *
+ * @return {Rect} A rectangle object
+ */
+module.exports = function Rect (l,t,r,b) {
+	if (!(this instanceof Rect)) return new Rect(l,t,r,b);
+
+	this.left=l||0;
+	this.top=t||0;
+	this.right=r||0;
+	this.bottom=b||0;
+	this.width=Math.abs(this.right - this.left);
+	this.height=Math.abs(this.bottom - this.top);
+};
+},{}],170:[function(require,module,exports){
+/**
+ * Calculate scrollbar width.
+ *
+ * @module mucss/scrollbar
+ */
+
+// Create the measurement node
+var scrollDiv = document.createElement("div");
+
+var style = scrollDiv.style;
+
+style.width = '100px';
+style.height = '100px';
+style.overflow = 'scroll';
+style.position = 'absolute';
+style.top = '-9999px';
+
+document.documentElement.appendChild(scrollDiv);
+
+// the scrollbar width
+module.exports = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+
+// Delete fake DIV
+document.documentElement.removeChild(scrollDiv);
+},{}],171:[function(require,module,exports){
+/**
+ * Enable/disable selectability of an element
+ * @module mucss/selection
+ */
+var css = require('./css');
+
+
+/**
+ * Disable or Enable any selection possibilities for an element.
+ *
+ * @param    {Element}   el   Target to make unselectable.
+ */
+exports.disable = function(el){
+	css(el, {
+		'user-select': 'none',
+		'user-drag': 'none',
+		'touch-callout': 'none'
+	});
+	el.setAttribute('unselectable', 'on');
+	el.addEventListener('selectstart', pd);
+};
+exports.enable = function(el){
+	css(el, {
+		'user-select': null,
+		'user-drag': null,
+		'touch-callout': null
+	});
+	el.removeAttribute('unselectable');
+	el.removeEventListener('selectstart', pd);
+};
+
+
+/** Prevent you know what. */
+function pd(e){
+	e.preventDefault();
+}
+},{"./css":160}],172:[function(require,module,exports){
+/**
+ * Parse translate3d
+ *
+ * @module mucss/translate
+ */
+
+var css = require('./css');
+var parseValue = require('./parse-value');
+
+module.exports = function (el) {
+	var translateStr = css(el, 'transform');
+
+	//find translate token, retrieve comma-enclosed values
+	//translate3d(1px, 2px, 2) → 1px, 2px, 2
+	//FIXME: handle nested calcs
+	var match = /translate(?:3d)?\s*\(([^\)]*)\)/.exec(translateStr);
+
+	if (!match) return [0, 0];
+	var values = match[1].split(/\s*,\s*/);
+
+	//parse values
+	//FIXME: nested values are not necessarily pixels
+	return values.map(function (value) {
+		return parseValue(value);
+	});
+};
+},{"./css":160,"./parse-value":167}],173:[function(require,module,exports){
+/**
+ * Clamp value.
+ * Detects proper clamp min/max.
+ *
+ * @param {number} a Current value to cut off
+ * @param {number} min One side limit
+ * @param {number} max Other side limit
+ *
+ * @return {number} Clamped value
+ */
+
+module.exports = require('./wrap')(function(a, min, max){
+	return max > min ? Math.max(Math.min(a,max),min) : Math.max(Math.min(a,min),max);
+});
+},{"./wrap":177}],174:[function(require,module,exports){
+/**
+ * Looping function for any framesize.
+ * Like fmod.
+ *
+ * @module  mumath/loop
+ *
+ */
+
+module.exports = require('./wrap')(function (value, left, right) {
+	//detect single-arg case, like mod-loop or fmod
+	if (right === undefined) {
+		right = left;
+		left = 0;
+	}
+
+	//swap frame order
+	if (left > right) {
+		var tmp = right;
+		right = left;
+		left = tmp;
+	}
+
+	var frame = right - left;
+
+	value = ((value + left) % frame) - left;
+	if (value < left) value += frame;
+	if (value > right) value -= frame;
+
+	return value;
+});
+},{"./wrap":177}],175:[function(require,module,exports){
+/**
+ * @module  mumath/precision
+ *
+ * Get precision from float:
+ *
+ * @example
+ * 1.1 → 1, 1234 → 0, .1234 → 4
+ *
+ * @param {number} n
+ *
+ * @return {number} decimap places
+ */
+
+module.exports = require('./wrap')(function(n){
+	var s = n + '',
+		d = s.indexOf('.') + 1;
+
+	return !d ? 0 : s.length - d;
+});
+},{"./wrap":177}],176:[function(require,module,exports){
+/**
+ * Precision round
+ *
+ * @param {number} value
+ * @param {number} step Minimal discrete to round
+ *
+ * @return {number}
+ *
+ * @example
+ * toPrecision(213.34, 1) == 213
+ * toPrecision(213.34, .1) == 213.3
+ * toPrecision(213.34, 10) == 210
+ */
+var precision = require('./precision');
+
+module.exports = require('./wrap')(function(value, step) {
+	if (step === 0) return value;
+	if (!step) return Math.round(value);
+	step = parseFloat(step);
+	value = Math.round(value / step) * step;
+	return parseFloat(value.toFixed(precision(step)));
+});
+},{"./precision":175,"./wrap":177}],177:[function(require,module,exports){
+/**
+ * Get fn wrapped with array/object attrs recognition
+ *
+ * @return {Function} Target function
+ */
+module.exports = function(fn){
+	return function (a) {
+		var args = arguments;
+		if (a instanceof Array) {
+			var result = new Array(a.length), slice;
+			for (var i = 0; i < a.length; i++){
+				slice = [];
+				for (var j = 0, l = args.length, val; j < l; j++){
+					val = args[j] instanceof Array ? args[j][i] : args[j];
+					val = val;
+					slice.push(val);
+				}
+				result[i] = fn.apply(this, slice);
+			}
+			return result;
+		}
+		else if (typeof a === 'object') {
+			var result = {}, slice;
+			for (var i in a){
+				slice = [];
+				for (var j = 0, l = args.length, val; j < l; j++){
+					val = typeof args[j] === 'object' ? args[j][i] : args[j];
+					val = val;
+					slice.push(val);
+				}
+				result[i] = fn.apply(this, slice);
+			}
+			return result;
+		}
+		else {
+			return fn.apply(this, args);
+		}
+	};
+};
+},{}],178:[function(require,module,exports){
 // Copyright 2011 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -28734,7 +31538,116 @@ var MutationSummary = (function () {
 
 module.exports = MutationSummary
 
-},{}],124:[function(require,module,exports){
+},{}],179:[function(require,module,exports){
+//speedy implementation of `in`
+//NOTE: `!target[propName]` 2-3 orders faster than `!(propName in target)`
+module.exports = function(a, b){
+	if (!a) return false;
+
+	//NOTE: this causes getter fire
+	if (a[b]) return true;
+
+	//FIXME: why in is better than hasOwnProperty? Something with prototypes. Show a case.
+	return b in a;
+	// return a.hasOwnProperty(b);
+}
+
+},{}],180:[function(require,module,exports){
+/**
+* Trivial types checkers.
+* Because there’re no common lib for that ( lodash_ is a fatguy)
+*/
+//TODO: make main use as `is.array(target)`
+//TODO: separate by libs, included per-file
+
+module.exports = {
+	has: require('./has'),
+	isObject: require('./is-object'),
+	isFn: require('./is-fn'),
+	isString: require('./is-string'),
+	isNumber: require('./is-number'),
+	isBoolean: require('./is-bool'),
+	isPlain: require('./is-plain'),
+	isArray: require('./is-array'),
+	isArrayLike: require('./is-array-like'),
+	isElement: require('./is-element'),
+	isPrivateName: require('./is-private-name'),
+	isRegExp: require('./is-regex'),
+	isEmpty: require('./is-empty')
+};
+
+},{"./has":179,"./is-array":182,"./is-array-like":181,"./is-bool":183,"./is-element":184,"./is-empty":185,"./is-fn":186,"./is-number":187,"./is-object":188,"./is-plain":189,"./is-private-name":190,"./is-regex":191,"./is-string":192}],181:[function(require,module,exports){
+var isString = require('./is-string');
+var isArray = require('./is-array');
+var isFn = require('./is-fn');
+
+//FIXME: add tests from http://jsfiddle.net/ku9LS/1/
+module.exports = function (a){
+	return isArray(a) || (a && !isString(a) && !a.nodeType && (typeof window != 'undefined' ? a != window : true) && !isFn(a) && typeof a.length === 'number');
+}
+},{"./is-array":182,"./is-fn":186,"./is-string":192}],182:[function(require,module,exports){
+module.exports = function(a){
+	return a instanceof Array;
+}
+},{}],183:[function(require,module,exports){
+module.exports = function(a){
+	return typeof a === 'boolean' || a instanceof Boolean;
+}
+},{}],184:[function(require,module,exports){
+module.exports = function(target){
+	return typeof document !== 'undefined' && target instanceof HTMLElement;
+};
+},{}],185:[function(require,module,exports){
+module.exports = function(a){
+	if (!a) return true;
+	for (var k in a) {
+		return false;
+	}
+	return true;
+}
+},{}],186:[function(require,module,exports){
+module.exports = function(a){
+	return !!(a && a.apply);
+}
+},{}],187:[function(require,module,exports){
+module.exports = function(a){
+	return typeof a === 'number' || a instanceof Number;
+}
+},{}],188:[function(require,module,exports){
+/**
+ * @module mutype/is-object
+ */
+
+//TODO: add st8 tests
+
+//isPlainObject indeed
+module.exports = function(o){
+	// return obj === Object(obj);
+	return !!o && typeof o === 'object' && o.constructor === Object;
+};
+
+},{}],189:[function(require,module,exports){
+var isString = require('./is-string'),
+	isNumber = require('./is-number'),
+	isBool = require('./is-bool');
+
+module.exports = function isPlain(a){
+	return !a || isString(a) || isNumber(a) || isBool(a);
+};
+},{"./is-bool":183,"./is-number":187,"./is-string":192}],190:[function(require,module,exports){
+module.exports = function(n){
+	return n[0] === '_' && n.length > 1;
+}
+
+},{}],191:[function(require,module,exports){
+module.exports = function(target){
+	return target instanceof RegExp;
+}
+},{}],192:[function(require,module,exports){
+module.exports = function(a){
+	return typeof a === 'string' || a instanceof String;
+}
+},{}],193:[function(require,module,exports){
 var wrappy = require('wrappy')
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
@@ -28778,7 +31691,7 @@ function onceStrict (fn) {
   return f
 }
 
-},{"wrappy":200}],125:[function(require,module,exports){
+},{"wrappy":273}],194:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -28829,7 +31742,7 @@ exports.homedir = function () {
 	return '/'
 };
 
-},{}],126:[function(require,module,exports){
+},{}],195:[function(require,module,exports){
 (function (process){
 'use strict';
 var os = require('os');
@@ -28857,7 +31770,7 @@ function homedir() {
 module.exports = typeof os.homedir === 'function' ? os.homedir : homedir;
 
 }).call(this,require('_process'))
-},{"_process":143,"os":125}],127:[function(require,module,exports){
+},{"_process":212,"os":194}],196:[function(require,module,exports){
 'use strict';
 
 
@@ -28964,7 +31877,7 @@ exports.setTyped = function (on) {
 
 exports.setTyped(TYPED_OK);
 
-},{}],128:[function(require,module,exports){
+},{}],197:[function(require,module,exports){
 'use strict';
 
 // Note: adler32 takes 12% for level 0 and 2% for level 6.
@@ -29017,7 +31930,7 @@ function adler32(adler, buf, len, pos) {
 
 module.exports = adler32;
 
-},{}],129:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -29087,7 +32000,7 @@ module.exports = {
   //Z_NULL:                 null // Use -1 or null inline, depending on var type
 };
 
-},{}],130:[function(require,module,exports){
+},{}],199:[function(require,module,exports){
 'use strict';
 
 // Note: we can't get significant speed boost here.
@@ -29148,7 +32061,7 @@ function crc32(crc, buf, len, pos) {
 
 module.exports = crc32;
 
-},{}],131:[function(require,module,exports){
+},{}],200:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -31024,7 +33937,7 @@ exports.deflatePrime = deflatePrime;
 exports.deflateTune = deflateTune;
 */
 
-},{"../utils/common":127,"./adler32":128,"./crc32":130,"./messages":135,"./trees":136}],132:[function(require,module,exports){
+},{"../utils/common":196,"./adler32":197,"./crc32":199,"./messages":204,"./trees":205}],201:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -31371,7 +34284,7 @@ module.exports = function inflate_fast(strm, start) {
   return;
 };
 
-},{}],133:[function(require,module,exports){
+},{}],202:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -32929,7 +35842,7 @@ exports.inflateSyncPoint = inflateSyncPoint;
 exports.inflateUndermine = inflateUndermine;
 */
 
-},{"../utils/common":127,"./adler32":128,"./crc32":130,"./inffast":132,"./inftrees":134}],134:[function(require,module,exports){
+},{"../utils/common":196,"./adler32":197,"./crc32":199,"./inffast":201,"./inftrees":203}],203:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -33274,7 +36187,7 @@ module.exports = function inflate_table(type, lens, lens_index, codes, table, ta
   return 0;
 };
 
-},{"../utils/common":127}],135:[function(require,module,exports){
+},{"../utils/common":196}],204:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -33308,7 +36221,7 @@ module.exports = {
   '-6':   'incompatible version' /* Z_VERSION_ERROR (-6) */
 };
 
-},{}],136:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -34530,7 +37443,7 @@ exports._tr_flush_block  = _tr_flush_block;
 exports._tr_tally = _tr_tally;
 exports._tr_align = _tr_align;
 
-},{"../utils/common":127}],137:[function(require,module,exports){
+},{"../utils/common":196}],206:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -34579,7 +37492,7 @@ function ZStream() {
 
 module.exports = ZStream;
 
-},{}],138:[function(require,module,exports){
+},{}],207:[function(require,module,exports){
 (function (process){
 // .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
 // backported and transplited with Babel, with backwards-compat fixes
@@ -34885,7 +37798,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":143}],139:[function(require,module,exports){
+},{"_process":212}],208:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -34909,7 +37822,7 @@ module.exports.posix = posix;
 module.exports.win32 = win32;
 
 }).call(this,require('_process'))
-},{"_process":143}],140:[function(require,module,exports){
+},{"_process":212}],209:[function(require,module,exports){
 /*!
  * plugin-error <https://github.com/jonschlinkert/plugin-error>
  *
@@ -35096,7 +38009,7 @@ function defaults(opts) {
 
 module.exports = PluginError;
 
-},{"ansi-cyan":5,"ansi-red":7,"arr-diff":13,"arr-union":15,"extend-shallow":55,"util":195}],141:[function(require,module,exports){
+},{"ansi-cyan":5,"ansi-red":7,"arr-diff":13,"arr-union":15,"extend-shallow":61,"util":268}],210:[function(require,module,exports){
 'use strict';
 const irregularPlurals = require('irregular-plurals');
 
@@ -35129,7 +38042,7 @@ module.exports = (word, plural, count) => {
 	return Math.abs(count) === 1 ? word : plural;
 };
 
-},{"irregular-plurals":109}],142:[function(require,module,exports){
+},{"irregular-plurals":141}],211:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -35177,7 +38090,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 
 
 }).call(this,require('_process'))
-},{"_process":143}],143:[function(require,module,exports){
+},{"_process":212}],212:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -35363,7 +38276,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],144:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
 'use strict';
 
 var replace = String.prototype.replace;
@@ -35383,7 +38296,7 @@ module.exports = {
     RFC3986: 'RFC3986'
 };
 
-},{}],145:[function(require,module,exports){
+},{}],214:[function(require,module,exports){
 'use strict';
 
 var stringify = require('./stringify');
@@ -35396,7 +38309,7 @@ module.exports = {
     stringify: stringify
 };
 
-},{"./formats":144,"./parse":146,"./stringify":147}],146:[function(require,module,exports){
+},{"./formats":213,"./parse":215,"./stringify":216}],215:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -35572,7 +38485,7 @@ module.exports = function (str, opts) {
     return utils.compact(obj);
 };
 
-},{"./utils":148}],147:[function(require,module,exports){
+},{"./utils":217}],216:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -35784,7 +38697,7 @@ module.exports = function (object, opts) {
     return joined.length > 0 ? prefix + joined : '';
 };
 
-},{"./formats":144,"./utils":148}],148:[function(require,module,exports){
+},{"./formats":213,"./utils":217}],217:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty;
@@ -35999,10 +38912,10 @@ module.exports = {
     merge: merge
 };
 
-},{}],149:[function(require,module,exports){
+},{}],218:[function(require,module,exports){
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":150}],150:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":219}],219:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -36134,7 +39047,7 @@ Duplex.prototype._destroy = function (err, cb) {
 
   pna.nextTick(cb, err);
 };
-},{"./_stream_readable":152,"./_stream_writable":154,"core-util-is":49,"inherits":108,"process-nextick-args":142}],151:[function(require,module,exports){
+},{"./_stream_readable":221,"./_stream_writable":223,"core-util-is":49,"inherits":117,"process-nextick-args":211}],220:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -36182,7 +39095,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":153,"core-util-is":49,"inherits":108}],152:[function(require,module,exports){
+},{"./_stream_transform":222,"core-util-is":49,"inherits":117}],221:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -37204,7 +40117,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":150,"./internal/streams/BufferList":155,"./internal/streams/destroy":156,"./internal/streams/stream":157,"_process":143,"core-util-is":49,"events":54,"inherits":108,"isarray":114,"process-nextick-args":142,"safe-buffer":165,"string_decoder/":169,"util":27}],153:[function(require,module,exports){
+},{"./_stream_duplex":219,"./internal/streams/BufferList":224,"./internal/streams/destroy":225,"./internal/streams/stream":226,"_process":212,"core-util-is":49,"events":60,"inherits":117,"isarray":149,"process-nextick-args":211,"safe-buffer":235,"string_decoder/":242,"util":27}],222:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -37419,7 +40332,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":150,"core-util-is":49,"inherits":108}],154:[function(require,module,exports){
+},{"./_stream_duplex":219,"core-util-is":49,"inherits":117}],223:[function(require,module,exports){
 (function (process,global,setImmediate){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -38109,7 +41022,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
-},{"./_stream_duplex":150,"./internal/streams/destroy":156,"./internal/streams/stream":157,"_process":143,"core-util-is":49,"inherits":108,"process-nextick-args":142,"safe-buffer":165,"timers":175,"util-deprecate":193}],155:[function(require,module,exports){
+},{"./_stream_duplex":219,"./internal/streams/destroy":225,"./internal/streams/stream":226,"_process":212,"core-util-is":49,"inherits":117,"process-nextick-args":211,"safe-buffer":235,"timers":248,"util-deprecate":266}],224:[function(require,module,exports){
 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -38189,7 +41102,7 @@ if (util && util.inspect && util.inspect.custom) {
     return this.constructor.name + ' ' + obj;
   };
 }
-},{"safe-buffer":165,"util":27}],156:[function(require,module,exports){
+},{"safe-buffer":235,"util":27}],225:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -38264,13 +41177,13 @@ module.exports = {
   destroy: destroy,
   undestroy: undestroy
 };
-},{"process-nextick-args":142}],157:[function(require,module,exports){
+},{"process-nextick-args":211}],226:[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":54}],158:[function(require,module,exports){
+},{"events":60}],227:[function(require,module,exports){
 module.exports = require('./readable').PassThrough
 
-},{"./readable":159}],159:[function(require,module,exports){
+},{"./readable":228}],228:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -38279,13 +41192,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":150,"./lib/_stream_passthrough.js":151,"./lib/_stream_readable.js":152,"./lib/_stream_transform.js":153,"./lib/_stream_writable.js":154}],160:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":219,"./lib/_stream_passthrough.js":220,"./lib/_stream_readable.js":221,"./lib/_stream_transform.js":222,"./lib/_stream_writable.js":223}],229:[function(require,module,exports){
 module.exports = require('./readable').Transform
 
-},{"./readable":159}],161:[function(require,module,exports){
+},{"./readable":228}],230:[function(require,module,exports){
 module.exports = require('./lib/_stream_writable.js');
 
-},{"./lib/_stream_writable.js":154}],162:[function(require,module,exports){
+},{"./lib/_stream_writable.js":223}],231:[function(require,module,exports){
 (function (process){
 var isWin = process.platform === 'win32';
 
@@ -38306,7 +41219,7 @@ function isSeparator(str, i) {
 }
 
 }).call(this,require('_process'))
-},{"_process":143}],163:[function(require,module,exports){
+},{"_process":212}],232:[function(require,module,exports){
 'use strict';
 
 var path = require('path');
@@ -38326,7 +41239,518 @@ function replaceExt(npath, ext) {
 
 module.exports = replaceExt;
 
-},{"path":138}],164:[function(require,module,exports){
+},{"path":207}],233:[function(require,module,exports){
+/**
+ * @module  resizable
+ */
+
+
+var Draggable = require('draggy');
+var emit = require('emmy/emit');
+var on = require('emmy/on');
+var isArray = require('mutype/is-array');
+var isString = require('mutype/is-string');
+var isObject = require('mutype/is-object');
+var extend = require('xtend/mutable');
+var inherit = require('inherits');
+var Emitter = require('events');
+var between = require('mumath/clamp');
+var splitKeys = require('split-keys');
+var css = require('mucss/css');
+var paddings = require('mucss/padding');
+var borders = require('mucss/border');
+var margins = require('mucss/margin');
+var offsets = require('mucss/offset');
+
+
+var doc = document, win = window, root = doc.documentElement;
+
+
+/**
+ * Make an element resizable.
+ *
+ * Note that we don’t need a container option
+ * as arbitrary container is emulatable via fake resizable.
+ *
+ * @constructor
+ */
+function Resizable (el, options) {
+	var self = this;
+
+	if (!(self instanceof Resizable)) {
+		return new Resizable(el, options);
+	}
+
+	self.element = el;
+
+	extend(self, options);
+
+	//if element isn’t draggable yet - force it to be draggable, without movements
+	if (self.draggable === true) {
+		self.draggable = new Draggable(self.element, {
+			within: self.within,
+			css3: self.css3
+		});
+	} else if (self.draggable) {
+		self.draggable = new Draggable(self.element, self.draggable);
+		self.draggable.css3 = self.css3;
+	} else {
+		self.draggable = new Draggable(self.element, {
+			handle: null
+		});
+	}
+
+	self.createHandles();
+
+	//bind event, if any
+	if (self.resize) {
+		self.on('resize', self.resize);
+	}
+}
+
+inherit(Resizable, Emitter);
+
+
+var proto = Resizable.prototype;
+
+
+/** Use css3 for draggable, if any */
+proto.css3 = true;
+
+
+/** Make itself draggable to the row */
+proto.draggable = false;
+
+
+
+/** Create handles according to options */
+proto.createHandles = function () {
+	var self = this;
+
+	//init handles
+	var handles;
+
+	//parse value
+	if (isArray(self.handles)) {
+		handles = {};
+		for (var i = self.handles.length; i--;){
+			handles[self.handles[i]] = null;
+		}
+	}
+	else if (isString(self.handles)) {
+		handles = {};
+		var arr = self.handles.match(/([swne]+)/g);
+		for (var i = arr.length; i--;){
+			handles[arr[i]] = null;
+		}
+	}
+	else if (isObject(self.handles)) {
+		handles = self.handles;
+	}
+	//default set of handles depends on position.
+	else {
+		var position = getComputedStyle(self.element).position;
+		var display = getComputedStyle(self.element).display;
+		//if display is inline-like - provide only three handles
+		//it is position: static or display: inline
+		if (/inline/.test(display) || /static/.test(position)){
+			handles = {
+				s: null,
+				se: null,
+				e: null
+			};
+
+			//ensure position is not static
+			css(self.element, 'position', 'relative');
+		}
+		//else - all handles
+		else {
+			handles = {
+				s: null,
+				se: null,
+				e: null,
+				ne: null,
+				n: null,
+				nw: null,
+				w: null,
+				sw: null
+			};
+		}
+	}
+
+	//create proper number of handles
+	var handle;
+	for (var direction in handles) {
+		handles[direction] = self.createHandle(handles[direction], direction);
+	}
+
+	//save handles elements
+	self.handles = handles;
+}
+
+
+/** Create handle for the direction */
+proto.createHandle = function(handle, direction){
+	var self = this;
+
+	var el = self.element;
+
+	//make handle element
+	if (!handle) {
+		handle = document.createElement('div');
+		handle.classList.add('resizable-handle');
+	}
+
+	//insert handle to the element
+	self.element.appendChild(handle);
+
+	//save direction
+	handle.direction = direction;
+
+	//detect self.within
+	//FIXME: may be painful if resizable is created on detached element
+	var within = self.within === 'parent' ? self.element.parentNode : self.within;
+
+	//make handle draggable
+	var draggy = new Draggable(handle, {
+		within: within,
+		//can’t use abs pos, as we engage it in styling
+		// css3: false,
+		threshold: self.threshold,
+		axis: /^[ns]$/.test(direction) ? 'y' : /^[we]$/.test(direction) ? 'x' : 'both'
+	});
+
+	draggy.on('dragstart', function (e) {
+		self.m = margins(el);
+		self.b = borders(el);
+		self.p = paddings(el);
+
+		//update draggalbe params
+		self.draggable.update(e);
+
+		//save initial dragging offsets
+		var s = getComputedStyle(el);
+		self.offsets = self.draggable.getCoords();
+
+		//recalc border-box
+		if (getComputedStyle(el).boxSizing === 'border-box') {
+			self.p.top = 0;
+			self.p.bottom = 0;
+			self.p.left = 0;
+			self.p.right = 0;
+			self.b.top = 0;
+			self.b.bottom = 0;
+			self.b.left = 0;
+			self.b.right = 0;
+		}
+
+		//save initial size
+		self.initSize = [el.offsetWidth - self.b.left - self.b.right - self.p.left - self.p.right, el.offsetHeight - self.b.top - self.b.bottom - self.p.top - self.p.bottom];
+
+		//save initial full size
+		self.initSizeFull = [
+			el.offsetWidth,
+			el.offsetHeight
+		];
+
+		//movement prev coords
+		self.prevCoords = [0, 0];
+
+		//shift-caused offset
+		self.shiftOffset = [0, 0];
+
+		//central initial coords
+		self.center = [self.offsets[0] + self.initSize[0]/2, self.offsets[1] + self.initSize[1]/2];
+
+		//calc limits (max height/width from left/right)
+		if (self.within) {
+			var po = offsets(within);
+			var o = offsets(el);
+			self.maxSize = [
+				o.left - po.left + self.initSize[0],
+				o.top - po.top + self.initSize[1],
+				po.right - o.right + self.initSize[0],
+				po.bottom - o.bottom + self.initSize[1]
+			];
+		} else {
+			self.maxSize = [9999, 9999, 9999, 9999];
+		}
+
+		//preset mouse cursor
+		css(root, {
+			'cursor': direction + '-resize'
+		});
+
+		//clear cursors
+		for (var h in self.handles){
+			css(self.handles[h], 'cursor', null);
+		}
+	});
+
+	draggy.on('drag', function () {
+		var coords = draggy.getCoords();
+
+		var prevSize = [
+			el.offsetWidth,
+			el.offsetHeight
+		];
+
+		//change width/height properly
+		if (draggy.shiftKey) {
+			switch (direction) {
+				case 'se':
+				case 's':
+				case 'e':
+					break;
+				case 'nw':
+					coords[0] = -coords[0];
+					coords[1] = -coords[1];
+					break;
+				case 'n':
+					coords[1] = -coords[1];
+					break;
+				case 'w':
+					coords[0] = -coords[0];
+					break;
+				case 'ne':
+					coords[1] = -coords[1];
+					break;
+				case 'sw':
+					coords[0] = -coords[0];
+					break;
+			};
+
+			//set placement is relative to initial center line
+			css(el, {
+				width: Math.min(
+					self.initSize[0] + coords[0]*2,
+					self.maxSize[2] + coords[0],
+					self.maxSize[0] + coords[0]
+				),
+				height: Math.min(
+					self.initSize[1] + coords[1]*2,
+					self.maxSize[3] + coords[1],
+					self.maxSize[1] + coords[1]
+				)
+			});
+
+			var difX = prevSize[0] - el.offsetWidth;
+			var difY = prevSize[1] - el.offsetHeight;
+
+			//update draggable limits
+			self.draggable.updateLimits();
+
+			if (difX) {
+				self.draggable.move(self.center[0] - self.initSize[0]/2 - coords[0]);
+			}
+
+			if (difY) {
+				self.draggable.move(null, self.center[1] - self.initSize[1]/2 - coords[1]);
+			}
+		}
+		else {
+			switch (direction) {
+				case 'se':
+					css(el, {
+						width: Math.min(
+							self.initSize[0] + coords[0],
+							self.maxSize[2]
+						),
+						height: Math.min(
+							self.initSize[1] + coords[1],
+							self.maxSize[3]
+						)
+					});
+
+				case 's':
+					css(el, {
+						height: Math.min(
+							self.initSize[1] + coords[1],
+							self.maxSize[3]
+						)
+					});
+
+				case 'e':
+					css(el, {
+						width: Math.min(
+							self.initSize[0] + coords[0],
+							self.maxSize[2]
+						)
+					});
+				case 'se':
+				case 's':
+				case 'e':
+					self.draggable.updateLimits();
+
+					self.draggable.move(
+						self.center[0] - self.initSize[0]/2,
+						self.center[1] - self.initSize[1]/2
+					);
+
+					break;
+
+				case 'nw':
+					css(el, {
+						width: between(self.initSize[0] - coords[0], 0, self.maxSize[0]),
+						height: between(self.initSize[1] - coords[1], 0, self.maxSize[1])
+					});
+				case 'n':
+					css(el, {
+						height: between(self.initSize[1] - coords[1], 0, self.maxSize[1])
+					});
+				case 'w':
+					css(el, {
+						width: between(self.initSize[0] - coords[0], 0, self.maxSize[0])
+					});
+				case 'nw':
+				case 'n':
+				case 'w':
+					self.draggable.updateLimits();
+
+					//subtract t/l on changed size
+					var deltaX = self.initSizeFull[0] - el.offsetWidth;
+					var deltaY = self.initSizeFull[1] - el.offsetHeight;
+
+					self.draggable.move(self.offsets[0] + deltaX, self.offsets[1] + deltaY);
+					break;
+
+				case 'ne':
+					css(el, {
+						width: between(self.initSize[0] + coords[0], 0, self.maxSize[2]),
+						height: between(self.initSize[1] - coords[1], 0, self.maxSize[1])
+					});
+
+					self.draggable.updateLimits();
+
+					//subtract t/l on changed size
+					var deltaY = self.initSizeFull[1] - el.offsetHeight;
+
+					self.draggable.move(null, self.offsets[1] + deltaY);
+					break;
+				case 'sw':
+					css(el, {
+						width: between(self.initSize[0] - coords[0], 0, self.maxSize[0]),
+						height: between(self.initSize[1] + coords[1], 0, self.maxSize[3])
+					});
+
+					self.draggable.updateLimits();
+
+					//subtract t/l on changed size
+					var deltaX = self.initSizeFull[0] - el.offsetWidth;
+
+					self.draggable.move(self.offsets[0] + deltaX);
+					break;
+			};
+		}
+
+		//trigger callbacks
+		emit(self, 'resize');
+		emit(el, 'resize');
+
+		draggy.setCoords(0,0);
+	});
+
+	draggy.on('dragend', function(){
+		//clear cursor & pointer-events
+		css(root, {
+			'cursor': null
+		});
+
+		//get back cursors
+		for (var h in self.handles){
+			css(self.handles[h], 'cursor', self.handles[h].direction + '-resize');
+		}
+	});
+
+	//append styles
+	css(handle, handleStyles[direction]);
+	css(handle, 'cursor', direction + '-resize');
+
+	//append proper class
+	handle.classList.add('resizable-handle-' + direction);
+
+	return handle;
+};
+
+
+/** deconstructor - removes any memory bindings */
+proto.destroy = function () {
+	//remove all handles
+	for (var hName in this.handles){
+		this.element.removeChild(this.handles[hName]);
+		Draggable.cache.get(this.handles[hName]).destroy();
+	}
+
+
+	//remove references
+	this.element = null;
+};
+
+
+var w = 10;
+
+/** Threshold size */
+proto.threshold = w;
+
+/** Styles for handles */
+var handleStyles = splitKeys({
+	'e,w,n,s,nw,ne,sw,se': {
+		'position': 'absolute'
+	},
+	'e,w': {
+		'top, bottom':0,
+		'width': w
+	},
+	'e': {
+		'left': 'auto',
+		'right': -w/2
+	},
+	'w': {
+		'right': 'auto',
+		'left': -w/2
+	},
+	's': {
+		'top': 'auto',
+		'bottom': -w/2
+	},
+	'n': {
+		'bottom': 'auto',
+		'top': -w/2
+	},
+	'n,s': {
+		'left, right': 0,
+		'height': w
+	},
+	'nw,ne,sw,se': {
+		'width': w,
+		'height': w,
+		'z-index': 1
+	},
+	'nw': {
+		'top, left': -w/2,
+		'bottom, right': 'auto'
+	},
+	'ne': {
+		'top, right': -w/2,
+		'bottom, left': 'auto'
+	},
+	'sw': {
+		'bottom, left': -w/2,
+		'top, right': 'auto'
+	},
+	'se': {
+		'bottom, right': -w/2,
+		'top, left': 'auto'
+	}
+}, true);
+
+
+
+/**
+ * @module resizable
+ */
+module.exports = Resizable;
+},{"draggy":53,"emmy/emit":55,"emmy/on":58,"events":60,"inherits":117,"mucss/border":159,"mucss/css":160,"mucss/margin":164,"mucss/offset":165,"mucss/padding":166,"mumath/clamp":173,"mutype/is-array":182,"mutype/is-object":188,"mutype/is-string":192,"split-keys":238,"xtend/mutable":275}],234:[function(require,module,exports){
 (function (process){
 module.exports = rimraf
 rimraf.sync = rimrafSync
@@ -38694,7 +42118,7 @@ function rmkidsSync (p, options) {
 }
 
 }).call(this,require('_process'))
-},{"_process":143,"assert":17,"fs":"browserify-fs","glob":78,"path":138}],165:[function(require,module,exports){
+},{"_process":212,"assert":17,"fs":"browserify-fs","glob":86,"path":207}],235:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -38758,7 +42182,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":33}],166:[function(require,module,exports){
+},{"buffer":33}],236:[function(require,module,exports){
 (function (process,global){
 (function (global, undefined) {
     "use strict";
@@ -38948,7 +42372,286 @@ SafeBuffer.allocUnsafeSlow = function (size) {
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":143}],167:[function(require,module,exports){
+},{"_process":212}],237:[function(require,module,exports){
+
+/**
+ * An Array.prototype.slice.call(arguments) alternative
+ *
+ * @param {Object} args something with a length
+ * @param {Number} slice
+ * @param {Number} sliceEnd
+ * @api public
+ */
+
+module.exports = function (args, slice, sliceEnd) {
+  var ret = [];
+  var len = args.length;
+
+  if (0 === len) return ret;
+
+  var start = slice < 0
+    ? Math.max(0, slice + len)
+    : slice || 0;
+
+  if (sliceEnd !== undefined) {
+    len = sliceEnd < 0
+      ? sliceEnd + len
+      : sliceEnd
+  }
+
+  while (len-- > start) {
+    ret[len - start] = args[len];
+  }
+
+  return ret;
+}
+
+
+},{}],238:[function(require,module,exports){
+var type = require('mutype');
+var extend = require('xtend/mutable');
+
+module.exports = splitKeys;
+
+
+/**
+ * Disentangle listed keys
+ *
+ * @param {Object} obj An object with key including listed declarations
+ * @example {'a,b,c': 1}
+ *
+ * @param {boolean} deep Whether to flatten nested objects
+ *
+ * @todo Think to provide such method on object prototype
+ *
+ * @return {oblect} Source set passed {@link set}
+ */
+function splitKeys(obj, deep, separator){
+	//swap args, if needed
+	if ((deep || separator) && (type.isBoolean(separator) || type.isString(deep) || type.isRegExp(deep))) {
+		var tmp = deep;
+		deep = separator;
+		separator = tmp;
+	}
+
+	//ensure separator
+	separator = separator === undefined ? splitKeys.separator : separator;
+
+	var list, value;
+
+	for(var keys in obj){
+		value = obj[keys];
+
+		if (deep && type.isObject(value)) splitKeys(value, deep, separator);
+
+		list = keys.split(separator);
+
+		if (list.length > 1){
+			delete obj[keys];
+			list.forEach(setKey);
+		}
+	}
+
+	function setKey(key){
+		//if existing key - extend, if possible
+		//FIXME: obj[key] might be not an object, but function, for example
+		if (value !== obj[key] && type.isObject(value) && type.isObject(obj[key])) {
+			obj[key] = extend({}, obj[key], value);
+		}
+		//or replace
+		else {
+			obj[key] = value;
+		}
+	}
+
+	return obj;
+}
+
+
+/** default separator */
+splitKeys.separator = /\s?,\s?/;
+},{"mutype":180,"xtend/mutable":275}],239:[function(require,module,exports){
+/**
+ * @module  st8
+ *
+ * Micro state machine.
+ */
+
+
+var Emitter = require('events');
+var isObject = require('is-plain-object');
+
+
+/** Defaults */
+
+State.options = {
+	leaveCallback: 'after',
+	enterCallback: 'before',
+	changeCallback: 'change',
+	remainderState: '_'
+};
+
+
+/**
+ * Create a new state controller based on states passed
+ *
+ * @constructor
+ *
+ * @param {object} settings Initial states
+ */
+
+function State(states, context){
+	//ignore existing state
+	if (states instanceof State) return states;
+
+	//ensure new state instance is created
+	if (!(this instanceof State)) return new State(states);
+
+	//save states object
+	this.states = states || {};
+
+	//save context
+	this.context = context || this;
+
+	//initedFlag
+	this.isInit = false;
+}
+
+
+/** Inherit State from Emitter */
+
+var proto = State.prototype = Object.create(Emitter.prototype);
+
+
+/**
+ * Go to a state
+ *
+ * @param {*} value Any new state to enter
+ */
+
+proto.set = function (value) {
+	var oldValue = this.state, states = this.states;
+	// console.group('set', value, oldValue);
+
+	//leave old state
+	var oldStateName = states[oldValue] !== undefined ? oldValue : State.options.remainderState;
+	var oldState = states[oldStateName];
+
+	var leaveResult, leaveFlag = State.options.leaveCallback + oldStateName;
+
+	if (this.isInit) {
+		if (isObject(oldState)) {
+			if (!this[leaveFlag]) {
+				this[leaveFlag] = true;
+
+				//if oldstate has after method - call it
+				leaveResult = getValue(oldState, State.options.leaveCallback, this.context);
+
+				//ignore changing if leave result is falsy
+				if (leaveResult === false) {
+					this[leaveFlag] = false;
+					// console.groupEnd();
+					return false;
+				}
+
+				//redirect, if returned anything
+				else if (leaveResult !== undefined && leaveResult !== value) {
+					this.set(leaveResult);
+					this[leaveFlag] = false;
+					// console.groupEnd();
+					return false;
+				}
+
+				this[leaveFlag] = false;
+
+				//ignore redirect
+				if (this.state !== oldValue) {
+					return;
+				}
+			}
+
+		}
+
+		//ignore not changed value
+		if (value === oldValue) return false;
+	}
+	else {
+		this.isInit = true;
+	}
+
+
+	//set current value
+	this.state = value;
+
+
+	//try to enter new state
+	var newStateName = states[value] !== undefined ? value : State.options.remainderState;
+	var newState = states[newStateName];
+	var enterFlag = State.options.enterCallback + newStateName;
+	var enterResult;
+
+	if (!this[enterFlag]) {
+		this[enterFlag] = true;
+
+		if (isObject(newState)) {
+			enterResult = getValue(newState, State.options.enterCallback, this.context);
+		} else {
+			enterResult = getValue(states, newStateName, this.context);
+		}
+
+		//ignore entering falsy state
+		if (enterResult === false) {
+			this.set(oldValue);
+			this[enterFlag] = false;
+			// console.groupEnd();
+			return false;
+		}
+
+		//redirect if returned anything but current state
+		else if (enterResult !== undefined && enterResult !== value) {
+			this.set(enterResult);
+			this[enterFlag] = false;
+			// console.groupEnd();
+			return false;
+		}
+
+		this[enterFlag] = false;
+	}
+
+
+
+	//notify change
+	if (value !== oldValue)	{
+		this.emit(State.options.changeCallback, value, oldValue);
+	}
+
+
+	// console.groupEnd();
+
+	//return context to chain calls
+	return this.context;
+};
+
+
+/** Get current state */
+
+proto.get = function(){
+	return this.state;
+};
+
+
+/** Return value or fn result */
+function getValue(holder, meth, ctx){
+	if (typeof holder[meth] === 'function') {
+		return holder[meth].call(ctx);
+	}
+
+	return holder[meth];
+}
+
+
+module.exports = State;
+},{"events":60,"is-plain-object":147}],240:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -39077,7 +42780,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":54,"inherits":108,"readable-stream/duplex.js":149,"readable-stream/passthrough.js":158,"readable-stream/readable.js":159,"readable-stream/transform.js":160,"readable-stream/writable.js":161}],168:[function(require,module,exports){
+},{"events":60,"inherits":117,"readable-stream/duplex.js":218,"readable-stream/passthrough.js":227,"readable-stream/readable.js":228,"readable-stream/transform.js":229,"readable-stream/writable.js":230}],241:[function(require,module,exports){
 (function (process){
 
 var Promise = require('any-promise')
@@ -39141,7 +42844,7 @@ module.exports = function (stream, done) {
 }
 
 }).call(this,require('_process'))
-},{"_process":143,"any-promise":10}],169:[function(require,module,exports){
+},{"_process":212,"any-promise":10}],242:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -39438,7 +43141,7 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":165}],170:[function(require,module,exports){
+},{"safe-buffer":235}],243:[function(require,module,exports){
 'use strict';
 const isRegexp = require('is-regexp');
 const isObj = require('is-obj');
@@ -39571,14 +43274,14 @@ module.exports = (val, opts, pad) => {
 	})(val, opts, pad);
 };
 
-},{"get-own-enumerable-property-symbols":74,"is-obj":112,"is-regexp":113}],171:[function(require,module,exports){
+},{"get-own-enumerable-property-symbols":81,"is-obj":145,"is-regexp":148}],244:[function(require,module,exports){
 'use strict';
 module.exports = {
 	stdout: false,
 	stderr: false
 };
 
-},{}],172:[function(require,module,exports){
+},{}],245:[function(require,module,exports){
 (function (process){
 var Transform = require('readable-stream/transform')
   , inherits  = require('util').inherits
@@ -39678,7 +43381,7 @@ module.exports.obj = through2(function (options, transform, flush) {
 })
 
 }).call(this,require('_process'))
-},{"_process":143,"readable-stream/transform":160,"util":195,"xtend":201}],173:[function(require,module,exports){
+},{"_process":212,"readable-stream/transform":229,"util":268,"xtend":274}],246:[function(require,module,exports){
 'use strict';
 var path = require('path');
 var osHomedir = require('os-homedir');
@@ -39689,7 +43392,7 @@ module.exports = function (str) {
 	return (str.indexOf(home) === 0 ? str.replace(home + path.sep, '~' + path.sep) : str).slice(0, -1);
 };
 
-},{"os-homedir":126,"path":138}],174:[function(require,module,exports){
+},{"os-homedir":195,"path":207}],247:[function(require,module,exports){
 /*!
  * time-stamp <https://github.com/jonschlinkert/time-stamp>
  *
@@ -39747,7 +43450,7 @@ function method(key) {
   })[key];
 }
 
-},{}],175:[function(require,module,exports){
+},{}],248:[function(require,module,exports){
 (function (setImmediate,clearImmediate){
 var nextTick = require('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -39826,7 +43529,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
-},{"process/browser.js":143,"timers":175}],176:[function(require,module,exports){
+},{"process/browser.js":212,"timers":248}],249:[function(require,module,exports){
 module.exports = Traverse;
 function Traverse (obj) {
     if (!(this instanceof Traverse)) return new Traverse(obj);
@@ -40150,7 +43853,7 @@ function copy (src) {
     else return src;
 }
 
-},{}],177:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 var Promise = require('bluebird');
 var Buffer = require('buffer').Buffer;
 var Stream = require('stream');
@@ -40175,7 +43878,7 @@ module.exports = function(entry) {
     entry.pipe(bufferStream);
   });
 };
-},{"bluebird":25,"buffer":33,"readable-stream":190,"stream":167}],178:[function(require,module,exports){
+},{"bluebird":25,"buffer":33,"readable-stream":263,"stream":240}],251:[function(require,module,exports){
 var Stream = require('stream');
 var util = require('util');
 
@@ -40195,7 +43898,7 @@ util.inherits(NoopStream,Stream.Transform);
 NoopStream.prototype._transform = function(d,e,cb) { cb() ;};
   
 module.exports = NoopStream;
-},{"readable-stream":190,"stream":167,"util":195}],179:[function(require,module,exports){
+},{"readable-stream":263,"stream":240,"util":268}],252:[function(require,module,exports){
 (function (setImmediate){
 var Stream = require('stream');
 var Promise = require('bluebird');
@@ -40339,7 +44042,7 @@ PullStream.prototype._flush = function(cb) {
 module.exports = PullStream;
 
 }).call(this,require("timers").setImmediate)
-},{"bluebird":25,"buffer":33,"readable-stream":190,"stream":167,"timers":175,"util":195}],180:[function(require,module,exports){
+},{"bluebird":25,"buffer":33,"readable-stream":263,"stream":240,"timers":248,"util":268}],253:[function(require,module,exports){
 module.exports = Extract;
 
 var Parse = require('./parse');
@@ -40368,7 +44071,7 @@ function Extract (opts) {
   });
 }
 
-},{"./parse":181,"fstream":59,"path":138,"util":195}],181:[function(require,module,exports){
+},{"./parse":254,"fstream":65,"path":207,"util":268}],254:[function(require,module,exports){
 (function (Buffer){
 var util = require('util');
 var zlib = require('zlib');
@@ -40616,7 +44319,7 @@ Parse.prototype.promise = function() {
 
 module.exports = Parse;
 }).call(this,require("buffer").Buffer)
-},{"./BufferStream":177,"./NoopStream":178,"./PullStream":179,"binary":23,"bluebird":25,"buffer":33,"readable-stream":190,"stream":167,"util":195,"zlib":29}],182:[function(require,module,exports){
+},{"./BufferStream":250,"./NoopStream":251,"./PullStream":252,"binary":23,"bluebird":25,"buffer":33,"readable-stream":263,"stream":240,"util":268,"zlib":29}],255:[function(require,module,exports){
 var Stream = require('stream');
 var Parse = require('./parse');
 var duplexer2 = require('duplexer2');
@@ -40662,7 +44365,7 @@ function parseOne(match,opts) {
 
 
 module.exports = parseOne;
-},{"./parse":181,"duplexer2":52,"readable-stream":190,"stream":167}],183:[function(require,module,exports){
+},{"./parse":254,"duplexer2":54,"readable-stream":263,"stream":240}],256:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -40709,7 +44412,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":143}],184:[function(require,module,exports){
+},{"_process":212}],257:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -40785,7 +44488,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":186,"./_stream_writable":188,"core-util-is":49,"inherits":108,"process-nextick-args":183}],185:[function(require,module,exports){
+},{"./_stream_readable":259,"./_stream_writable":261,"core-util-is":49,"inherits":117,"process-nextick-args":256}],258:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -40812,7 +44515,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":187,"core-util-is":49,"inherits":108}],186:[function(require,module,exports){
+},{"./_stream_transform":260,"core-util-is":49,"inherits":117}],259:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -41752,7 +45455,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":184,"./internal/streams/BufferList":189,"_process":143,"buffer":33,"buffer-shims":32,"core-util-is":49,"events":54,"inherits":108,"isarray":114,"process-nextick-args":183,"string_decoder/":191,"util":27}],187:[function(require,module,exports){
+},{"./_stream_duplex":257,"./internal/streams/BufferList":262,"_process":212,"buffer":33,"buffer-shims":32,"core-util-is":49,"events":60,"inherits":117,"isarray":149,"process-nextick-args":256,"string_decoder/":264,"util":27}],260:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -41933,7 +45636,7 @@ function done(stream, er) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":184,"core-util-is":49,"inherits":108}],188:[function(require,module,exports){
+},{"./_stream_duplex":257,"core-util-is":49,"inherits":117}],261:[function(require,module,exports){
 (function (process,setImmediate){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -42462,7 +46165,7 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'),require("timers").setImmediate)
-},{"./_stream_duplex":184,"_process":143,"buffer":33,"buffer-shims":32,"core-util-is":49,"events":54,"inherits":108,"process-nextick-args":183,"timers":175,"util-deprecate":193}],189:[function(require,module,exports){
+},{"./_stream_duplex":257,"_process":212,"buffer":33,"buffer-shims":32,"core-util-is":49,"events":60,"inherits":117,"process-nextick-args":256,"timers":248,"util-deprecate":266}],262:[function(require,module,exports){
 'use strict';
 
 var Buffer = require('buffer').Buffer;
@@ -42527,7 +46230,7 @@ BufferList.prototype.concat = function (n) {
   }
   return ret;
 };
-},{"buffer":33,"buffer-shims":32}],190:[function(require,module,exports){
+},{"buffer":33,"buffer-shims":32}],263:[function(require,module,exports){
 (function (process){
 var Stream = (function (){
   try {
@@ -42547,9 +46250,9 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable' && Stream) {
 }
 
 }).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":184,"./lib/_stream_passthrough.js":185,"./lib/_stream_readable.js":186,"./lib/_stream_transform.js":187,"./lib/_stream_writable.js":188,"_process":143}],191:[function(require,module,exports){
-arguments[4][95][0].apply(exports,arguments)
-},{"buffer":33,"dup":95}],192:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":257,"./lib/_stream_passthrough.js":258,"./lib/_stream_readable.js":259,"./lib/_stream_transform.js":260,"./lib/_stream_writable.js":261,"_process":212}],264:[function(require,module,exports){
+arguments[4][103][0].apply(exports,arguments)
+},{"buffer":33,"dup":103}],265:[function(require,module,exports){
 'use strict';
 // Polyfills for node 0.8
 require('listenercount');
@@ -42560,7 +46263,7 @@ require('setimmediate');
 exports.Parse = require('./lib/parse');
 exports.ParseOne = require('./lib/parseOne');
 exports.Extract = require('./lib/extract');
-},{"./lib/extract":180,"./lib/parse":181,"./lib/parseOne":182,"buffer-indexof-polyfill":31,"listenercount":119,"setimmediate":166}],193:[function(require,module,exports){
+},{"./lib/extract":253,"./lib/parse":254,"./lib/parseOne":255,"buffer-indexof-polyfill":31,"listenercount":155,"setimmediate":236}],266:[function(require,module,exports){
 (function (global){
 
 /**
@@ -42631,11 +46334,11 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],194:[function(require,module,exports){
+},{}],267:[function(require,module,exports){
 arguments[4][19][0].apply(exports,arguments)
-},{"dup":19}],195:[function(require,module,exports){
+},{"dup":19}],268:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
-},{"./support/isBuffer":194,"_process":143,"dup":20,"inherits":108}],196:[function(require,module,exports){
+},{"./support/isBuffer":267,"_process":212,"dup":20,"inherits":117}],269:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -42973,7 +46676,7 @@ Object.defineProperty(File.prototype, 'symlink', {
 module.exports = File;
 
 }).call(this,require('_process'))
-},{"./lib/inspect-stream":197,"./lib/is-stream":198,"./lib/normalize":199,"_process":143,"buffer":33,"clone":40,"clone-buffer":38,"clone-stats":39,"cloneable-readable":41,"path":138,"remove-trailing-separator":162,"replace-ext":163,"util":195}],197:[function(require,module,exports){
+},{"./lib/inspect-stream":270,"./lib/is-stream":271,"./lib/normalize":272,"_process":212,"buffer":33,"clone":40,"clone-buffer":38,"clone-stats":39,"cloneable-readable":41,"path":207,"remove-trailing-separator":231,"replace-ext":232,"util":268}],270:[function(require,module,exports){
 'use strict';
 
 function inspectStream(stream) {
@@ -42988,7 +46691,7 @@ function inspectStream(stream) {
 
 module.exports = inspectStream;
 
-},{}],198:[function(require,module,exports){
+},{}],271:[function(require,module,exports){
 'use strict';
 
 function isStream(stream) {
@@ -43005,7 +46708,7 @@ function isStream(stream) {
 
 module.exports = isStream;
 
-},{}],199:[function(require,module,exports){
+},{}],272:[function(require,module,exports){
 'use strict';
 
 var path = require('path');
@@ -43016,7 +46719,7 @@ function normalize(str) {
 
 module.exports = normalize;
 
-},{"path":138}],200:[function(require,module,exports){
+},{"path":207}],273:[function(require,module,exports){
 // Returns a wrapper function that returns a wrapped callback
 // The wrapper function should do some stuff, and return a
 // presumably different callback function.
@@ -43051,7 +46754,7 @@ function wrappy (fn, cb) {
   }
 }
 
-},{}],201:[function(require,module,exports){
+},{}],274:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -43072,7 +46775,26 @@ function extend() {
     return target
 }
 
-},{}],202:[function(require,module,exports){
+},{}],275:[function(require,module,exports){
+module.exports = extend
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+function extend(target) {
+    for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i]
+
+        for (var key in source) {
+            if (hasOwnProperty.call(source, key)) {
+                target[key] = source[key]
+            }
+        }
+    }
+
+    return target
+}
+
+},{}],276:[function(require,module,exports){
 (function (Buffer,setImmediate){
 var fs = require("fs");
 var Transform = require("stream").Transform;
@@ -43717,7 +47439,7 @@ Crc32Watcher.prototype._transform = function(chunk, encoding, cb) {
 };
 
 }).call(this,require("buffer").Buffer,require("timers").setImmediate)
-},{"buffer":33,"buffer-crc32":30,"events":54,"fs":"browserify-fs","stream":167,"timers":175,"util":195,"zlib":29}],203:[function(require,module,exports){
+},{"buffer":33,"buffer-crc32":30,"events":60,"fs":"browserify-fs","stream":240,"timers":248,"util":268,"zlib":29}],277:[function(require,module,exports){
 div.apps = exports;
 
 exports.install = pkg => {
@@ -43819,7 +47541,7 @@ exports.reloadAndLaunch = async (appPath, ...appArgs) => {
   return await exports.launch(appPath, ...appArgs);
 };
 
-},{}],204:[function(require,module,exports){
+},{}],278:[function(require,module,exports){
 div.desktopWorkspaces = module.exports = exports = {
   all: [
     { id: 'web', icon: 'world', highlight: true },
@@ -43850,7 +47572,7 @@ div.desktopWorkspaces = module.exports = exports = {
   },
 };
 
-},{}],205:[function(require,module,exports){
+},{}],279:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let qs = require('qs');
 let through2 = require('through2');
@@ -43959,7 +47681,7 @@ async function getContentsStream(filePath) {
   return ret;
 }
 
-},{"qs":145,"through2":172,"vinyl":196}],206:[function(require,module,exports){
+},{"qs":214,"through2":245,"vinyl":269}],280:[function(require,module,exports){
 (function (Buffer){
 let Vinyl = require('vinyl');
 let base64 = require('base64-js');
@@ -44022,7 +47744,7 @@ exports.storeFile = async (dirPath, file) => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../helper/fromFile":210,"base64-js":22,"buffer":33,"localforage":120,"minimatch":121,"path":138,"through2":172,"vinyl":196}],207:[function(require,module,exports){
+},{"../helper/fromFile":284,"base64-js":22,"buffer":33,"localforage":156,"minimatch":157,"path":207,"through2":245,"vinyl":269}],281:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let through2 = require('through2');
 
@@ -44061,10 +47783,10 @@ exports.src = (glob, opt) => {
   return adapter.src(glob.slice(mountPoint.length), opt);
 };
 
-},{"./backendAdapter":205,"./browserAdapter":206,"gulp-debug":80,"gulp-unzip":81,"gulp-zip":105,"through2":172,"vinyl":196}],208:[function(require,module,exports){
+},{"./backendAdapter":279,"./browserAdapter":280,"gulp-debug":88,"gulp-unzip":89,"gulp-zip":113,"through2":245,"vinyl":269}],282:[function(require,module,exports){
 module.exports = div.allFromStream = require('stream-to-array');
 
-},{"stream-to-array":168}],209:[function(require,module,exports){
+},{"stream-to-array":241}],283:[function(require,module,exports){
 (function (Buffer){
 let allFromStream = require('./allFromStream');
 
@@ -44087,7 +47809,7 @@ module.exports = div.bufFromStream = async stream => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./allFromStream":208,"buffer":33}],210:[function(require,module,exports){
+},{"./allFromStream":282,"buffer":33}],284:[function(require,module,exports){
 let bufFromStream = require('./bufFromStream');
 
 module.exports = div.fromFile = async (file, enc) => {
@@ -44108,13 +47830,13 @@ function decode(buf, enc) {
   return new TextDecoder(enc).decode(buf);
 }
 
-},{"./bufFromStream":209}],211:[function(require,module,exports){
+},{"./bufFromStream":283}],285:[function(require,module,exports){
 let allFromStream = require('./allFromStream');
 
 module.exports = div.oneFromStream =
   stream => allFromStream(stream).then(xs => xs[0]);
 
-},{"./allFromStream":208}],212:[function(require,module,exports){
+},{"./allFromStream":282}],286:[function(require,module,exports){
 require('junior-ui/browserGlobal');
 
 window.div = exports;
@@ -44144,11 +47866,30 @@ require('./helper/oneFromStream');
 require('./desktopWorkspaces');
 require('./windowManager');
 
-},{"./apps":203,"./desktopWorkspaces":204,"./fs":207,"./helper/allFromStream":208,"./helper/bufFromStream":209,"./helper/fromFile":210,"./helper/oneFromStream":211,"./windowManager":213,"base64-js":22,"junior-ui/browserGlobal":115,"localforage":120,"through2":172}],213:[function(require,module,exports){
+},{"./apps":277,"./desktopWorkspaces":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./windowManager":287,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":245}],287:[function(require,module,exports){
 div.windowManager = module.exports = exports = {
   lastZIndex: 0,
+
+  Resizable: require('resizable'),
+
+  update() {
+    for (let wnd of jr.find('.window')) {
+      wnd.div = wnd.div || {};
+      wnd.div.wm = wnd.div.wm || {};
+
+      if (wnd.div.wm.dragCtrl) {
+        continue;
+      }
+
+      wnd.div.wm.resizableCtrl = new exports.Resizable(wnd, {
+        draggable: {
+          handle: jr(wnd).jr.findFirst('.window-handle'),
+        },
+      });
+    }
+  },
 };
 
-},{}],"browserify-fs":[function(require,module,exports){
+},{"resizable":233}],"browserify-fs":[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}]},{},[212]);
+},{"dup":27}]},{},[286]);
