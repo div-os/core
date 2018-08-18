@@ -47572,6 +47572,15 @@ div.desktopWorkspaces = module.exports = exports = {
   },
 };
 
+document.addEventListener('DOMContentLoaded', () => {
+  div.windowManager.decorators.push((wnd, opt) => {
+    wnd.setAttribute(
+      'div-workspace',
+      opt.workspaceId || exports.activeId,
+    );
+  });
+});
+
 },{}],279:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let qs = require('qs');
@@ -47868,7 +47877,65 @@ require('./windowManager');
 
 },{"./apps":277,"./desktopWorkspaces":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./windowManager":287,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":245}],287:[function(require,module,exports){
 div.windowManager = module.exports = exports = {
+  decorators: [],
+
   lastZIndex: 0,
+
+  create(opt) {
+    opt = opt || {};
+
+    if (opt.floating === undefined) {
+      opt.floating = true;
+    }
+
+    let wnd = document.createElement('div');
+
+    wnd.div = {};
+    wnd.div.wm = {};
+
+    wnd.classList.add('window');
+    wnd.style.zIndex = ++exports.lastZIndex;
+
+    if (opt.floating) {
+      wnd.classList.add('window--floating');
+      wnd.style.width = '900px';
+      wnd.style.height = '500px';
+      wnd.style.left = '60px';
+      wnd.style.top = '50px';
+    }
+
+    if (opt.title) {
+      let headerEl = document.createElement('div');
+      let titleEl = document.createElement('div');
+
+      headerEl.classList.add('window-header', 'window-handle');
+
+      titleEl.classList.add('window-title');
+      titleEl.textContent = opt.title;
+
+      headerEl.appendChild(titleEl);
+      wnd.appendChild(headerEl);
+    }
+
+    if (opt.iframeSrc) {
+      let iframeEl = document.createElement('iframe');
+
+      iframeEl.classList.add('window-iframe');
+      iframeEl.src = opt.iframeSrc;
+
+      wnd.appendChild(iframeEl);
+    }
+
+    for (let decorator of exports.decorators) {
+      decorator(wnd, opt);
+    }
+
+    jr.findFirst('.windowManager').appendChild(wnd);
+
+    requestAnimationFrame(() => exports.update());
+
+    return wnd;
+  },
 
   Resizable: require('resizable'),
 

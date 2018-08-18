@@ -211,6 +211,18 @@
   jr.findFirst('body').jr.setScope({ div });
   jr.init();
 
+  div.windowManager.decorators.push(wnd => {
+    wnd = jr(wnd);
+
+    wnd.jr.findFirst('.window-header').classList.add(
+      'toolbar', 'toolbar-header',
+    );
+
+    wnd.jr.findFirst('.window-title').classList.add(
+      'title',
+    );
+  });
+
   div.desktopWorkspaces.update();
   div.windowManager.update();
 </script>

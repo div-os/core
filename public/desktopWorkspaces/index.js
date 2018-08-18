@@ -27,3 +27,12 @@ div.desktopWorkspaces = module.exports = exports = {
     }
   },
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  div.windowManager.decorators.push((wnd, opt) => {
+    wnd.setAttribute(
+      'div-workspace',
+      opt.workspaceId || exports.activeId,
+    );
+  });
+});
