@@ -47872,12 +47872,67 @@ require('./helper/allFromStream');
 require('./helper/bufFromStream');
 require('./helper/fromFile');
 require('./helper/oneFromStream');
+require('./scriptManager');
 
 // UI modules.
 require('./desktopWorkspaces');
 require('./windowManager');
 
-},{"./apps":277,"./desktopWorkspaces":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./windowManager":287,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":245}],287:[function(require,module,exports){
+},{"./apps":277,"./desktopWorkspaces":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./scriptManager":287,"./windowManager":288,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":245}],287:[function(require,module,exports){
+div.scriptManager = exports;
+
+exports.tryGetBySrc = src => {
+  return jr.findFirst(`script[src="${src}"]`);
+};
+
+exports.tryGetLinkByHref = href => {
+  return jr.findFirst(`link[href="${href}"]`);
+};
+
+exports.load = async src => {
+  let script = exports.tryGetBySrc(src);
+
+  if (script) {
+    return script;
+  }
+
+  script = document.createElement('script');
+  script.src = src;
+
+  let loadPromise = new Promise((resolve, reject) => {
+    script.addEventListener('error', ev => reject(ev.error));
+    script.addEventListener('load', resolve);
+  });
+
+  document.head.appendChild(script);
+  await loadPromise;
+
+  return script;
+};
+
+exports.loadStylesheet = async href => {
+  let link = exports.tryGetLinkByHref(href);
+
+  if (link) {
+    return link;
+  }
+
+  link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = href;
+
+  let loadPromise = new Promise((resolve, reject) => {
+    link.addEventListener('error', ev => reject(ev.error));
+    link.addEventListener('load', resolve);
+  });
+
+  document.head.appendChild(link);
+  await loadPromise;
+
+  return link;
+};
+
+},{}],288:[function(require,module,exports){
 div.windowManager = module.exports = exports = {
   defaultFloatingWidth: 600,
   defaultFloatingHeight: 400,

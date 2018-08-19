@@ -22,6 +22,7 @@ require('./helper/allFromStream');
 require('./helper/bufFromStream');
 require('./helper/fromFile');
 require('./helper/oneFromStream');
+require('./scriptManager');
 
 // UI modules.
 require('./desktopWorkspaces');
