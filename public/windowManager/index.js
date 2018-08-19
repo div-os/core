@@ -40,24 +40,21 @@ div.windowManager = module.exports = exports = {
     }
 
     let headerEl = document.createElement('div');
-    let ctrlBtnsEl = document.createElement('div');
 
-    ctrlBtnsEl.classList.add('window-ctrlBtns');
+    for (let action of ['close', 'zoom']) {
+      let btn = document.createElement('button');
 
-    for (let action of ['close', 'minimize', 'zoom']) {
-      let btnEl = document.createElement('button');
+      btn.classList.add(
+        'window-stdHeaderBtn',
+        `window-stdHeaderBtn--${action}`,
 
-      btnEl.style.color = {
-        close: '#fc605b',
-        minimize: '#f9bc2d',
-        zoom: '#34c84a',
-      }[action];
-
-      btnEl.classList.add(
-        'window-ctrlBtn', 'icon', 'icon-record',
+        'icon', {
+          close: 'icon-cancel',
+          zoom: 'icon-resize-full',
+        }[action],
       );
 
-      btnEl.addEventListener('click', () => {
+      btn.addEventListener('click', () => {
         switch (action) {
           case 'close':
             wnd.remove();
@@ -70,10 +67,8 @@ div.windowManager = module.exports = exports = {
         }
       });
 
-      ctrlBtnsEl.appendChild(btnEl);
+      headerEl.appendChild(btn);
     }
-
-    headerEl.appendChild(ctrlBtnsEl);
 
     if (opt.title) {
       let titleEl = document.createElement('div');

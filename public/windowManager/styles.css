@@ -3,6 +3,10 @@
   flex-grow: 1;
 }
 
+.window {
+  overflow: hidden;
+}
+
 .window--glass {
   background-color: rgba(255, 255, 255, 0.1);
 }
@@ -22,7 +26,6 @@
   top: 50px;
   width: 500px;
   height: 300px;
-  overflow: hidden;
   border: 1px solid #bebebe;
   border-radius: 6px;
   border-bottom-left-radius: 3px;
@@ -30,24 +33,28 @@
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
 }
 
-.window-ctrlBtns {
-  position: absolute;
-  top: 4px;
-  left: 10px;
+.window-header {
   display: flex;
+  align-items: center;
 }
 
-.window-ctrlBtn {
+.window-stdHeaderBtn {
+  transform: translateY(1px);
+  position: absolute;
   display: flex;
+  justify-content: center;
+  align-items: center;
   outline: none;
   border: 0;
   padding: 0;
-  font-size: 14px;
-  background-color: transparent;
 }
 
-.window-ctrlBtn:not(:first-child) {
-  margin-left: 6px;
+.window-stdHeaderBtn--close {
+  left: 14px;
+}
+
+.window-stdHeaderBtn--zoom {
+  right: 14px;
 }
 
 .window-iframe {

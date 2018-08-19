@@ -1,0 +1,9 @@
+.toolbar-header {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+}
+
+.toolbar-header .title {
+  flex-grow: 1;
+}
