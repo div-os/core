@@ -47440,9 +47440,67 @@ Crc32Watcher.prototype._transform = function(chunk, encoding, cb) {
 
 }).call(this,require("buffer").Buffer,require("timers").setImmediate)
 },{"buffer":33,"buffer-crc32":30,"events":60,"fs":"browserify-fs","stream":240,"timers":248,"util":268,"zlib":29}],277:[function(require,module,exports){
+(function (Buffer){
+let Vinyl = require('vinyl');
+let t2 = require('through2');
+
 div.apps = exports;
 
 exports.install = pkg => {
+};
+
+exports.installArchive = async archive => {
+  let stream = t2.obj();
+
+  let pipeline = stream
+    .pipe(div.fs.gulpUnzip())
+    .pipe(div.fs.gulpDebug({
+      logger: console.log.bind(console),
+    }))
+    .pipe(div.fs.browser.dest(`/apps/${archive.stem}`));
+
+  stream.push(archive);
+  stream.end();
+
+  await new Promise((resolve, reject) => {
+    pipeline.on('error', reject);
+    pipeline.on('end', resolve);
+  });
+};
+
+exports.fetchAndInstall = async path => {
+  let res = await fetch(path);
+
+  if (!res.ok) {
+    throw new Error(
+      `Fetch error: ${res.status} ${res.statusText}`,
+    );
+  }
+
+  let buf = Buffer.from(await (async () => {
+    let reader = new FileReader();
+
+    let readPromise = new Promise((resolve, reject) => {
+      reader.onerror = reject;
+      reader.onload = ev => resolve(ev.target.result);
+    });
+
+    reader.readAsArrayBuffer(await res.blob());
+
+    return await readPromise;
+  })());
+
+  return await exports.installArchive(new Vinyl({
+    path,
+    contents: buf,
+
+    pipe: target => {
+      let stream = t2.obj();
+      stream.push(buf);
+
+      return stream.pipe(target);
+    },
+  }));
 };
 
 exports.makeScriptPath = appPath => `${appPath}/app.js`;
@@ -47543,7 +47601,8 @@ exports.reloadAndLaunch = async (appPath, ...appArgs) => {
   return await exports.launch(appPath, ...appArgs);
 };
 
-},{}],278:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"buffer":33,"through2":245,"vinyl":269}],278:[function(require,module,exports){
 div.desktopWorkspaces = module.exports = exports = {
   all: [
     { id: 'web', icon: 'world', highlight: true },
@@ -47877,6 +47936,23 @@ require('./scriptManager');
 // UI modules.
 require('./desktopWorkspaces');
 require('./windowManager');
+
+(async () => {
+  for (let name of ['files', 'helloSvg']) {
+    try {
+      let path = `apps/samples/${name}/${name}.zip`;
+
+      console.warn(`Fetching and installing ${path}...`);
+      await div.apps.fetchAndInstall(path);
+
+      console.warn(`Installed: /browser/apps/${name}`);
+    }
+    catch (err) {
+      console.error(err);
+    }
+  }
+})()
+.catch(err => console.error(err));
 
 },{"./apps":277,"./desktopWorkspaces":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./scriptManager":287,"./windowManager":288,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":245}],287:[function(require,module,exports){
 div.scriptManager = exports;

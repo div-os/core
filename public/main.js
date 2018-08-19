@@ -27,3 +27,20 @@ require('./scriptManager');
 // UI modules.
 require('./desktopWorkspaces');
 require('./windowManager');
+
+(async () => {
+  for (let name of ['files', 'helloSvg']) {
+    try {
+      let path = `apps/samples/${name}/${name}.zip`;
+
+      console.warn(`Fetching and installing ${path}...`);
+      await div.apps.fetchAndInstall(path);
+
+      console.warn(`Installed: /browser/apps/${name}`);
+    }
+    catch (err) {
+      console.error(err);
+    }
+  }
+})()
+.catch(err => console.error(err));

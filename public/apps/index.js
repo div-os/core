@@ -1,6 +1,63 @@
+let Vinyl = require('vinyl');
+let t2 = require('through2');
+
 div.apps = exports;
 
 exports.install = pkg => {
+};
+
+exports.installArchive = async archive => {
+  let stream = t2.obj();
+
+  let pipeline = stream
+    .pipe(div.fs.gulpUnzip())
+    .pipe(div.fs.gulpDebug({
+      logger: console.log.bind(console),
+    }))
+    .pipe(div.fs.browser.dest(`/apps/${archive.stem}`));
+
+  stream.push(archive);
+  stream.end();
+
+  await new Promise((resolve, reject) => {
+    pipeline.on('error', reject);
+    pipeline.on('end', resolve);
+  });
+};
+
+exports.fetchAndInstall = async path => {
+  let res = await fetch(path);
+
+  if (!res.ok) {
+    throw new Error(
+      `Fetch error: ${res.status} ${res.statusText}`,
+    );
+  }
+
+  let buf = Buffer.from(await (async () => {
+    let reader = new FileReader();
+
+    let readPromise = new Promise((resolve, reject) => {
+      reader.onerror = reject;
+      reader.onload = ev => resolve(ev.target.result);
+    });
+
+    reader.readAsArrayBuffer(await res.blob());
+
+    return await readPromise;
+  })());
+
+  return await exports.installArchive(new Vinyl({
+    path,
+    contents: buf,
+
+    pipe: target => {
+      let stream = t2.obj();
+      stream.push(buf);
+
+      return stream.pipe(target);
+    },
+  }));
 };
 
 exports.makeScriptPath = appPath => `${appPath}/app.js`;
