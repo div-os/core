@@ -7,11 +7,14 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.window--maximized {
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+.window--zoomed {
+  left: 0 !important;
+  right: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
 }
 
 .window--floating {
@@ -27,7 +30,29 @@
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
 }
 
+.window-ctrlBtns {
+  position: absolute;
+  top: 4px;
+  left: 10px;
+  display: flex;
+}
+
+.window-ctrlBtn {
+  display: flex;
+  outline: none;
+  border: 0;
+  padding: 0;
+  font-size: 14px;
+  background-color: transparent;
+}
+
+.window-ctrlBtn:not(:first-child) {
+  margin-left: 6px;
+}
+
 .window-iframe {
   height: 100%;
   border: 0;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
 }

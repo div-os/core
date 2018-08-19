@@ -67,6 +67,8 @@ exports.load = async appPath => {
     throw new Error(`${appPath} failed to load`);
   }
 
+  appCtrl.appPath = appPath;
+
   return script.div.appCtrl = appCtrl;
 };
 

@@ -189,22 +189,7 @@
     </div>
   </div>
 
-  <div
-    class="windowManager"
-    jr-list="for w of div.desktopWorkspaces.all"
-  >
-    <div
-      class="window window--glass window--floating"
-      jr-div-workspace.bind="w.id"
-    >
-      <div class="window-handle toolbar toolbar-header">
-        <div
-          class="title"
-          jr-textcontent.bind="w.id"
-        ></div>
-      </div>
-    </div>
-  </div>
+  <div class="windowManager"></div>
 </div>
 
 <script>

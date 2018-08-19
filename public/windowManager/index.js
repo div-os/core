@@ -1,4 +1,7 @@
 div.windowManager = module.exports = exports = {
+  defaultFloatingWidth: 600,
+  defaultFloatingHeight: 400,
+
   decorators: [],
 
   lastZIndex: 0,
@@ -13,21 +16,66 @@ div.windowManager = module.exports = exports = {
     let wnd = document.createElement('div');
 
     wnd.div = {};
-    wnd.div.wm = {};
+
+    wnd.div.wm = {
+      args: opt.args,
+
+      floatingWidth: opt.floatingWidth ||
+        exports.defaultFloatingWidth,
+
+      floatingHeight: opt.floatingHeight ||
+        exports.defaultFloatingHeight,
+    };
 
     wnd.classList.add('window');
     wnd.style.zIndex = ++exports.lastZIndex;
 
     if (opt.floating) {
       wnd.classList.add('window--floating');
-      wnd.style.width = '900px';
-      wnd.style.height = '500px';
+
       wnd.style.left = '60px';
       wnd.style.top = '50px';
+      wnd.style.width = `${wnd.div.wm.floatingWidth}px`;
+      wnd.style.height = `${wnd.div.wm.floatingHeight}px`;
     }
 
+    let headerEl = document.createElement('div');
+    let ctrlBtnsEl = document.createElement('div');
+
+    ctrlBtnsEl.classList.add('window-ctrlBtns');
+
+    for (let action of ['close', 'minimize', 'zoom']) {
+      let btnEl = document.createElement('button');
+
+      btnEl.style.color = {
+        close: '#fc605b',
+        minimize: '#f9bc2d',
+        zoom: '#34c84a',
+      }[action];
+
+      btnEl.classList.add(
+        'window-ctrlBtn', 'icon', 'icon-record',
+      );
+
+      btnEl.addEventListener('click', () => {
+        switch (action) {
+          case 'close':
+            wnd.remove();
+            break;
+
+          case 'zoom':
+            wnd.classList.toggle('window--floating');
+            wnd.classList.toggle('window--zoomed');
+            break;
+        }
+      });
+
+      ctrlBtnsEl.appendChild(btnEl);
+    }
+
+    headerEl.appendChild(ctrlBtnsEl);
+
     if (opt.title) {
-      let headerEl = document.createElement('div');
       let titleEl = document.createElement('div');
 
       headerEl.classList.add('window-header', 'window-handle');
@@ -36,11 +84,17 @@ div.windowManager = module.exports = exports = {
       titleEl.textContent = opt.title;
 
       headerEl.appendChild(titleEl);
-      wnd.appendChild(headerEl);
     }
+
+    wnd.appendChild(headerEl);
 
     if (opt.iframeSrc) {
       let iframeEl = document.createElement('iframe');
+
+      iframeEl.div = {};
+      iframeEl.div.wm = {};
+
+      iframeEl.div.wm.parentWnd = wnd;
 
       iframeEl.classList.add('window-iframe');
       iframeEl.src = opt.iframeSrc;
