@@ -44,9 +44,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  min-width: 16px;
+  min-height: 16px;
   outline: none;
   border: 0;
   padding: 0;
+  background-color: transparent;
 }
 
 .window-stdHeaderBtn--close {
