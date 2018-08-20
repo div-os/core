@@ -99,6 +99,7 @@
     border-radius: 5px;
     padding: 12px;
     font-weight: normal;
+    text-shadow: none;
     color: #333;
     background-color: #f5f5f5;
 
@@ -137,6 +138,28 @@
     padding: 3px 6px;
     padding-left: 25px;
   }
+
+  .launcher-resultGroup {
+    margin: 0 -12px;
+  }
+
+  .launcher-result {
+    display: flex;
+    align-items: center;
+    min-height: 51px;
+    padding: 4px 16px;
+  }
+
+  .launcher-resultIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .launcher-resultName {
+    position: relative;
+    top: 1px;
+    margin-left: 12px;
+  }
 </style>
 
 <div class="desktopBg"></div>
@@ -158,13 +181,48 @@
       <div jr-class="launcher ${
         div.launcher.isOpen ? 'launcher--open' : ''
       }">
-        <div class="launcher-searchFormGroup form-group">
+        <div class="launcher-searchFormGroup">
           <i class="launcher-searchFormIcon"></i>
 
           <input
             class="launcher-searchFormInput form-control"
             jr-value.bind="div.launcher.searchTerms"
           >
+        </div>
+
+        <div class="launcher-resultGroup nav-group">
+          <div class="nav-group-title">
+            Applications
+          </div>
+
+          <div
+            class="launcher-results"
+            jr-list="for result of div.launcher.results"
+          >
+            <a
+              jr-class="launcher-result nav-group-item ${
+                result.isActive ? 'active' : ''
+              }"
+
+              jr-on-mouseenter="
+                div.launcher.makeActive(result)
+              "
+
+              jr-on-click="
+                div.launcher.selectResult(result)
+              "
+            >
+              <img
+                class="launcher-resultIcon"
+                jr-src.bind="result.iconSrc"
+              >
+
+              <span
+                class="launcher-resultName"
+                jr-textcontent.bind="result.name"
+              ></span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
