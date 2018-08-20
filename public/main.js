@@ -26,6 +26,7 @@ require('./scriptManager');
 
 // UI modules.
 require('./desktopWorkspaces');
+require('./launcher');
 require('./windowManager');
 
 (async () => {

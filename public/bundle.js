@@ -47907,6 +47907,90 @@ module.exports = div.oneFromStream =
   stream => allFromStream(stream).then(xs => xs[0]);
 
 },{"./allFromStream":282}],286:[function(require,module,exports){
+exports.clickOutside = async el => {
+  let ev;
+
+  do {
+    ev = await exports.event(document, 'click');
+  } while (el.contains(ev.target));
+
+  return ev;
+};
+
+exports.event = (targetEl, evName, opt = {}) => {
+  let resolve;
+  let promise = new Promise(r => resolve = r);
+
+  let delegateEl = opt.delegateEl || targetEl;
+
+  let handler = ev => {
+    if (targetEl && !targetEl.contains(ev.target)) {
+      return;
+    }
+
+    resolve(ev);
+    delegateEl.removeEventListener(evName, handler);
+  };
+
+  delegateEl.addEventListener(evName, handler);
+
+  return promise;
+};
+
+exports.nextFrame = () => new Promise(resolve => {
+  requestAnimationFrame(resolve);
+});
+
+},{}],287:[function(require,module,exports){
+let promises = require('./helper/promises');
+
+div.launcher = exports;
+let pvt = {};
+
+pvt.isOpen = false;
+
+Object.defineProperty(exports, 'isOpen', {
+  get: () => pvt.isOpen,
+
+  set: val => {
+    pvt.isOpen = val;
+
+    (async () => {
+      if (!val) {
+        return;
+      }
+
+      await promises.nextFrame();
+      exports.findSearchFormInputEl().focus();
+
+      await promises.clickOutside(exports.findEl());
+      exports.close();
+    })()
+    .catch(err => console.error(err));
+  },
+});
+
+exports.findEl = () => jr.findFirst('.launcher');
+
+exports.findSearchFormInputEl =
+  () => jr.findFirst('.launcher-searchFormInput');
+
+exports.open = () => {
+  exports.isOpen = true;
+  jr.update();
+};
+
+exports.close = () => {
+  exports.isOpen = false;
+  jr.update();
+};
+
+exports.toggle = () => {
+  exports.isOpen = !exports.isOpen;
+  jr.update();
+};
+
+},{"./helper/promises":286}],288:[function(require,module,exports){
 require('junior-ui/browserGlobal');
 
 window.div = exports;
@@ -47935,6 +48019,7 @@ require('./scriptManager');
 
 // UI modules.
 require('./desktopWorkspaces');
+require('./launcher');
 require('./windowManager');
 
 (async () => {
@@ -47954,7 +48039,7 @@ require('./windowManager');
 })()
 .catch(err => console.error(err));
 
-},{"./apps":277,"./desktopWorkspaces":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./scriptManager":287,"./windowManager":288,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":245}],287:[function(require,module,exports){
+},{"./apps":277,"./desktopWorkspaces":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./windowManager":290,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":245}],289:[function(require,module,exports){
 div.scriptManager = exports;
 
 exports.tryGetBySrc = src => {
@@ -48008,7 +48093,7 @@ exports.loadStylesheet = async href => {
   return link;
 };
 
-},{}],288:[function(require,module,exports){
+},{}],290:[function(require,module,exports){
 div.windowManager = module.exports = exports = {
   defaultFloatingWidth: 600,
   defaultFloatingHeight: 400,
@@ -48156,4 +48241,4 @@ document.addEventListener('mousedown', ev => {
 
 },{"resizable":233}],"browserify-fs":[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}]},{},[286]);
+},{"dup":27}]},{},[288]);
