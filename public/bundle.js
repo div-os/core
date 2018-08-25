@@ -48011,6 +48011,12 @@ exports.results = [
     appPath: 'browser/apps/helloSvg',
     appArgs: ['World'],
   },
+
+  {
+    name: 'Metal Web Browser',
+    iconSrc: 'apps/metal/icon.svg',
+    appPath: 'browser/apps/metal',
+  },
 ];
 
 exports.makeActive = result => {
@@ -48084,7 +48090,11 @@ require('./windowManager');
 require('./workspaceManager');
 
 (async () => {
-  for (let name of ['files', 'helloSvg']) {
+  for (let name of [
+    'files',
+    'helloSvg',
+    'metal',
+  ]) {
     try {
       let path = `apps/${name}/${name}.zip`;
 

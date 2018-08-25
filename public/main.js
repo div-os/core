@@ -47,7 +47,11 @@ require('./windowManager');
 require('./workspaceManager');
 
 (async () => {
-  for (let name of ['files', 'helloSvg']) {
+  for (let name of [
+    'files',
+    'helloSvg',
+    'metal',
+  ]) {
     try {
       let path = `apps/${name}/${name}.zip`;
 

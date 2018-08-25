@@ -82,6 +82,12 @@ exports.results = [
     appPath: 'browser/apps/helloSvg',
     appArgs: ['World'],
   },
+
+  {
+    name: 'Metal Web Browser',
+    iconSrc: 'apps/metal/icon.svg',
+    appPath: 'browser/apps/metal',
+  },
 ];
 
 exports.makeActive = result => {
