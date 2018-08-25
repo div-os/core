@@ -61,7 +61,7 @@
         );
 
         iconEl.classList.add(
-          `filesApp_dirEntry-icon--${f.split('.')[1]}`,
+          `filesApp_dirEntry-icon--{{f.split('.')[1]}}`,
         );
 
         let nameEl = entryEl.jr.findFirst(

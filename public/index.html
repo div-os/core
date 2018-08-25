@@ -186,9 +186,9 @@
         Applications
       </button>
 
-      <div jr-class="launcher ${
+      <div jr-class="launcher {{
         div.launcher.isOpen ? 'launcher--open' : ''
-      }">
+      }}">
         <div class="launcher-searchFormGroup">
           <i class="launcher-searchFormIcon"></i>
 
@@ -211,9 +211,9 @@
             jr-list="for result of div.launcher.results"
           >
             <a
-              jr-class="launcher-result nav-group-item ${
+              jr-class="launcher-result nav-group-item {{
                 result.isActive ? 'active' : ''
-              }"
+              }}"
 
               jr-on-mouseenter="
                 div.launcher.makeActive(result)
