@@ -49,7 +49,7 @@ require('./workspaceManager');
 (async () => {
   for (let name of ['files', 'helloSvg']) {
     try {
-      let path = `apps/samples/${name}/${name}.zip`;
+      let path = `apps/${name}/${name}.zip`;
 
       console.warn(`Fetching and installing ${path}...`);
       await div.apps.fetchAndInstall(path);

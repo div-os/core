@@ -72,13 +72,13 @@ exports.toggle = () => {
 exports.results = [
   {
     name: 'Files',
-    iconSrc: 'apps/samples/files/icon.svg',
+    iconSrc: 'apps/files/icon.svg',
     appPath: 'browser/apps/files',
   },
 
   {
     name: 'Hello SVG',
-    iconSrc: 'apps/samples/helloSvg/icon.svg',
+    iconSrc: 'apps/helloSvg/icon.svg',
     appPath: 'browser/apps/helloSvg',
     appArgs: ['World'],
   },
