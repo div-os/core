@@ -51,9 +51,9 @@
                   <div jr-class="
                     filesApp_dirEntry-icon
 
-                    filesApp_dirEntry-icon--\${
+                    filesApp_dirEntry-icon--{{
                       dirEntry.name.split('.')[1]
-                    }
+                    }}
                   "></div>
 
                   <span
