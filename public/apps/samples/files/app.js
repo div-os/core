@@ -11,6 +11,15 @@
   }
 
   class FilesApp {
+    constructor() {
+      this.dir = {
+        entries: [
+          { name: 'hello.txt' },
+          { name: 'world.jpg' },
+        ],
+      };
+    }
+
     async launch(...args) {
       await div.scriptManager.loadStylesheet(
         `${appCtrl.appPath}/icons.css`,
@@ -25,51 +34,38 @@
         title: 'Files',
       }));
 
-      let contentEl = jr(document.createElement('div'));
-      wnd.appendChild(contentEl);
+      wnd.jr.setScope({ filesApp: this });
 
-      contentEl.classList.add('window-content');
+      wnd.appendChild(jr.createElement(`
+        <div class="window-content">
+          <div class="pane-group">
+            <div class="pane-sm sidebar padded-more">
+            </div>
 
-      contentEl.innerHTML = `
-        <div class="pane-group">
-          <div class="pane-sm sidebar padded-more">
-          </div>
+            <div class="pane">
+              <div
+                class="filesApp_dirBrowser"
+                jr-list="for dirEntry of filesApp.dir.entries"
+              >
+                <button class="filesApp_dirEntry">
+                  <div jr-class="
+                    filesApp_dirEntry-icon
 
-          <div class="pane">
-            <div class="filesApp_dirBrowser"></div>
+                    filesApp_dirEntry-icon--\${
+                      dirEntry.name.split('.')[1]
+                    }
+                  "></div>
+
+                  <span
+                    class="filesApp_dirEntry-name"
+                    jr-textcontent.bind="dirEntry.name"
+                  ></span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      `;
-
-      let dirBrowserEl = contentEl.jr.findFirst(
-        '.filesApp_dirBrowser',
-      );
-
-      for (let f of ['example.txt', 'monika.jpg']) {
-        let entryEl = jr(document.createElement('button'));
-        dirBrowserEl.appendChild(entryEl);
-
-        entryEl.classList.add('filesApp_dirEntry');
-
-        entryEl.innerHTML = `
-          <div class=" filesApp_dirEntry-icon"></div>
-          <span class="filesApp_dirEntry-name"></span>
-        `;
-
-        let iconEl = entryEl.jr.findFirst(
-          '.filesApp_dirEntry-icon',
-        );
-
-        iconEl.classList.add(
-          `filesApp_dirEntry-icon--{{f.split('.')[1]}}`,
-        );
-
-        let nameEl = entryEl.jr.findFirst(
-          '.filesApp_dirEntry-name',
-        );
-
-        nameEl.textContent = f;
-      }
+      `));
     }
   }
 })();
