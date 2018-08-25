@@ -73,13 +73,13 @@ exports.results = [
   {
     name: 'Files',
     iconSrc: 'apps/samples/files/icon.svg',
-    appPath: 'apps/samples/files',
+    appPath: 'browser/apps/files',
   },
 
   {
     name: 'Hello SVG',
     iconSrc: 'apps/samples/helloSvg/icon.svg',
-    appPath: 'apps/samples/helloSvg',
+    appPath: 'browser/apps/helloSvg',
     appArgs: ['World'],
   },
 ];

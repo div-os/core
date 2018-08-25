@@ -48002,13 +48002,13 @@ exports.results = [
   {
     name: 'Files',
     iconSrc: 'apps/samples/files/icon.svg',
-    appPath: 'apps/samples/files',
+    appPath: 'browser/apps/files',
   },
 
   {
     name: 'Hello SVG',
     iconSrc: 'apps/samples/helloSvg/icon.svg',
-    appPath: 'apps/samples/helloSvg',
+    appPath: 'browser/apps/helloSvg',
     appArgs: ['World'],
   },
 ];
@@ -48040,8 +48040,25 @@ require('junior-ui/browserGlobal');
 window.div = exports;
 
 (async () => {
-  div.swReg = await navigator.serviceWorker
+  let swReg = await navigator.serviceWorker
     .register('sw-bundle.js');
+
+  let pongRes = await fetch('/sw-ping');
+
+  if (!pongRes.ok || await pongRes.text() !== 'Pong') {
+    alert(
+      `The ServiceWorker is not responding. Please ` +
+      `soft-refresh the page.`,
+    );
+
+    div.panic = true;
+    jr.update();
+
+    return;
+  }
+
+  div.swReg = swReg;
+  jr.update();
 })()
 .catch(err => console.error(err));
 

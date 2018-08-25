@@ -19,6 +19,26 @@
     margin: 0;
   }
 
+  .desktop {
+    height: 100%;
+  }
+
+  .desktop--panic {
+    filter: blur(2px);
+    transform: scale(1.1);
+  }
+
+  .desktop--panic:before {
+    content: '';
+    z-index: 99999;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
   .desktopBg {
     position: fixed;
     left: 0;
@@ -170,102 +190,107 @@
   }
 </style>
 
-<div class="desktopBg"></div>
-
-<div style="
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+<div jr-class="
+  desktop
+  {{div.panic ? 'desktop--panic' : ''}}
 ">
-  <div class="desktopMenu">
-    <div class="desktopMenu-leftBox">
-      <button
-        class="desktopMenu-launcherBtn"
-        jr-on-click="div.launcher.open()"
-      >
-        Applications
-      </button>
+  <div class="desktopBg"></div>
 
-      <div jr-class="launcher {{
-        div.launcher.isOpen ? 'launcher--open' : ''
-      }}">
-        <div class="launcher-searchFormGroup">
-          <i class="launcher-searchFormIcon"></i>
+  <div style="
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  ">
+    <div class="desktopMenu">
+      <div class="desktopMenu-leftBox">
+        <button
+          class="desktopMenu-launcherBtn"
+          jr-on-click="div.launcher.open()"
+        >
+          Applications
+        </button>
 
-          <input
-            class="launcher-searchFormInput form-control"
-            jr-value.bind="div.launcher.searchTerms"
-          >
-        </div>
+        <div jr-class="launcher {{
+          div.launcher.isOpen ? 'launcher--open' : ''
+        }}">
+          <div class="launcher-searchFormGroup">
+            <i class="launcher-searchFormIcon"></i>
 
-        <div class="launcher-resultGroup nav-group">
-          <div class="
-            launcher-resultGroupTitle
-            nav-group-title
-          ">
-            Applications
+            <input
+              class="launcher-searchFormInput form-control"
+              jr-value.bind="div.launcher.searchTerms"
+            >
           </div>
 
-          <div
-            class="launcher-results"
-            jr-list="for result of div.launcher.results"
-          >
-            <a
-              jr-class="launcher-result nav-group-item {{
-                result.isActive ? 'active' : ''
-              }}"
+          <div class="launcher-resultGroup nav-group">
+            <div class="
+              launcher-resultGroupTitle
+              nav-group-title
+            ">
+              Applications
+            </div>
 
-              jr-on-mouseenter="
-                div.launcher.makeActive(result)
-              "
-
-              jr-on-click="
-                div.launcher.selectResult(result)
-              "
+            <div
+              class="launcher-results"
+              jr-list="for result of div.launcher.results"
             >
-              <img
-                class="launcher-resultIcon"
-                jr-src.bind="result.iconSrc"
-              >
+              <a
+                jr-class="launcher-result nav-group-item {{
+                  result.isActive ? 'active' : ''
+                }}"
 
-              <span
-                class="launcher-resultName"
-                jr-textcontent.bind="result.name"
-              ></span>
-            </a>
+                jr-on-mouseenter="
+                  div.launcher.makeActive(result)
+                "
+
+                jr-on-click="
+                  div.launcher.selectResult(result)
+                "
+              >
+                <img
+                  class="launcher-resultIcon"
+                  jr-src.bind="result.iconSrc"
+                >
+
+                <span
+                  class="launcher-resultName"
+                  jr-textcontent.bind="result.name"
+                ></span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
+
+      <div class="desktopMenu-centerBox">
+        Sun 03:56
+      </div>
+
+      <div class="desktopMenu-rightBox">
+        <button
+          class="desktopMenu-iconBtn divIcon-volumeMid"
+          aria-label="Volume: Medium"
+        ></button>
+
+        <button
+          class="desktopMenu-iconBtn divIcon-chargingBattery"
+          aria-label="Battery: Charging"
+        ></button>
+
+        <button
+          class="desktopMenu-iconBtn divIcon-bell"
+          aria-label="Notifications"
+        ></button>
+
+        <button
+          class="desktopMenu-iconBtn divIcon-power"
+          aria-label="Power"
+        ></button>
+      </div>
     </div>
 
-    <div class="desktopMenu-centerBox">
-      Sun 03:56
-    </div>
-
-    <div class="desktopMenu-rightBox">
-      <button
-        class="desktopMenu-iconBtn divIcon-volumeMid"
-        aria-label="Volume: Medium"
-      ></button>
-
-      <button
-        class="desktopMenu-iconBtn divIcon-chargingBattery"
-        aria-label="Battery: Charging"
-      ></button>
-
-      <button
-        class="desktopMenu-iconBtn divIcon-bell"
-        aria-label="Notifications"
-      ></button>
-
-      <button
-        class="desktopMenu-iconBtn divIcon-power"
-        aria-label="Power"
-      ></button>
-    </div>
+    <div class="windowManager"></div>
   </div>
-
-  <div class="windowManager"></div>
 </div>
 
 <script>

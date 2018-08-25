@@ -4,7 +4,18 @@ let extName = require('ext-name');
 let fileType = require('file-type');
 let lf = require('localforage');
 
-toolbox.router.get('/browser/(.*)', async (req, values) => {
+self.addEventListener('activate', ev => {
+  ev.waitUntil(self.clients.claim());
+});
+
+let pingHandler = () => {
+  return new Response('Pong');
+};
+
+toolbox.router.get('sw-ping', pingHandler);
+toolbox.router.get('/sw-ping', pingHandler);
+
+let lfHandler = async (req, values) => {
   let filePath = values[0];
   let e = await lf.getItem(`vinyl:/${filePath}`);
 
@@ -26,4 +37,7 @@ toolbox.router.get('/browser/(.*)', async (req, values) => {
       'Content-Type': mimeFromBuf || mimeFromExt,
     },
   });
-});
+};
+
+toolbox.router.get('browser/(.*)', lfHandler);
+toolbox.router.get('/browser/(.*)', lfHandler);
