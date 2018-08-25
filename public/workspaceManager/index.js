@@ -1,4 +1,4 @@
-div.desktopWorkspaces = module.exports = exports = {
+div.workspaceManager = module.exports = exports = {
   all: [
     { id: 'web', icon: 'world', highlight: true },
     { id: 'term', icon: 'term', highlight: true },

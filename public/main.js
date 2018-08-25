@@ -25,9 +25,9 @@ require('./helper/oneFromStream');
 require('./scriptManager');
 
 // UI modules.
-require('./desktopWorkspaces');
 require('./launcher');
 require('./windowManager');
+require('./workspaceManager');
 
 (async () => {
   for (let name of ['files', 'helloSvg']) {

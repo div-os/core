@@ -47603,46 +47603,6 @@ exports.reloadAndLaunch = async (appPath, ...appArgs) => {
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":33,"through2":245,"vinyl":269}],278:[function(require,module,exports){
-div.desktopWorkspaces = module.exports = exports = {
-  all: [
-    { id: 'web', icon: 'world', highlight: true },
-    { id: 'term', icon: 'term', highlight: true },
-    { id: 'game', icon: 'game' },
-  ],
-
-  activeId: 'web',
-
-  isActive(w) {
-    return this.activeId === w.id;
-  },
-
-  switchTo(w) {
-    this.activeId = w.id;
-    this.update();
-  },
-
-  update() {
-    let { activeId } = this;
-
-    for (let wnd of jr.find('[div-workspace]')) {
-      wnd.classList.toggle(
-        'workspaceItem--hidden',
-        wnd.getAttribute('div-workspace') !== activeId,
-      );
-    }
-  },
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-  div.windowManager.decorators.push((wnd, opt) => {
-    wnd.setAttribute(
-      'div-workspace',
-      opt.workspaceId || exports.activeId,
-    );
-  });
-});
-
-},{}],279:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let qs = require('qs');
 let through2 = require('through2');
@@ -47751,7 +47711,7 @@ async function getContentsStream(filePath) {
   return ret;
 }
 
-},{"qs":214,"through2":245,"vinyl":269}],280:[function(require,module,exports){
+},{"qs":214,"through2":245,"vinyl":269}],279:[function(require,module,exports){
 (function (Buffer){
 let Vinyl = require('vinyl');
 let base64 = require('base64-js');
@@ -47814,7 +47774,7 @@ exports.storeFile = async (dirPath, file) => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../helper/fromFile":284,"base64-js":22,"buffer":33,"localforage":156,"minimatch":157,"path":207,"through2":245,"vinyl":269}],281:[function(require,module,exports){
+},{"../helper/fromFile":283,"base64-js":22,"buffer":33,"localforage":156,"minimatch":157,"path":207,"through2":245,"vinyl":269}],280:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let through2 = require('through2');
 
@@ -47853,10 +47813,10 @@ exports.src = (glob, opt) => {
   return adapter.src(glob.slice(mountPoint.length), opt);
 };
 
-},{"./backendAdapter":279,"./browserAdapter":280,"gulp-debug":88,"gulp-unzip":89,"gulp-zip":113,"through2":245,"vinyl":269}],282:[function(require,module,exports){
+},{"./backendAdapter":278,"./browserAdapter":279,"gulp-debug":88,"gulp-unzip":89,"gulp-zip":113,"through2":245,"vinyl":269}],281:[function(require,module,exports){
 module.exports = div.allFromStream = require('stream-to-array');
 
-},{"stream-to-array":241}],283:[function(require,module,exports){
+},{"stream-to-array":241}],282:[function(require,module,exports){
 (function (Buffer){
 let allFromStream = require('./allFromStream');
 
@@ -47879,7 +47839,7 @@ module.exports = div.bufFromStream = async stream => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./allFromStream":282,"buffer":33}],284:[function(require,module,exports){
+},{"./allFromStream":281,"buffer":33}],283:[function(require,module,exports){
 let bufFromStream = require('./bufFromStream');
 
 module.exports = div.fromFile = async (file, enc) => {
@@ -47900,13 +47860,13 @@ function decode(buf, enc) {
   return new TextDecoder(enc).decode(buf);
 }
 
-},{"./bufFromStream":283}],285:[function(require,module,exports){
+},{"./bufFromStream":282}],284:[function(require,module,exports){
 let allFromStream = require('./allFromStream');
 
 module.exports = div.oneFromStream =
   stream => allFromStream(stream).then(xs => xs[0]);
 
-},{"./allFromStream":282}],286:[function(require,module,exports){
+},{"./allFromStream":281}],285:[function(require,module,exports){
 exports.clickOutside = async el => {
   let ev;
 
@@ -47941,7 +47901,7 @@ exports.nextFrame = () => new Promise(resolve => {
   requestAnimationFrame(resolve);
 });
 
-},{}],287:[function(require,module,exports){
+},{}],286:[function(require,module,exports){
 let promises = require('./helper/promises');
 
 div.launcher = exports;
@@ -48049,7 +48009,7 @@ exports.selectResult = async result => {
   }
 };
 
-},{"./helper/promises":286}],288:[function(require,module,exports){
+},{"./helper/promises":285}],287:[function(require,module,exports){
 require('junior-ui/browserGlobal');
 
 window.div = exports;
@@ -48077,9 +48037,9 @@ require('./helper/oneFromStream');
 require('./scriptManager');
 
 // UI modules.
-require('./desktopWorkspaces');
 require('./launcher');
 require('./windowManager');
+require('./workspaceManager');
 
 (async () => {
   for (let name of ['files', 'helloSvg']) {
@@ -48098,7 +48058,7 @@ require('./windowManager');
 })()
 .catch(err => console.error(err));
 
-},{"./apps":277,"./desktopWorkspaces":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./windowManager":290,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":245}],289:[function(require,module,exports){
+},{"./apps":277,"./fs":280,"./helper/allFromStream":281,"./helper/bufFromStream":282,"./helper/fromFile":283,"./helper/oneFromStream":284,"./launcher":286,"./scriptManager":288,"./windowManager":289,"./workspaceManager":290,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":245}],288:[function(require,module,exports){
 div.scriptManager = exports;
 
 exports.tryGetBySrc = src => {
@@ -48152,7 +48112,7 @@ exports.loadStylesheet = async href => {
   return link;
 };
 
-},{}],290:[function(require,module,exports){
+},{}],289:[function(require,module,exports){
 div.windowManager = module.exports = exports = {
   defaultFloatingWidth: 600,
   defaultFloatingHeight: 400,
@@ -48298,6 +48258,46 @@ document.addEventListener('mousedown', ev => {
   }
 });
 
-},{"resizable":233}],"browserify-fs":[function(require,module,exports){
+},{"resizable":233}],290:[function(require,module,exports){
+div.workspaceManager = module.exports = exports = {
+  all: [
+    { id: 'web', icon: 'world', highlight: true },
+    { id: 'term', icon: 'term', highlight: true },
+    { id: 'game', icon: 'game' },
+  ],
+
+  activeId: 'web',
+
+  isActive(w) {
+    return this.activeId === w.id;
+  },
+
+  switchTo(w) {
+    this.activeId = w.id;
+    this.update();
+  },
+
+  update() {
+    let { activeId } = this;
+
+    for (let wnd of jr.find('[div-workspace]')) {
+      wnd.classList.toggle(
+        'workspaceItem--hidden',
+        wnd.getAttribute('div-workspace') !== activeId,
+      );
+    }
+  },
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  div.windowManager.decorators.push((wnd, opt) => {
+    wnd.setAttribute(
+      'div-workspace',
+      opt.workspaceId || exports.activeId,
+    );
+  });
+});
+
+},{}],"browserify-fs":[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}]},{},[288]);
+},{"dup":27}]},{},[287]);
