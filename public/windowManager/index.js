@@ -13,11 +13,21 @@ div.windowManager = module.exports = exports = {
       opt.floating = true;
     }
 
-    let wnd = document.createElement('div');
+    let wnd = jr.createElement(`
+      <div
+        class="window"
+        style="z-index: ${++exports.lastZIndex}"
+      >
+      </div>
+    `);
+
+    wnd.jr.setScope({ wnd });
 
     wnd.div = {};
 
     wnd.div.wm = {
+      title: opt.title || '',
+
       args: opt.args,
 
       floatingWidth: opt.floatingWidth ||
@@ -25,10 +35,16 @@ div.windowManager = module.exports = exports = {
 
       floatingHeight: opt.floatingHeight ||
         exports.defaultFloatingHeight,
-    };
 
-    wnd.classList.add('window');
-    wnd.style.zIndex = ++exports.lastZIndex;
+      close() {
+        wnd.remove();
+      },
+
+      toggleZoom() {
+        wnd.classList.toggle('window--zoomed');
+        wnd.classList.toggle('window--floating');
+      },
+    };
 
     if (opt.floating) {
       wnd.classList.add('window--floating');
@@ -39,49 +55,75 @@ div.windowManager = module.exports = exports = {
       wnd.style.height = `${wnd.div.wm.floatingHeight}px`;
     }
 
-    let headerEl = document.createElement('div');
+    if (opt.stdHeader === undefined || opt.stdHeader) {
+      let headerEl = jr.createElement(`
+        <div class="
+          window-stdHeader
+          window-header
+          window-handle
+        ">
+          <div class="window-stdHeaderLeftBox">
+            <button
+              class="
+                window-stdHeaderBtn
+                window-stdHeaderBtn--close
+                icon
+                icon-cancel
+              "
 
-    for (let action of ['close', 'zoom']) {
-      let btn = document.createElement('button');
+              jr-on-click="wnd.div.wm.close()"
+            ></button>
 
-      btn.classList.add(
-        'window-stdHeaderBtn',
-        `window-stdHeaderBtn--${action}`,
+            <div class="window-stdHeaderContentBox">
+            </div>
+          </div>
 
-        'icon', {
-          close: 'icon-cancel',
-          zoom: 'icon-resize-full',
-        }[action],
-      );
+          <div class="window-stdHeaderRightBox">
+            <button
+              class="
+                window-stdHeaderBtn
+                window-stdHeaderBtn--zoom
+                icon
+                icon-resize-full
+              "
 
-      btn.addEventListener('click', () => {
-        switch (action) {
-          case 'close':
-            wnd.remove();
-            break;
+              jr-on-click="wnd.div.wm.toggleZoom()"
+            ></button>
+          </div>
+        </div>
+      `);
 
-          case 'zoom':
-            wnd.classList.toggle('window--floating');
-            wnd.classList.toggle('window--zoomed');
-            break;
-        }
-      });
+      wnd.appendChild(headerEl);
 
-      headerEl.appendChild(btn);
+      wnd.div.wm.stdHeader = {
+        getEl() {
+          return wnd.jr.findFirst('.window-stdHeader');
+        },
+
+        getContentBoxEl() {
+          return wnd.jr.findFirst(
+            '.window-stdHeaderContentBox',
+          );
+        },
+
+        getTitleEl() {
+          return wnd.jr.findFirst('.window-stdTitle');
+        },
+      };
+      console.log(wnd.div.wm.stdHeader.getEl());
+
+      if (opt.stdTitle === undefined || opt.stdTitle) {
+        let titleEl = jr.createElement(`
+          <div
+            class="window-stdTitle window-title"
+            jr-textcontent.bind="wnd.div.wm.title"
+          ></div>
+        `);
+
+        wnd.div.wm.stdHeader.getContentBoxEl()
+          .appendChild(titleEl);
+      }
     }
-
-    if (opt.title) {
-      let titleEl = document.createElement('div');
-
-      headerEl.classList.add('window-header', 'window-handle');
-
-      titleEl.classList.add('window-title');
-      titleEl.textContent = opt.title;
-
-      headerEl.appendChild(titleEl);
-    }
-
-    wnd.appendChild(headerEl);
 
     if (opt.iframeSrc) {
       let iframeEl = document.createElement('iframe');

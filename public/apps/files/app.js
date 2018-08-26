@@ -34,7 +34,7 @@
         title: 'Files',
       }));
 
-      wnd.jr.setScope({ filesApp: this });
+      wnd.jr.scope.filesApp = this;
 
       wnd.appendChild(jr.createElement(`
         <div class="window-content">

@@ -33,14 +33,23 @@
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
 }
 
-.window-header {
+.window-stdHeader {
+  display: flex;
+  align-items: stretch;
+}
+
+.window-stdHeaderLeftBox,
+.window-stdHeaderRightBox {
   display: flex;
   align-items: center;
 }
 
+.window-stdHeaderLeftBox {
+  flex-grow: 1;
+}
+
 .window-stdHeaderBtn {
   transform: translateY(1px);
-  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -53,11 +62,21 @@
 }
 
 .window-stdHeaderBtn--close {
-  left: 14px;
+  margin-left: 14px;
+  margin-right: 8px;
 }
 
 .window-stdHeaderBtn--zoom {
-  right: 14px;
+  margin-left: 8px;
+  margin-right: 14px;
+}
+
+.window-stdHeaderContentBox {
+  flex-grow: 1;
+}
+
+.window-stdTitle {
+  min-height: 19px;
 }
 
 .window-iframe {

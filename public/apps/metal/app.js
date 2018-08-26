@@ -48,7 +48,7 @@
 
       this.iframeEl = wnd.jr.findFirst('iframe');
 
-      wnd.jr.setScope({ metalApp: this });
+      wnd.jr.scope.metalApp = this;
 
       window.addEventListener('message', ev => {
         let { data } = ev;
