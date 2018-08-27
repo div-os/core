@@ -1,17 +1,26 @@
-.filesApp_dirBrowser {
+.filesApp_headerActions {
   display: flex;
-  flex-wrap: wrap;
 }
 
-.filesApp_dirEntry {
+.filesApp_headerActions > :not(:first-child) {
+  margin-left: 8px;
+}
+
+.filesApp_dirBrowser--grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 7px;
+}
+
+.filesApp_dirEntry--grid {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 5px;
+  margin: 7px;
   outline: none;
   border: 1px dashed transparent;
-  padding: 15px;
+  padding: 12px 16px 6px;
   background-color: transparent;
 }
 
