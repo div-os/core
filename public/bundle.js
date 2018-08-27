@@ -25414,7 +25414,8 @@ jr.updateListEl = el => {
     listAttr.value = el.getAttribute('jr-list');
 
   let parsedListExpr =
-    /^for ([^ ]+) of (.+)$/.exec(listExpr);
+    /^[ \t\r\n]*for ([^ \t\r\n]+) of ([^ \t\r\n]+)[ \t\r\n]*$/
+    .exec(listExpr);
 
   if (!parsedListExpr) {
     console.error(`[jr] Invalid jr-list expression in`, el);
