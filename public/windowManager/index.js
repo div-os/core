@@ -110,7 +110,6 @@ div.windowManager = module.exports = exports = {
           return wnd.jr.findFirst('.window-stdTitle');
         },
       };
-      console.log(wnd.div.wm.stdHeader.getEl());
 
       if (opt.stdTitle === undefined || opt.stdTitle) {
         let titleEl = jr.createElement(`
