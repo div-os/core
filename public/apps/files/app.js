@@ -12,12 +12,7 @@
 
   class FilesApp {
     constructor() {
-      this.dir = {
-        entries: [
-          { name: 'hello.txt' },
-          { name: 'world.jpg' },
-        ],
-      };
+      this.history = [];
     }
 
     async launch(...args) {
@@ -31,6 +26,93 @@
 
       this.wnd = jr(this.createWindow());
       this.wnd.jr.scope.filesApp = this;
+
+      this.browsePath('/backend/home/n2liquid')
+        .catch(err => console.error(err));
+    }
+
+    async browsePath(path) {
+      let prevDir = this.dir;
+
+      this.dir = {
+        i: !prevDir ? 0 : prevDir.i + 1,
+
+        path,
+        entries: [],
+      };
+
+      this.history.splice(
+        this.dir.i,
+        this.history.length,
+        this.dir,
+      );
+
+      await new Promise(resolve => {
+        this.dir.pipeline = div.fs.src('*', {
+          cwd: path,
+          stat: true,
+        })
+        .on('data', f => {
+          this.dir.entries.push(f);
+          jr.update();
+        })
+        .on('end', resolve);
+      });
+    }
+
+    browseHistory(i) {
+      if (!this.dir) {
+        return;
+      }
+
+      let nextDir = this.history[this.dir.i + i];
+
+      if (nextDir) {
+        this.dir = nextDir;
+      }
+    }
+
+    goBack() {
+      this.browseHistory(-1);
+    }
+
+    goForward() {
+      this.browseHistory(1);
+    }
+
+    getType(f) {
+      if (f.stat.isDirectory()) {
+        return 'dir';
+      }
+
+      let parts = f.basename.split('.');
+
+      return parts.length > 1
+        ? parts[parts.length - 1]
+        : 'unknown';
+    }
+
+    async open(f) {
+      if (f.stat.isDirectory()) {
+        await this.browsePath(f.path);
+        return;
+      }
+
+      if ([
+        '.gif',
+        '.html',
+        '.md',
+        '.pdf',
+        '.png',
+        '.svg',
+        '.webm',
+        '.webp',
+      ].some(x => f.basename.endsWith(x))) {
+        div.windowManager.create({
+          title: f.basename,
+          iframeSrc: f.path,
+        });
+      }
     }
 
     createWindow() {
@@ -46,11 +128,17 @@
       contentBoxEl.innerHTML = `
         <div class="filesApp_headerActions">
           <div class="btn-group">
-            <button class="btn btn-default">
+            <button
+              class="btn btn-default"
+              jr-on-click="filesApp.goBack()"
+            >
               <i class="icon icon-left"></i>
             </button>
 
-            <button class="btn btn-default">
+            <button
+              class="btn btn-default"
+              jr-on-click="filesApp.goForward()"
+            >
               <i class="icon icon-right"></i>
             </button>
           </div>
@@ -106,30 +194,36 @@
 
             <div class="pane">
               <div
-                class="
-                  filesApp_dirBrowser
-                  filesApp_dirBrowser--grid
-                "
+                jr-if="filesApp.dir"
 
                 jr-list="
                   for dirEntry of filesApp.dir.entries
                 "
+
+                class="
+                  filesApp_dirBrowser
+                  filesApp_dirBrowser--grid
+                "
               >
-                <button class="
-                  filesApp_dirEntry
-                  filesApp_dirEntry--grid
-                ">
+                <button
+                  class="
+                    filesApp_dirEntry
+                    filesApp_dirEntry--grid
+                  "
+
+                  jr-on-click="filesApp.open(dirEntry)"
+                >
                   <div jr-class="
                     filesApp_dirEntry-icon
 
                     filesApp_dirEntry-icon--{{
-                      dirEntry.name.split('.')[1]
+                      filesApp.getType(dirEntry)
                     }}
                   "></div>
 
                   <span
                     class="filesApp_dirEntry-name"
-                    jr-textcontent.bind="dirEntry.name"
+                    jr-textcontent.bind="dirEntry.basename"
                   ></span>
                 </button>
               </div>

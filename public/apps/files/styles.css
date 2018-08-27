@@ -8,6 +8,7 @@
 
 .filesApp_dirBrowser--grid {
   display: flex;
+  align-items: flex-start;
   flex-wrap: wrap;
   padding: 7px;
 }
@@ -17,6 +18,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 85px;
   margin: 7px;
   outline: none;
   border: 1px dashed transparent;
@@ -29,5 +31,16 @@
 }
 
 .filesApp_dirEntry-name {
+  max-width: 80px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   margin-top: 5px;
+}
+
+.filesApp_dirEntry:focus .filesApp_dirEntry-name {
+  overflow: initial;
+  text-overflow: initial;
+  white-space: initial;
 }
