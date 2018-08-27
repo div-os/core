@@ -73,20 +73,20 @@ exports.results = [
   {
     name: 'Files',
     iconSrc: 'apps/files/icon.svg',
-    appPath: 'browser/apps/files',
+    appPath: 'apps/files',
   },
 
   {
     name: 'Hello SVG',
     iconSrc: 'apps/helloSvg/icon.svg',
-    appPath: 'browser/apps/helloSvg',
+    appPath: 'apps/helloSvg',
     appArgs: ['World'],
   },
 
   {
     name: 'Metal Web Browser',
     iconSrc: 'apps/metal/icon.svg',
-    appPath: 'browser/apps/metal',
+    appPath: 'apps/metal',
   },
 ];
 
