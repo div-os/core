@@ -9,7 +9,7 @@ exports.src = (glob, opt) => {
 
   (async () => {
     let res = await fetch(
-      `/api/glob${glob}?${qs.stringify(opt || {})}`,
+      `/api/glob?pattern=${glob}&${qs.stringify(opt || {})}`,
     );
 
     if (!res.ok) {
@@ -43,6 +43,16 @@ exports.src = (glob, opt) => {
 
         return originalRead.call(contents, ...args);
       };
+
+      if (fileProps.stat) {
+        let { stat } = fileProps;
+
+        for (let k of [
+          'isDirectory',
+        ]) {
+          stat[k] = () => stat[`_${k}`];
+        }
+      }
 
       fileProps.contents = contents;
       ret.push(new Vinyl(fileProps));

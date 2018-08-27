@@ -47640,7 +47640,7 @@ exports.src = (glob, opt) => {
 
   (async () => {
     let res = await fetch(
-      `/api/glob${glob}?${qs.stringify(opt || {})}`,
+      `/api/glob?pattern=${glob}&${qs.stringify(opt || {})}`,
     );
 
     if (!res.ok) {
@@ -47674,6 +47674,16 @@ exports.src = (glob, opt) => {
 
         return originalRead.call(contents, ...args);
       };
+
+      if (fileProps.stat) {
+        let { stat } = fileProps;
+
+        for (let k of [
+          'isDirectory',
+        ]) {
+          stat[k] = () => stat[`_${k}`];
+        }
+      }
 
       fileProps.contents = contents;
       ret.push(new Vinyl(fileProps));
@@ -47825,8 +47835,20 @@ exports.mountPointAdapters = {
 };
 
 exports.src = (glob, opt) => {
+  let cwd = (() => {
+    if (!opt.cwd) {
+      return '';
+    }
+
+    return opt.cwd.endsWith('/')
+      ? opt.cwd
+      : `${opt.cwd}/`;
+  })();
+
+  let fullGlob = `${cwd}${glob}`;
+
   let mountPoint = Object.keys(exports.mountPointAdapters)
-    .find(prefix => glob.startsWith(`${prefix}/`));
+    .find(prefix => fullGlob.startsWith(`${prefix}/`));
 
   if (!mountPoint) {
     let ret = through2();
@@ -47835,8 +47857,26 @@ exports.src = (glob, opt) => {
     return ret;
   }
 
+  if (cwd) {
+    opt = {
+      ...opt,
+      cwd: opt.cwd.slice(mountPoint.length),
+    };
+  }
+  else {
+    glob = glob.slice(mountPoint.length);
+  }
+
   let adapter = exports.mountPointAdapters[mountPoint];
-  return adapter.src(glob.slice(mountPoint.length), opt);
+
+  return adapter.src(glob, opt)
+    .pipe(through2.obj((d, enc, cb) => {
+      d.base = `${mountPoint}${d.base}`;
+      d.cwd = `${mountPoint}${d.cwd}`;
+      d.dirname = `${mountPoint}${d.dirname}`;
+
+      cb(null, d);
+    }));
 };
 
 },{"./backendAdapter":278,"./browserAdapter":279,"gulp-debug":88,"gulp-unzip":89,"gulp-zip":113,"through2":245,"vinyl":269}],281:[function(require,module,exports){

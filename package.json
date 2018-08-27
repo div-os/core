@@ -13,6 +13,7 @@
     "express": "^4.16.3",
     "ext-name": "^5.0.0",
     "file-type": "^9.0.0",
+    "fs-promise-native": "^1.0.0",
     "glob-stream": "^6.1.0",
     "gulp-debug": "^4.0.0",
     "gulp-unzip": "^1.0.0",
