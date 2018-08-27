@@ -29,12 +29,14 @@
         `${appCtrl.appPath}/styles.css`,
       );
 
-      let wnd = this.wnd = jr(div.windowManager.create({
-        args,
-        title: 'Files',
-      }));
+      this.wnd = jr(this.createWindow());
+      this.wnd.jr.scope.filesApp = this;
+    }
 
-      wnd.jr.scope.filesApp = this;
+    createWindow() {
+      let wnd = div.windowManager.create({
+        title: 'Files',
+      });
 
       wnd.classList.add('filesApp');
 
@@ -109,7 +111,9 @@
                   filesApp_dirBrowser--grid
                 "
 
-                jr-list="for dirEntry of filesApp.dir.entries"
+                jr-list="
+                  for dirEntry of filesApp.dir.entries
+                "
               >
                 <button class="
                   filesApp_dirEntry
@@ -133,6 +137,8 @@
           </div>
         </div>
       `));
+
+      return wnd;
     }
   }
 })();
