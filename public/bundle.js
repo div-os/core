@@ -48090,7 +48090,7 @@ window.div = exports;
   let swReg = await navigator.serviceWorker
     .register('sw-bundle.js');
 
-  let pongRes = await fetch('/sw-ping');
+  let pongRes = await fetch('sw-ping');
 
   if (!pongRes.ok || await pongRes.text() !== 'Pong') {
     alert(
