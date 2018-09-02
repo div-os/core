@@ -41,8 +41,8 @@
   border-radius: 5px;
 }
 
-.filesApp_dirEntry-icon {
-  position: relative;
+.filesApp_dirEntry:hover .filesApp_dirEntry-icon {
+  filter: contrast(110%);
 }
 
 .filesApp_dirEntry:focus .filesApp_dirEntry-icon:before {
