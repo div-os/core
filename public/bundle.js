@@ -47812,6 +47812,7 @@ exports.storeFile = async (dirPath, file) => {
 }).call(this,require("buffer").Buffer)
 },{"../helper/fromFile":283,"base64-js":22,"buffer":33,"localforage":156,"minimatch":157,"path":207,"through2":245,"vinyl":269}],280:[function(require,module,exports){
 let Vinyl = require('vinyl');
+let minimatch = require('minimatch');
 let through2 = require('through2');
 
 // FIXME: Where should this be coming from? Lack of it
@@ -47835,6 +47836,8 @@ exports.mountPointAdapters = {
 };
 
 exports.src = (glob, opt) => {
+  opt = opt || {};
+
   let cwd = (() => {
     if (!opt.cwd) {
       return '';
@@ -47846,40 +47849,90 @@ exports.src = (glob, opt) => {
   })();
 
   let fullGlob = `${cwd}${glob}`;
+  let globParts = fullGlob.split('/');
 
-  let mountPoint = Object.keys(exports.mountPointAdapters)
-    .find(prefix => fullGlob.startsWith(`${prefix}/`));
+  let globChunks = globParts.map(
+    (_, i) => globParts.slice(0, i + 1).join('/'),
+  );
 
-  if (!mountPoint) {
-    let ret = through2();
+  let mountPoints = Object.keys(exports.mountPointAdapters)
+    .filter(mountPoint => globChunks.some(
+      partialGlob => minimatch(mountPoint, partialGlob),
+    ));
+
+  let ret = through2.obj();
+
+  if (!mountPoints.length) {
     ret.end();
-
     return ret;
   }
 
-  if (cwd) {
-    opt = {
+  let doneCount = 0;
+
+  for (let mp of mountPoints) {
+    if (minimatch(mp, fullGlob)) {
+      let fileProps = { path: mp };
+
+      if (opt.stat) {
+        fileProps.stat = {
+          isDirectory: () => true,
+        };
+      }
+
+      ret.push(new Vinyl(fileProps));
+
+      continue;
+    }
+
+    let mpGlob = (() => {
+      // FIXME: Use a regular expression that checks for a
+      // slash or end-of-string as well after mp in glob.
+      if (!glob.startsWith(mp)) {
+        return glob;
+      }
+
+      return glob.slice(mp.length);
+    })();
+
+    let mpOpt = {
       ...opt,
-      cwd: opt.cwd.slice(mountPoint.length),
+
+      cwd: (() => {
+        // FIXME: Use a regular expression that checks for a
+        // slash or end-of-string as well after mp in cwd.
+        if (!cwd || !cwd.startsWith(mp)) {
+          return cwd;
+        }
+
+        return cwd.slice(mp.length);
+      })(),
     };
+
+    exports.mountPointAdapters[mp].src(mpGlob, mpOpt)
+      .on('error', err => {
+        ret.destroy(err);
+        // FIXME: Also close other adapter streams.
+      })
+      .on('data', f => {
+        f.base = `${mp}${f.base}`;
+        f.cwd = `${mp}${f.cwd}`;
+        f.dirname = `${mp}${f.dirname}`;
+
+        ret.push(f);
+      })
+      .on('end', () => {
+        ++doneCount;
+
+        if (doneCount >= mountPoints.length) {
+          ret.end();
+        }
+      });
   }
-  else {
-    glob = glob.slice(mountPoint.length);
-  }
 
-  let adapter = exports.mountPointAdapters[mountPoint];
-
-  return adapter.src(glob, opt)
-    .pipe(through2.obj((d, enc, cb) => {
-      d.base = `${mountPoint}${d.base}`;
-      d.cwd = `${mountPoint}${d.cwd}`;
-      d.dirname = `${mountPoint}${d.dirname}`;
-
-      cb(null, d);
-    }));
+  return ret;
 };
 
-},{"./backendAdapter":278,"./browserAdapter":279,"gulp-debug":88,"gulp-unzip":89,"gulp-zip":113,"through2":245,"vinyl":269}],281:[function(require,module,exports){
+},{"./backendAdapter":278,"./browserAdapter":279,"gulp-debug":88,"gulp-unzip":89,"gulp-zip":113,"minimatch":157,"through2":245,"vinyl":269}],281:[function(require,module,exports){
 module.exports = div.allFromStream = require('stream-to-array');
 
 },{"stream-to-array":241}],282:[function(require,module,exports){

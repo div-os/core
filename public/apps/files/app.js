@@ -27,7 +27,7 @@
       this.wnd = jr(this.createWindow());
       this.wnd.jr.scope.filesApp = this;
 
-      this.browsePath('/backend/home/n2liquid')
+      this.browsePath('/')
         .catch(err => console.error(err));
     }
 
