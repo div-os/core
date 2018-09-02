@@ -119,3 +119,12 @@ exports.storeFile = async (dirPath, file) => {
     contents: await fromFile(file),
   });
 };
+
+exports.rimraf = async dirPath => {
+  if (dirPath.endsWith('/')) {
+    dirPath = dirPath.slice(0, -1);
+  }
+
+  let keys = await exports.getKeys(`${dirPath}/**`);
+  await Promise.all(keys.map(k => lf.removeItem(k)));
+};

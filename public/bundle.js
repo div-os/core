@@ -47477,13 +47477,16 @@ exports.install = pkg => {
 
 exports.installArchive = async archive => {
   let stream = t2.obj();
+  let destPath = `/apps/${archive.stem}`;
+
+  await div.fs.browser.rimraf(destPath);
 
   let pipeline = stream
     .pipe(div.fs.gulpUnzip())
     .pipe(div.fs.gulpDebug({
       logger: console.log.bind(console),
     }))
-    .pipe(div.fs.browser.dest(`/apps/${archive.stem}`));
+    .pipe(div.fs.browser.dest(destPath));
 
   stream.push(archive);
   stream.end();
@@ -47874,6 +47877,15 @@ exports.storeFile = async (dirPath, file) => {
   await lf.setItem(k, {
     contents: await fromFile(file),
   });
+};
+
+exports.rimraf = async dirPath => {
+  if (dirPath.endsWith('/')) {
+    dirPath = dirPath.slice(0, -1);
+  }
+
+  let keys = await exports.getKeys(`${dirPath}/**`);
+  await Promise.all(keys.map(k => lf.removeItem(k)));
 };
 
 }).call(this,require("buffer").Buffer)
