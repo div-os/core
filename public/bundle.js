@@ -47644,6 +47644,11 @@ exports.src = (glob, opt) => {
     );
 
     if (!res.ok) {
+      if (res.status === 404) {
+        ret.end();
+        return;
+      }
+
       ret.destroy(new Error(
         `Backend error response: ` +
         `${res.status} ${res.statusText}`,
@@ -47762,17 +47767,42 @@ div.fs.browser = exports;
 exports.storagePrefix = 'vinyl:';
 
 exports.src = (glob, opt) => {
+  opt = opt || {};
+
+  let cwd = (() => {
+    if (!opt.cwd) {
+      return '';
+    }
+
+    return opt.cwd.endsWith('/')
+      ? opt.cwd
+      : `${opt.cwd}/`;
+  })();
+
+  let fullGlob = `${cwd}${glob}`;
+
   let ret = through2.obj();
 
   (async () => {
-    for (let k of await exports.getKeys(glob)) {
+    for (let k of await exports.getKeys(fullGlob)) {
       let filePath = k.slice(exports.storagePrefix.length);
-      let e = await lf.getItem(k);
+      let fileProps = await lf.getItem(k);
 
-      ret.push(new Vinyl({
-        path: filePath,
-        contents: Buffer.from(e.contents),
-      }));
+      fileProps.path = filePath;
+
+      fileProps.contents =
+        fileProps.contents &&
+        Buffer.from(fileProps.contents);
+
+      let stat = fileProps.stat = fileProps.stat || {};
+
+      for (let k of [
+        'isDirectory',
+      ]) {
+        stat[k] = () => stat[`_${k}`];
+      }
+
+      ret.push(new Vinyl(fileProps));
     }
 
     ret.end();
@@ -47800,9 +47830,46 @@ exports.getKeys = async glob => {
   });
 };
 
+exports.mkdirp = async dirPath => {
+  if (dirPath.startsWith('/')) {
+    dirPath = dirPath.slice(1);
+  }
+
+  let dirPathParts = dirPath.split('/');
+
+  let dirPathChunks = dirPathParts.map(
+    (_, i) => dirPathParts.slice(0, i + 1).join('/'),
+  );
+
+  for (let dirPathChunk of dirPathChunks) {
+    let k = `${exports.storagePrefix}/${dirPathChunk}`;
+
+    let existing = await lf.getItem(k);
+
+    if (existing) {
+      let { stat } = existing;
+
+      if (!stat || !stat._isDirectory) {
+        throw new Error(
+          `/${dirPathChunk} already exists and is not ` +
+          `a directory`,
+        );
+      }
+    }
+
+    await lf.setItem(k, {
+      stat: {
+        _isDirectory: true,
+      },
+    });
+  }
+};
+
 exports.storeFile = async (dirPath, file) => {
   let filePath = path.resolve(dirPath, file.basename);
   let k = `${exports.storagePrefix}${filePath}`;
+
+  await exports.mkdirp(dirPath);
 
   await lf.setItem(k, {
     contents: await fromFile(file),

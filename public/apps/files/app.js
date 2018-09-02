@@ -58,6 +58,8 @@
         })
         .on('end', resolve);
       });
+
+      jr.update();
     }
 
     browseHistory(i) {

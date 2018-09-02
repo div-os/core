@@ -13,6 +13,11 @@ exports.src = (glob, opt) => {
     );
 
     if (!res.ok) {
+      if (res.status === 404) {
+        ret.end();
+        return;
+      }
+
       ret.destroy(new Error(
         `Backend error response: ` +
         `${res.status} ${res.statusText}`,
