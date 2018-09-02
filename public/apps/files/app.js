@@ -101,7 +101,12 @@
       if ([
         '.gif',
         '.html',
+        '.jpg',
         '.md',
+        '.mp3',
+        '.mp4',
+        '.ogg',
+        '.ogv',
         '.pdf',
         '.png',
         '.svg',
@@ -211,7 +216,7 @@
                     filesApp_dirEntry--grid
                   "
 
-                  jr-on-click="filesApp.open(dirEntry)"
+                  jr-on-dblclick="filesApp.open(dirEntry)"
                 >
                   <div jr-class="
                     filesApp_dirEntry-icon

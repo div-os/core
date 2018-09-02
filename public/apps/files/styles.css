@@ -18,29 +18,56 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 85px;
+  width: 144px;
   margin: 7px;
   outline: none;
-  border: 1px dashed transparent;
+  border: 0;
   padding: 12px 16px 6px;
   background-color: transparent;
 }
 
-.filesApp_dirEntry:focus {
-  border-color: lightgrey;
+.filesApp_dirEntry-icon {
+  position: relative;
 }
 
 .filesApp_dirEntry-name {
-  max-width: 80px;
+  max-width: 144px;
   overflow: hidden;
   overflow-wrap: break-word;
   text-overflow: ellipsis;
   white-space: nowrap;
   margin-top: 5px;
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+
+.filesApp_dirEntry-icon {
+  position: relative;
+}
+
+.filesApp_dirEntry:focus .filesApp_dirEntry-icon:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-image: inherit;
+  background-size: inherit;
+
+  filter:
+    contrast(0%)
+    sepia(100%)
+    hue-rotate(173deg)
+    brightness(87%)
+    saturate(300%)
+    opacity(50%);
 }
 
 .filesApp_dirEntry:focus .filesApp_dirEntry-name {
   overflow: initial;
   text-overflow: initial;
   white-space: initial;
+  color: white;
+  background-color: #4a90d9;
 }
