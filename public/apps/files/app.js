@@ -117,7 +117,7 @@
       ].some(x => f.basename.endsWith(x))) {
         div.windowManager.create({
           title: f.basename,
-          iframeSrc: f.path,
+          iframeSrc: f.path.slice(1),
         });
       }
     }
