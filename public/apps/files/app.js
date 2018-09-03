@@ -169,14 +169,14 @@
         <div class="filesApp_headerActions">
           <div class="btn-group">
             <button
-              class="btn btn-default"
+              class="btn btn-mini btn-default"
               jr-on-click="filesApp.goBack()"
             >
               <i class="icon icon-left"></i>
             </button>
 
             <button
-              class="btn btn-default"
+              class="btn btn-mini btn-default"
               jr-on-click="filesApp.goForward()"
             >
               <i class="icon icon-right"></i>
@@ -184,21 +184,21 @@
           </div>
 
           <div class="btn-group">
-            <button class="btn btn-default">
+            <button class="btn btn-mini btn-default">
               <i class="icon icon-home"></i>
             </button>
 
-            <button class="btn btn-default">
+            <button class="btn btn-mini btn-default">
               <i class="icon icon-cw"></i>
             </button>
           </div>
 
           <div class="btn-group">
-            <button class="btn btn-default">
+            <button class="btn btn-mini btn-default">
               <i class="icon icon-layout"></i>
             </button>
 
-            <button class="btn btn-default">
+            <button class="btn btn-mini btn-default">
               <i class="icon icon-list"></i>
             </button>
           </div>
@@ -211,7 +211,7 @@
             "
           >
             <button
-              jr-class="btn btn-default"
+              jr-class="btn btn-mini btn-default"
               jr-on-click="filesApp.browsePath(n.path)"
             >
               <i jr-class.bind="n.iconClass"></i>
@@ -230,10 +230,16 @@
                   Personal
                 </div>
 
-                <div class="nav-group-item active">
+                <a
+                  class="nav-group-item"
+
+                  jr-on-click="
+                    filesApp.browsePath('/backend/home')
+                  "
+                >
                   <i class="icon icon-home"></i>
                   Home
-                </div>
+                </a>
               </div>
 
               <div class="nav-group">
@@ -241,10 +247,13 @@
                   Devices
                 </div>
 
-                <div class="nav-group-item">
+                <a
+                  class="nav-group-item"
+                  jr-on-click="filesApp.browsePath('/')"
+                >
                   <i class="icon icon-drive"></i>
                   File system
-                </div>
+                </a>
               </div>
             </div>
 
