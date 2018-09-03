@@ -34,6 +34,10 @@
     async browsePath(path) {
       let prevDir = this.dir;
 
+      if (prevDir && prevDir.path === path) {
+        return;
+      }
+
       this.dir = {
         i: !prevDir ? 0 : prevDir.i + 1,
 
@@ -122,6 +126,35 @@
       }
     }
 
+    getPathNodeData() {
+      let parts = this.dir.path.split('/');
+
+      let ret = parts.map((x, i) => {
+        if (!x) {
+          return null;
+        }
+
+        let path = parts.slice(0, i + 1).join('/');
+
+        if (x === 'home' && i === 2) {
+          return { path, iconClass: 'icon icon-home' };
+        }
+
+        return { path, label: x };
+      });
+
+      ret = ret.filter(x => !!x);
+
+      ret.unshift({
+        path: '/',
+        iconClass: 'icon icon-flow-cascade',
+      });
+
+      ret[ret.length - 1].active = true;
+
+      return ret;
+    }
+
     createWindow() {
       let wnd = div.windowManager.create({
         title: 'Files',
@@ -167,6 +200,22 @@
 
             <button class="btn btn-default">
               <i class="icon icon-list"></i>
+            </button>
+          </div>
+
+          <div
+            class="btn-group"
+
+            jr-list="
+              for n of filesApp.getPathNodeData()
+            "
+          >
+            <button
+              jr-class="btn btn-default"
+              jr-on-click="filesApp.browsePath(n.path)"
+            >
+              <i jr-class.bind="n.iconClass"></i>
+              <span jr-textcontent.bind="n.label"></span>
             </button>
           </div>
         </div>

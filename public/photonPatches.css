@@ -8,6 +8,14 @@
   flex-grow: 1;
 }
 
+.btn-group {
+  flex-shrink: 0;
+}
+
+.btn-group > .btn:only-child {
+  border-radius: 4px;
+}
+
 .form-control:focus {
   box-shadow: 0 0 0 1px #6db3fd;
 }
