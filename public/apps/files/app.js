@@ -251,7 +251,7 @@
                   class="nav-group-item"
                   jr-on-click="filesApp.browsePath('/')"
                 >
-                  <i class="icon icon-drive"></i>
+                  <i class="icon icon-flow-cascade"></i>
                   File system
                 </a>
               </div>
