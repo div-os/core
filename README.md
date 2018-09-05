@@ -1,6 +1,9 @@
 # divOS
 
 No time to explain. Code is worth a thousand words.
+But check out the demo:
+
+[![divOS demo](demo.apng)](https://div-os.github.io/core/public/index.html)
 
 ## License
 
