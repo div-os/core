@@ -26,12 +26,29 @@ exports.src = (glob, opt) => {
 
     let lineBuffer = '';
 
-    function flush() {
+    function flush(ctx) {
+      if (!['streaming', 'done'].includes(ctx)) {
+        throw new Error(
+          `backendAdapter / flush: ctx must be ` +
+          `'streaming' or 'done'`,
+        );
+      }
+
       if (!lineBuffer) {
         return;
       }
 
-      let fileProps = JSON.parse(lineBuffer);
+      let fileProps;
+
+      try {
+        fileProps = JSON.parse(lineBuffer);
+      } catch (err) {
+        if (ctx === 'streaming') {
+          return;
+        }
+
+        throw err;
+      }
 
       let contents = through2();
       let originalRead = contents.read;
@@ -71,18 +88,19 @@ exports.src = (glob, opt) => {
         let data = decoder.decode(bytes);
 
         for (let l of data.split('\n')) {
-          flush();
+          flush('streaming');
+
           lineBuffer += l;
         }
       },
 
       abort(err) {
-        flush();
+        flush('done');
         ret.destroy(err);
       },
 
       close() {
-        flush();
+        flush('done');
         ret.end();
       },
     }));
