@@ -6,6 +6,10 @@
   margin-left: 8px;
 }
 
+.filesApp_pathNodeIcon--hasLabel {
+  margin-right: 3px;
+}
+
 .filesApp_dirBrowser--grid {
   display: flex;
   align-items: flex-start;

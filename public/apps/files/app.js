@@ -24,11 +24,22 @@
         `${appCtrl.appPath}/styles.css`,
       );
 
+      await this.updateHomePath();
+
       this.wnd = jr(this.createWindow());
       this.wnd.jr.scope.filesApp = this;
 
       this.browsePath('/')
         .catch(err => console.error(err));
+    }
+
+    async updateHomePath() {
+      this.homePath = await div.env.get('HOME');
+    }
+
+    async browseHome() {
+      await this.updateHomePath();
+      return await this.browsePath(this.homePath);
     }
 
     async browsePath(path) {
@@ -137,8 +148,12 @@
 
         let path = parts.slice(0, i + 1).join('/');
 
-        if (x === 'home' && i === 2) {
-          return { path, iconClass: 'icon icon-home' };
+        if (path === this.homePath) {
+          return {
+            path,
+            label: x,
+            iconClass: 'icon icon-home',
+          };
         }
 
         return { path, label: x };
@@ -215,8 +230,26 @@
               jr-class="btn btn-mini btn-default"
               jr-on-click="filesApp.browsePath(n.path)"
             >
-              <i jr-class.bind="n.iconClass"></i>
-              <span jr-textcontent.bind="n.label"></span>
+              <i
+                jr-if="n.iconClass"
+
+                jr-class="
+                  filesApp_pathNodeIcon
+
+                  {{
+                    n.label
+                      ? 'filesApp_pathNodeIcon--hasLabel'
+                      : ''
+                  }}
+
+                  {{n.iconClass}}
+                "
+              ></i>
+
+              <span
+                jr-if="n.label"
+                jr-textcontent.bind="n.label"
+              ></span>
             </button>
           </div>
         </div>
@@ -233,10 +266,7 @@
 
                 <a
                   class="nav-group-item"
-
-                  jr-on-click="
-                    filesApp.browsePath('/backend/home')
-                  "
+                  jr-on-click="filesApp.browseHome()"
                 >
                   <i class="icon icon-home"></i>
                   Home
