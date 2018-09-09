@@ -115,7 +115,7 @@ div.windowManager = module.exports = exports = {
         let titleEl = jr.createElement(`
           <div
             class="window-stdTitle window-title"
-            jr-textcontent.bind="wnd.div.wm.title"
+            jr-text-content.bind="wnd.div.wm.title"
           ></div>
         `);
 

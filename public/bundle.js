@@ -25116,7 +25116,12 @@ jr.init = () => {
             let el = jr(n);
 
             for (let el2 of [el, ...el.jr.parentElements]) {
-              if (el2.jr.commentAnchor) {
+              let { commentAnchor } = el2.jr;
+
+              if (
+                commentAnchor
+                && document.contains(commentAnchor)
+              ) {
                 continue removedNodesLoop;
               }
             }
@@ -25416,9 +25421,12 @@ jr.updateIfEl = el => {
     el.jr.commentAnchor = null;
     indexEntry.commentAnchor = null;
   }
-  else {
+  else
+  if (document.contains(el)) {
+    let tagName = el.tagName.toLowerCase();
+
     let anchor = document.createComment(
-      ` jr anchor for ${el.tagName.toLowerCase()} `,
+      ` jr anchor for ${tagName}[jr-if="${condExpr}"] `,
     );
 
     anchor.jr = {
@@ -25652,6 +25660,10 @@ jr.updateEl = el => {
         continue;
       }
 
+      if (!document.contains(el)) {
+        continue;
+      }
+
       if (attr.name === 'jr-list') {
         jr.updateListEl(el);
         continue;
@@ -25686,7 +25698,10 @@ jr.updateEl = el => {
         );
       }
 
-      if (attr.name.endsWith('.bind')) {
+      let isBind = attr.name.endsWith('.bind');
+      let isToggle = attr.name.endsWith('.toggle');
+
+      if (isBind || isToggle) {
         computed = scope.eval(computed);
       }
 
@@ -25698,10 +25713,25 @@ jr.updateEl = el => {
 
       let targetName = attr.name
         .slice('jr-'.length)
-        .replace(/\.bind$/, '');
+        .replace(/\.(bind|toggle)$/, '');
 
-      if (targetName === 'textcontent') {
+      if (targetName === 'text-content') {
+        if (isToggle) {
+          throw new Error(
+            `jr-text-content.toggle is not supported`,
+          );
+        }
+
         el.textContent = computed;
+      }
+      else
+      if (isToggle) {
+        if (computed) {
+          el.setAttribute(targetName, '');
+        }
+        else {
+          el.removeAttribute(targetName);
+        }
       }
       else {
         let propTargets = ['value'];
@@ -47133,7 +47163,7 @@ div.windowManager = module.exports = exports = {
         let titleEl = jr.createElement(`
           <div
             class="window-stdTitle window-title"
-            jr-textcontent.bind="wnd.div.wm.title"
+            jr-text-content.bind="wnd.div.wm.title"
           ></div>
         `);
 

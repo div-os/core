@@ -248,7 +248,7 @@
 
               <span
                 jr-if="n.label"
-                jr-textcontent.bind="n.label"
+                jr-text-content.bind="n.label"
               ></span>
             </button>
           </div>
@@ -319,7 +319,7 @@
 
                   <span
                     class="filesApp_dirEntry-name"
-                    jr-textcontent.bind="dirEntry.basename"
+                    jr-text-content.bind="dirEntry.basename"
                   ></span>
                 </button>
               </div>
