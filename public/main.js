@@ -42,6 +42,7 @@ require('./helper/oneFromStream');
 require('./scriptManager');
 
 // UI modules.
+require('./env');
 require('./launcher');
 require('./windowManager');
 require('./workspaceManager');
