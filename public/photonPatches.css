@@ -16,6 +16,20 @@
   border-radius: 4px;
 }
 
+.btn[disabled] {
+  opacity: 0.6;
+}
+
+.btn[disabled]:active {
+  background-color: #fcfcfc;
+
+  background-image: linear-gradient(
+    to bottom,
+    #fcfcfc 0%,
+    #f1f1f1 100%
+  );
+}
+
 .form-control:focus {
   box-shadow: 0 0 0 1px #6db3fd;
 }
