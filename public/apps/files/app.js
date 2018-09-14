@@ -45,6 +45,64 @@
       ];
     }
 
+    async updateActiveSidebarItem(dir) {
+      let allItems = this.sidebarGroups.reduce(
+        (acc, x) => acc.concat(x.items), [],
+      );
+
+      allItems.sort((a, b) => {
+        let aPathLen = a.path.length;
+        let bPathLen = b.path.length;
+
+        if (aPathLen < bPathLen) {
+          return -1;
+        }
+
+        if (aPathLen > bPathLen) {
+          return 1;
+        }
+
+        if (aPathLen === bPathLen) {
+          return 0;
+        }
+      });
+
+      let itemsWithResolvedPaths = await Promise.all(
+        allItems.map(async x => {
+          if (typeof x.path !== 'function') {
+            return x;
+          }
+
+          return { ...x, path: await x.path() };
+        }),
+      );
+
+      let activeItemIndex =
+        itemsWithResolvedPaths.findIndex(
+          x => dir.path.startsWith(x.path),
+        );
+
+      dir.activeSidebarItem = allItems[
+        activeItemIndex
+      ];
+
+      this.optimisticallyActiveSidebarItem = null;
+
+      jr.update();
+
+      return dir.activeSidebarItem;
+    }
+
+    isActiveSidebarItem(item) {
+      if (this.optimisticallyActiveSidebarItem) {
+        return
+          this.optimisticallyActiveSidebarItem === item;
+      }
+
+      return this.dir
+        && this.dir.activeSidebarItem === item;
+    }
+
     async launch(...args) {
       await div.scriptManager.loadStylesheet(
         `${appCtrl.appPath}/icons.css`,
@@ -68,6 +126,8 @@
     }
 
     async browseSidebar(item) {
+      this.optimisticallyActiveSidebarItem = item;
+
       let { path } = item;
 
       if (typeof path === 'function') {
@@ -75,6 +135,8 @@
       }
 
       await this.browsePath(path);
+
+      jr.update();
     }
 
     async browsePath(path) {
@@ -97,19 +159,26 @@
         this.dir,
       );
 
-      await new Promise(resolve => {
-        this.dir.pipeline = div.fs.src('*', {
-          cwd: path,
-          stat: true,
-        })
-        .on('data', f => {
-          this.dir.entries.push(f);
-          jr.update();
-        })
-        .on('end', resolve);
-      });
+      try {
+        await Promise.all([
+          this.updateActiveSidebarItem(this.dir),
 
-      jr.update();
+          new Promise(resolve => {
+            this.dir.pipeline = div.fs.src('*', {
+              cwd: path,
+              stat: true,
+            })
+            .on('data', f => {
+              this.dir.entries.push(f);
+              jr.update();
+            })
+            .on('end', resolve);
+          }),
+        ]);
+      }
+      finally {
+        jr.update();
+      }
     }
 
     getRelativeHistoryEntry(i) {
@@ -323,7 +392,12 @@
 
                   <div jr-list="for item of group.items">
                     <a
-                      class="nav-group-item"
+                      jr-class="
+                        nav-group-item
+
+                        {{filesApp.isActiveSidebarItem(item)
+                          ? 'active' : ''}}
+                      "
 
                       jr-on-click="
                         filesApp.browseSidebar(item)
