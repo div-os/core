@@ -13,6 +13,36 @@
   class FilesApp {
     constructor() {
       this.history = [];
+
+      this.sidebarGroups = [
+        {
+          label: 'Personal',
+
+          items: [
+            {
+              iconClass: 'icon icon-home',
+              label: 'Home',
+
+              path: async () => {
+                await this.updateHomePath();
+                return this.homePath;
+              },
+            },
+          ],
+        },
+
+        {
+          label: 'Devices',
+
+          items: [
+            {
+              iconClass: 'icon icon-flow-cascade',
+              label: 'File system',
+              path: '/',
+            },
+          ],
+        },
+      ];
     }
 
     async launch(...args) {
@@ -37,9 +67,14 @@
       this.homePath = await div.env.get('HOME');
     }
 
-    async browseHome() {
-      await this.updateHomePath();
-      return await this.browsePath(this.homePath);
+    async browseSidebar(item) {
+      let { path } = item;
+
+      if (typeof path === 'function') {
+        path = await path();
+      }
+
+      await this.browsePath(path);
     }
 
     async browsePath(path) {
@@ -273,32 +308,37 @@
         <div class="window-content">
           <div class="pane-group">
             <div class="pane-sm sidebar">
-              <div class="nav-group">
-                <div class="nav-group-title">
-                  Personal
+              <div
+                class="nav-group"
+
+                jr-list="
+                  for group of filesApp.sidebarGroups
+                "
+              >
+                <div>
+                  <div
+                    class="nav-group-title"
+                    jr-text-content.bind="group.label"
+                  ></div>
+
+                  <div jr-list="for item of group.items">
+                    <a
+                      class="nav-group-item"
+
+                      jr-on-click="
+                        filesApp.browseSidebar(item)
+                      "
+                    >
+                      <i
+                        jr-class.bind="item.iconClass"
+                      ></i>
+
+                      <span
+                        jr-text-content.bind="item.label"
+                      ></span>
+                    </a>
+                  </div>
                 </div>
-
-                <a
-                  class="nav-group-item"
-                  jr-on-click="filesApp.browseHome()"
-                >
-                  <i class="icon icon-home"></i>
-                  Home
-                </a>
-              </div>
-
-              <div class="nav-group">
-                <div class="nav-group-title">
-                  Devices
-                </div>
-
-                <a
-                  class="nav-group-item"
-                  jr-on-click="filesApp.browsePath('/')"
-                >
-                  <i class="icon icon-flow-cascade"></i>
-                  File system
-                </a>
               </div>
             </div>
 
