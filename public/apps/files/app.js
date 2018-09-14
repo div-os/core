@@ -77,16 +77,28 @@
       jr.update();
     }
 
-    browseHistory(i) {
+    getRelativeHistoryEntry(i) {
       if (!this.dir) {
-        return;
+        return null;
       }
 
-      let nextDir = this.history[this.dir.i + i];
+      return this.history[this.dir.i + i];
+    }
+
+    browseHistory(i) {
+      let nextDir = this.getRelativeHistoryEntry(i);
 
       if (nextDir) {
         this.dir = nextDir;
       }
+    }
+
+    canGoBack() {
+      return !!this.getRelativeHistoryEntry(-1);
+    }
+
+    canGoForward() {
+      return !!this.getRelativeHistoryEntry(1);
     }
 
     goBack() {
@@ -186,6 +198,7 @@
           <div class="btn-group">
             <button
               class="btn btn-mini btn-default"
+              jr-disabled.toggle="!filesApp.canGoBack()"
               jr-on-click="filesApp.goBack()"
             >
               <i class="icon icon-left"></i>
@@ -193,6 +206,7 @@
 
             <button
               class="btn btn-mini btn-default"
+              jr-disabled.toggle="!filesApp.canGoForward()"
               jr-on-click="filesApp.goForward()"
             >
               <i class="icon icon-right"></i>
