@@ -12,7 +12,7 @@
 
   class FilesApp {
     constructor() {
-      this.history = [];
+      this.tabs = [];
 
       this.sidebarGroups = [
         {
@@ -45,7 +45,20 @@
       ];
     }
 
-    async updateActiveSidebarItem(dir) {
+    get activeDir() {
+      return this.activeTab.dir;
+    }
+
+    async updateActiveSidebarItem(ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      let { dir } = tab;
+
       let allItems = this.sidebarGroups.reduce(
         (acc, x) => acc.concat(x.items), [],
       );
@@ -93,14 +106,24 @@
       return dir.activeSidebarItem;
     }
 
-    isActiveSidebarItem(item) {
-      if (this.optimisticallyActiveSidebarItem) {
-        return
-          this.optimisticallyActiveSidebarItem === item;
+    isActiveSidebarItem(item, ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      let {
+        dir,
+        optimisticallyActiveSidebarItem,
+      } = tab;
+
+      if (optimisticallyActiveSidebarItem) {
+        return optimisticallyActiveSidebarItem === item;
       }
 
-      return this.dir
-        && this.dir.activeSidebarItem === item;
+      return dir && dir.activeSidebarItem === item;
     }
 
     async launch(...args) {
@@ -117,16 +140,72 @@
       this.wnd = jr(this.createWindow());
       this.wnd.jr.scope.filesApp = this;
 
-      this.browsePath('/')
-        .catch(err => console.error(err));
+      this.openNewTab().catch(err => console.error(err));
+    }
+
+    async openNewTab(path) {
+      let tab = {
+        history: [],
+
+        get name() {
+          if (!this.dir) {
+            return 'New tab';
+          }
+
+          let { path } = this.dir;
+
+          if (path === '/') {
+            return path;
+          }
+
+          let pathParts = path.split('/');
+          return pathParts[pathParts.length - 1];
+        },
+      };
+
+      this.tabs.push(tab);
+      this.activeTab = tab;
+
+      await this.browsePath(path || '/');
+    }
+
+    isActiveTab(tab) {
+      return this.activeTab === tab;
+    }
+
+    switchToTab(tab) {
+      this.activeTab = tab;
+    }
+
+    closeTab(tab) {
+      let isActiveTab = this.isActiveTab(tab);
+      let i = this.tabs.indexOf(tab);
+
+      if (i === -1) {
+        throw new Error(`No such tab`);
+      }
+
+      this.tabs.splice(i, 1);
+
+      if (isActiveTab) {
+        this.activeTab =
+          this.tabs[i] || this.tabs[i - 1] || null;
+      }
     }
 
     async updateHomePath() {
       this.homePath = await div.env.get('HOME');
     }
 
-    async browseSidebar(item) {
-      this.optimisticallyActiveSidebarItem = item;
+    async browseSidebar(item, ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      tab.optimisticallyActiveSidebarItem = item;
 
       let { path } = item;
 
@@ -134,42 +213,49 @@
         path = await path();
       }
 
-      await this.browsePath(path);
+      await this.browsePath(path, ctx);
 
       jr.update();
     }
 
-    async browsePath(path) {
-      let prevDir = this.dir;
+    async browsePath(path, ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      let prevDir = tab.dir;
 
       if (prevDir && prevDir.path === path) {
         return;
       }
 
-      this.dir = {
+      tab.dir = {
         i: !prevDir ? 0 : prevDir.i + 1,
 
         path,
         entries: [],
       };
 
-      this.history.splice(
-        this.dir.i,
-        this.history.length,
-        this.dir,
+      tab.history.splice(
+        tab.dir.i,
+        tab.history.length,
+        tab.dir,
       );
 
       try {
         await Promise.all([
-          this.updateActiveSidebarItem(this.dir),
+          this.updateActiveSidebarItem(ctx),
 
           new Promise(resolve => {
-            this.dir.pipeline = div.fs.src('*', {
+            tab.dir.pipeline = div.fs.src('*', {
               cwd: path,
               stat: true,
             })
             .on('data', f => {
-              this.dir.entries.push(f);
+              tab.dir.entries.push(f);
               jr.update();
             })
             .on('end', resolve);
@@ -181,36 +267,50 @@
       }
     }
 
-    getRelativeHistoryEntry(i) {
-      if (!this.dir) {
+    getRelativeHistoryEntry(i, ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      if (!tab.dir) {
         return null;
       }
 
-      return this.history[this.dir.i + i];
+      return tab.history[tab.dir.i + i];
     }
 
-    browseHistory(i) {
-      let nextDir = this.getRelativeHistoryEntry(i);
+    browseHistory(i, ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      let nextDir = this.getRelativeHistoryEntry(i, ctx);
 
       if (nextDir) {
-        this.dir = nextDir;
+        tab.dir = nextDir;
       }
     }
 
-    canGoBack() {
-      return !!this.getRelativeHistoryEntry(-1);
+    canGoBack(ctx) {
+      return !!this.getRelativeHistoryEntry(-1, ctx);
     }
 
-    canGoForward() {
-      return !!this.getRelativeHistoryEntry(1);
+    canGoForward(ctx) {
+      return !!this.getRelativeHistoryEntry(1, ctx);
     }
 
-    goBack() {
-      this.browseHistory(-1);
+    goBack(ctx) {
+      this.browseHistory(-1, ctx);
     }
 
-    goForward() {
-      this.browseHistory(1);
+    goForward(ctx) {
+      this.browseHistory(1, ctx);
     }
 
     getType(f) {
@@ -225,9 +325,16 @@
         : 'unknown';
     }
 
-    async open(f) {
+    async open(f, ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
       if (f.stat.isDirectory()) {
-        await this.browsePath(f.path);
+        await this.browsePath(f.path, ctx);
         return;
       }
 
@@ -254,8 +361,15 @@
       }
     }
 
-    getPathNodeData() {
-      let parts = this.dir.path.split('/');
+    getPathNodeData(ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      let parts = tab.dir.path.split('/');
 
       let ret = parts.map((x, i) => {
         if (!x) {
@@ -416,12 +530,59 @@
               </div>
             </div>
 
-            <div class="pane">
+            <div class="filesApp_dirBrowserPane pane">
+              <div class="filesApp_tabs">
+                <div
+                  class="filesApp_tabs-tabList"
+                  jr-list="for tab of filesApp.tabs"
+                >
+                  <div
+                    jr-class="
+                      filesApp_tabs-tab
+
+                      {{filesApp.tabs.length === 1
+                        ? 'filesApp_tabs-tab--only-tab' : ''}}
+
+                      {{filesApp.isActiveTab(tab)
+                        ? 'filesApp_tabs-tab--active' : ''}}
+                    "
+                  >
+                    <button
+                      class="filesApp_tabs-closeTabBtn"
+
+                      jr-disabled.toggle="
+                        filesApp.tabs.length === 1
+                      "
+
+                      jr-on-click="filesApp.closeTab(tab)"
+                    >
+                      <i class="icon icon-cancel"></i>
+                    </button>
+
+                    <span
+                      class="filesApp_tabs-tabName"
+                      jr-text-content.bind="tab.name"
+
+                      jr-on-click="
+                        filesApp.switchToTab(tab)
+                      "
+                    ></span>
+                  </div>
+                </div>
+
+                <button
+                  class="filesApp_tabs-newTabBtn"
+                  jr-on-click="filesApp.openNewTab()"
+                >
+                  <i class="icon icon-plus"></i>
+                </button>
+              </div>
+
               <div
-                jr-if="filesApp.dir"
+                jr-if="filesApp.activeDir"
 
                 jr-list="
-                  for dirEntry of filesApp.dir.entries
+                  for dirEntry of filesApp.activeDir.entries
                 "
 
                 class="
