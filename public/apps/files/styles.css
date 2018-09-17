@@ -32,7 +32,6 @@
 
 .filesApp_tabs-newTabBtn,
 .filesApp_tabs-closeTabBtn {
-  outline: 0;
   border: 0;
   padding: 1px 10px 0;
   background-color: transparent;
@@ -104,7 +103,6 @@
   align-items: center;
   width: 144px;
   margin: 7px;
-  outline: none;
   border: 0;
   padding: 12px 16px 6px;
   background-color: transparent;
