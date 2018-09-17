@@ -62,6 +62,10 @@
   border-left: 0;
 }
 
+.filesApp_tabs-tab--inactive:last-child {
+  border-right: 1px solid #afafaf;
+}
+
 .filesApp_tabs-tab--active {
   border-left: 1px solid #989698;
   border-right: 1px solid #989698;

@@ -15,6 +15,7 @@
       this.tabs = [];
 
       this.sidebarGroups = [
+        /*
         {
           label: 'Personal',
 
@@ -30,6 +31,7 @@
             },
           ],
         },
+        */
 
         {
           label: 'Devices',
@@ -415,7 +417,7 @@
         <div class="filesApp_headerActions">
           <div class="btn-group">
             <button
-              class="btn btn-mini btn-default"
+              class="btn btn-default"
               jr-disabled.toggle="!filesApp.canGoBack()"
               jr-on-click="filesApp.goBack()"
             >
@@ -423,7 +425,7 @@
             </button>
 
             <button
-              class="btn btn-mini btn-default"
+              class="btn btn-default"
               jr-disabled.toggle="!filesApp.canGoForward()"
               jr-on-click="filesApp.goForward()"
             >
@@ -432,22 +434,8 @@
           </div>
 
           <div class="btn-group">
-            <button class="btn btn-mini btn-default">
-              <i class="icon icon-home"></i>
-            </button>
-
-            <button class="btn btn-mini btn-default">
+            <button class="btn btn-default">
               <i class="icon icon-cw"></i>
-            </button>
-          </div>
-
-          <div class="btn-group">
-            <button class="btn btn-mini btn-default">
-              <i class="icon icon-layout"></i>
-            </button>
-
-            <button class="btn btn-mini btn-default">
-              <i class="icon icon-list"></i>
             </button>
           </div>
 
@@ -459,7 +447,7 @@
             "
           >
             <button
-              jr-class="btn btn-mini btn-default"
+              jr-class="btn btn-default"
               jr-on-click="filesApp.browsePath(n.path)"
             >
               <i
@@ -544,7 +532,8 @@
                         ? 'filesApp_tabs-tab--only-tab' : ''}}
 
                       {{filesApp.isActiveTab(tab)
-                        ? 'filesApp_tabs-tab--active' : ''}}
+                        ? 'filesApp_tabs-tab--active'
+                        : 'filesApp_tabs-tab--inactive'}}
                     "
                   >
                     <button
