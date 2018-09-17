@@ -153,8 +153,8 @@
         await Promise.all([
           this.updateActiveSidebarItem(ctx),
 
-          new Promise(resolve => {
-            tab.dir.pipeline = div.fs.src('*', {
+          new Promise((resolve, reject) => {
+            div.fs.src('*', {
               cwd: path,
               stat: true,
             })
@@ -162,6 +162,7 @@
               tab.dir.entries.push(f);
               jr.update();
             })
+            .on('error', reject)
             .on('end', resolve);
           }),
         ]);
