@@ -47,8 +47,195 @@
       ];
     }
 
+    async launch(...args) {
+      await div.scriptManager.loadStylesheet(
+        `${appCtrl.appPath}/icons.css`,
+      );
+
+      await div.scriptManager.loadStylesheet(
+        `${appCtrl.appPath}/styles.css`,
+      );
+
+      await this.updateHomePath();
+
+      this.wnd = jr(this.createWindow());
+      this.wnd.jr.scope.filesApp = this;
+
+      this.openNewTab().catch(err => console.error(err));
+    }
+
     get activeDir() {
       return this.activeTab.dir;
+    }
+
+    async updateHomePath() {
+      this.homePath = await div.env.get('HOME');
+    }
+
+    async openNewTab(path) {
+      let tab = {
+        history: [],
+
+        get name() {
+          if (!this.dir) {
+            return 'New tab';
+          }
+
+          let { path } = this.dir;
+
+          if (path === '/') {
+            return path;
+          }
+
+          let pathParts = path.split('/');
+          return pathParts[pathParts.length - 1];
+        },
+      };
+
+      this.tabs.push(tab);
+      this.activeTab = tab;
+
+      await this.browsePath(path || '/');
+    }
+
+    isActiveTab(tab) {
+      return this.activeTab === tab;
+    }
+
+    switchToTab(tab) {
+      this.activeTab = tab;
+    }
+
+    closeTab(tab) {
+      let isActiveTab = this.isActiveTab(tab);
+      let i = this.tabs.indexOf(tab);
+
+      if (i === -1) {
+        throw new Error(`No such tab`);
+      }
+
+      this.tabs.splice(i, 1);
+
+      if (isActiveTab) {
+        this.activeTab =
+          this.tabs[i] || this.tabs[i - 1] || null;
+      }
+    }
+
+    async browsePath(path, ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      let prevDir = tab.dir;
+
+      if (prevDir && prevDir.path === path) {
+        return;
+      }
+
+      tab.dir = {
+        i: !prevDir ? 0 : prevDir.i + 1,
+
+        path,
+        entries: [],
+      };
+
+      tab.history.splice(
+        tab.dir.i,
+        tab.history.length,
+        tab.dir,
+      );
+
+      try {
+        await Promise.all([
+          this.updateActiveSidebarItem(ctx),
+
+          new Promise(resolve => {
+            tab.dir.pipeline = div.fs.src('*', {
+              cwd: path,
+              stat: true,
+            })
+            .on('data', f => {
+              tab.dir.entries.push(f);
+              jr.update();
+            })
+            .on('end', resolve);
+          }),
+        ]);
+      }
+      finally {
+        jr.update();
+      }
+    }
+
+    browseHistory(i, ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      let nextDir = this.getRelativeHistoryEntry(i, ctx);
+
+      if (nextDir) {
+        tab.dir = nextDir;
+      }
+    }
+
+    canGoBack(ctx) {
+      return !!this.getRelativeHistoryEntry(-1, ctx);
+    }
+
+    canGoForward(ctx) {
+      return !!this.getRelativeHistoryEntry(1, ctx);
+    }
+
+    goBack(ctx) {
+      this.browseHistory(-1, ctx);
+    }
+
+    goForward(ctx) {
+      this.browseHistory(1, ctx);
+    }
+
+    getRelativeHistoryEntry(i, ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      if (!tab.dir) {
+        return null;
+      }
+
+      return tab.history[tab.dir.i + i];
+    }
+
+    async browseSidebar(item, ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      tab.optimisticallyActiveSidebarItem = item;
+
+      let { path } = item;
+
+      if (typeof path === 'function') {
+        path = await path();
+      }
+
+      await this.browsePath(path, ctx);
+
+      jr.update();
     }
 
     async updateActiveSidebarItem(ctx) {
@@ -126,193 +313,6 @@
       }
 
       return dir && dir.activeSidebarItem === item;
-    }
-
-    async launch(...args) {
-      await div.scriptManager.loadStylesheet(
-        `${appCtrl.appPath}/icons.css`,
-      );
-
-      await div.scriptManager.loadStylesheet(
-        `${appCtrl.appPath}/styles.css`,
-      );
-
-      await this.updateHomePath();
-
-      this.wnd = jr(this.createWindow());
-      this.wnd.jr.scope.filesApp = this;
-
-      this.openNewTab().catch(err => console.error(err));
-    }
-
-    async openNewTab(path) {
-      let tab = {
-        history: [],
-
-        get name() {
-          if (!this.dir) {
-            return 'New tab';
-          }
-
-          let { path } = this.dir;
-
-          if (path === '/') {
-            return path;
-          }
-
-          let pathParts = path.split('/');
-          return pathParts[pathParts.length - 1];
-        },
-      };
-
-      this.tabs.push(tab);
-      this.activeTab = tab;
-
-      await this.browsePath(path || '/');
-    }
-
-    isActiveTab(tab) {
-      return this.activeTab === tab;
-    }
-
-    switchToTab(tab) {
-      this.activeTab = tab;
-    }
-
-    closeTab(tab) {
-      let isActiveTab = this.isActiveTab(tab);
-      let i = this.tabs.indexOf(tab);
-
-      if (i === -1) {
-        throw new Error(`No such tab`);
-      }
-
-      this.tabs.splice(i, 1);
-
-      if (isActiveTab) {
-        this.activeTab =
-          this.tabs[i] || this.tabs[i - 1] || null;
-      }
-    }
-
-    async updateHomePath() {
-      this.homePath = await div.env.get('HOME');
-    }
-
-    async browseSidebar(item, ctx) {
-      ctx = ctx || {};
-
-      let { tab } = {
-        ...ctx || {},
-        tab: ctx.tab || this.activeTab,
-      };
-
-      tab.optimisticallyActiveSidebarItem = item;
-
-      let { path } = item;
-
-      if (typeof path === 'function') {
-        path = await path();
-      }
-
-      await this.browsePath(path, ctx);
-
-      jr.update();
-    }
-
-    async browsePath(path, ctx) {
-      ctx = ctx || {};
-
-      let { tab } = {
-        ...ctx || {},
-        tab: ctx.tab || this.activeTab,
-      };
-
-      let prevDir = tab.dir;
-
-      if (prevDir && prevDir.path === path) {
-        return;
-      }
-
-      tab.dir = {
-        i: !prevDir ? 0 : prevDir.i + 1,
-
-        path,
-        entries: [],
-      };
-
-      tab.history.splice(
-        tab.dir.i,
-        tab.history.length,
-        tab.dir,
-      );
-
-      try {
-        await Promise.all([
-          this.updateActiveSidebarItem(ctx),
-
-          new Promise(resolve => {
-            tab.dir.pipeline = div.fs.src('*', {
-              cwd: path,
-              stat: true,
-            })
-            .on('data', f => {
-              tab.dir.entries.push(f);
-              jr.update();
-            })
-            .on('end', resolve);
-          }),
-        ]);
-      }
-      finally {
-        jr.update();
-      }
-    }
-
-    getRelativeHistoryEntry(i, ctx) {
-      ctx = ctx || {};
-
-      let { tab } = {
-        ...ctx || {},
-        tab: ctx.tab || this.activeTab,
-      };
-
-      if (!tab.dir) {
-        return null;
-      }
-
-      return tab.history[tab.dir.i + i];
-    }
-
-    browseHistory(i, ctx) {
-      ctx = ctx || {};
-
-      let { tab } = {
-        ...ctx || {},
-        tab: ctx.tab || this.activeTab,
-      };
-
-      let nextDir = this.getRelativeHistoryEntry(i, ctx);
-
-      if (nextDir) {
-        tab.dir = nextDir;
-      }
-    }
-
-    canGoBack(ctx) {
-      return !!this.getRelativeHistoryEntry(-1, ctx);
-    }
-
-    canGoForward(ctx) {
-      return !!this.getRelativeHistoryEntry(1, ctx);
-    }
-
-    goBack(ctx) {
-      this.browseHistory(-1, ctx);
-    }
-
-    goForward(ctx) {
-      this.browseHistory(1, ctx);
     }
 
     getType(f) {
