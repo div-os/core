@@ -3,6 +3,18 @@
   align-items: center;
   min-height: 34px;
   border-bottom: 1px solid #989898;
+
+  box-shadow:
+    inset 1px 0 0 #cfcfcf,
+    inset -1px 0 0 #cfcfcf,
+    inset 0 1px 0 #f6f6f6,
+    inset 0 -1px 0 #cfcfcf;
+
+  background-image: linear-gradient(
+    to bottom,
+    #e6e6e6 0%,
+    #c4c4c4 100%
+  );
 }
 
 .toolbar-header .title {
