@@ -132,22 +132,29 @@
 
       let prevDir = tab.dir;
 
-      if (prevDir && prevDir.path === path) {
+      if (
+        prevDir
+        && prevDir.path === path
+        && !ctx.refresh
+      ) {
         return;
       }
 
-      tab.dir = {
-        i: !prevDir ? 0 : prevDir.i + 1,
+      if (!ctx.refresh) {
+        tab.dir = {
+          i: !prevDir ? 0 : prevDir.i + 1,
+          path,
+        };
 
-        path,
-        entries: [],
-      };
+        tab.history.splice(
+          tab.dir.i,
+          tab.history.length,
+          tab.dir,
+        );
+      }
 
-      tab.history.splice(
-        tab.dir.i,
-        tab.history.length,
-        tab.dir,
-      );
+      let { dir } = tab;
+      let entries = dir.entries = [];
 
       try {
         await Promise.all([
@@ -159,7 +166,7 @@
               stat: true,
             })
             .on('data', f => {
-              tab.dir.entries.push(f);
+              entries.push(f);
               jr.update();
             })
             .on('error', reject)
@@ -216,6 +223,23 @@
       }
 
       return tab.history[tab.dir.i + i];
+    }
+
+    async refresh(ctx) {
+      ctx = ctx || {};
+
+      let { tab } = {
+        ...ctx || {},
+        tab: ctx.tab || this.activeTab,
+      };
+
+      let { dir } = tab;
+
+      if (!dir) {
+        return;
+      }
+
+      await this.browsePath(dir.path, { refresh: true });
     }
 
     async browseSidebar(item, ctx) {
@@ -435,7 +459,10 @@
           </div>
 
           <div class="btn-group">
-            <button class="btn btn-default">
+            <button
+              class="btn btn-default"
+              jr-on-click="filesApp.refresh()"
+            >
               <i class="icon icon-cw"></i>
             </button>
           </div>
