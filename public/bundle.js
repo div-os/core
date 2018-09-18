@@ -47091,6 +47091,10 @@ div.windowManager = module.exports = exports = {
       toggleZoom() {
         wnd.classList.toggle('window--zoomed');
         wnd.classList.toggle('window--floating');
+
+        wnd.dispatchEvent(new CustomEvent('resize', {
+          bubbles: true,
+        }));
       },
     };
 
