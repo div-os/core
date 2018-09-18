@@ -78,6 +78,12 @@ exports.results = [
   },
 
   {
+    name: 'Terminal Emulator',
+    iconSrc: 'apps/term/icon.svg',
+    appPath: 'apps/term',
+  },
+
+  {
     name: 'Files',
     iconSrc: 'apps/files/icon.svg',
     appPath: 'apps/files',
