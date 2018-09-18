@@ -10,6 +10,7 @@ fsMiddleware.register(app);
 globMiddleware.register(app);
 
 app.use('/backend', express.static('/'));
+app.use('/node_modules', express.static('node_modules'));
 app.use(express.static(`${__dirname}/public`));
 
 app.listen(port);
