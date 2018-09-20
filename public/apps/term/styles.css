@@ -1,6 +1,7 @@
 .termApp_outerContainer {
   display: flex;
   width: 100%;
+  overflow: hidden;
   justify-content: center;
   align-items: center;
   background-color: #263342;
