@@ -47,6 +47,7 @@
 
     async openNewTab(path) {
       this.ctrl = new Terminal();
+      this.ctrl.setOption('allowTransparency', true);
 
       this.ctrl.open(
         this.wnd.jr.findFirst('.termApp_innerContainer'),
@@ -59,6 +60,22 @@
       );
 
       await this.connect();
+
+      // FIXME: Use this.socket instead to decrease
+      // latency and eliminate race conditions.
+      this.ctrl.on('resize', ({ cols, rows }) => {
+        if (this.socket.readyState !== 1) {
+          return;
+        }
+
+        fetch([
+          'api/terms/', this.remotePid,
+          '/size?cols=', cols, '&rows=', rows,
+        ].join(''), {
+          method: 'POST',
+        })
+        .catch(err => console.error(err));
+      });
     }
 
     isActiveTab(tab) {
@@ -111,7 +128,7 @@
       let { cols, rows } = ctrl;
 
       let res = await fetch(
-        `/api/terms?cols=${cols}&rows=${rows}`, {
+        `api/terms?cols=${cols}&rows=${rows}`, {
           method: 'POST',
         },
       );
@@ -124,7 +141,7 @@
         ].join(' '));
       }
 
-      let pid = Number(await res.text());
+      let pid = this.remotePid = Number(await res.text());
 
       let wsProtocol = location.protocol === 'https:'
         ? 'wss:' : 'ws:';
@@ -132,6 +149,11 @@
       let socket = this.socket = new WebSocket([
         wsProtocol,
         `//${location.host}`,
+
+        location.pathname !== '/'
+          ? location.pathname
+          : '',
+
         `/api/terms/${pid}`,
       ].join(''));
 

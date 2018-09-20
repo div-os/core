@@ -5,3 +5,8 @@
   align-items: center;
   background-color: #263342;
 }
+
+.termApp .xterm .xterm-viewport {
+  overflow: hidden;
+  background-color: transparent !important;
+}

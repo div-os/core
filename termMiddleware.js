@@ -46,7 +46,7 @@ exports.register = app => {
 
     let term = terms[pid];
 
-    term.resize(cols, rows);
+    term.proc.resize(cols, rows);
     res.end();
   });
 
