@@ -47087,11 +47087,14 @@ let monitorSize = () => {
 monitorSize();
 
 },{"./eventBus":278}],291:[function(require,module,exports){
+let eventBus = require('../eventBus');
+
 div.windowManager = module.exports = exports = {
   defaultFloatingWidth: 600,
   defaultFloatingHeight: 400,
 
   decorators: [],
+  wnds: new Set(),
 
   lastZIndex: 0,
 
@@ -47239,6 +47242,8 @@ div.windowManager = module.exports = exports = {
 
     requestAnimationFrame(() => exports.update());
 
+    this.wnds.add(wnd);
+
     return wnd;
   },
 
@@ -47262,6 +47267,14 @@ div.windowManager = module.exports = exports = {
   },
 };
 
+eventBus.on('viewport:resize', () => {
+  for (let wnd of exports.wnds) {
+    wnd.dispatchEvent(new CustomEvent('resize', {
+      bubbles: true,
+    }));
+  }
+});
+
 document.addEventListener('mousedown', ev => {
   let wnd = ev.target.closest('.window');
 
@@ -47277,7 +47290,7 @@ document.addEventListener('mousedown', ev => {
   }
 });
 
-},{"resizable":232}],292:[function(require,module,exports){
+},{"../eventBus":278,"resizable":232}],292:[function(require,module,exports){
 div.workspaceManager = module.exports = exports = {
   all: [
     { id: 'web', icon: 'world', highlight: true },
