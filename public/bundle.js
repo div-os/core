@@ -46975,6 +46975,7 @@ require('./helper/bufFromStream');
 require('./helper/fromFile');
 require('./helper/oneFromStream');
 require('./scriptManager');
+require('./viewportManager');
 
 // UI modules.
 require('./env');
@@ -47003,7 +47004,7 @@ require('./workspaceManager');
 })()
 .catch(err => console.error(err));
 
-},{"./apps":276,"./env":277,"./eventBus":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./windowManager":290,"./workspaceManager":291,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":244}],289:[function(require,module,exports){
+},{"./apps":276,"./env":277,"./eventBus":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./viewportManager":290,"./windowManager":291,"./workspaceManager":292,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":244}],289:[function(require,module,exports){
 div.scriptManager = exports;
 
 exports.tryGetBySrc = src => {
@@ -47058,6 +47059,34 @@ exports.loadStylesheet = async href => {
 };
 
 },{}],290:[function(require,module,exports){
+let eventBus = require('./eventBus');
+
+div.viewportManager = exports;
+
+let monitorSize = () => {
+  requestAnimationFrame(monitorSize);
+
+  let { width, height } = visualViewport;
+
+  if (!exports.size) {
+    exports.size = { width, height };
+    return;
+  }
+
+  if (
+    exports.size.width === width
+    && exports.size.height === height
+  ) {
+    return;
+  }
+
+  Object.assign(exports.size, { width, height });
+  eventBus.emit('viewport:resize', { ...exports.size });
+};
+
+monitorSize();
+
+},{"./eventBus":278}],291:[function(require,module,exports){
 div.windowManager = module.exports = exports = {
   defaultFloatingWidth: 600,
   defaultFloatingHeight: 400,
@@ -47248,7 +47277,7 @@ document.addEventListener('mousedown', ev => {
   }
 });
 
-},{"resizable":232}],291:[function(require,module,exports){
+},{"resizable":232}],292:[function(require,module,exports){
 div.workspaceManager = module.exports = exports = {
   all: [
     { id: 'web', icon: 'world', highlight: true },

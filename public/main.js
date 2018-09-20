@@ -41,6 +41,7 @@ require('./helper/bufFromStream');
 require('./helper/fromFile');
 require('./helper/oneFromStream');
 require('./scriptManager');
+require('./viewportManager');
 
 // UI modules.
 require('./env');
