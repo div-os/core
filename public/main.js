@@ -34,6 +34,7 @@ div.through2 = require('through2');
 
 // Non-UI modules.
 require('./apps');
+require('./eventBus');
 require('./fs');
 require('./helper/allFromStream');
 require('./helper/bufFromStream');

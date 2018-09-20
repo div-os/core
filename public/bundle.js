@@ -46321,6 +46321,11 @@ exports.get = async k => {
 };
 
 },{}],278:[function(require,module,exports){
+let EventEmitter = require('events');
+
+div.eventBus = module.exports = new EventEmitter();
+
+},{"events":60}],279:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let qs = require('qs');
 let through2 = require('through2');
@@ -46462,7 +46467,7 @@ async function getContentsStream(filePath) {
   return ret;
 }
 
-},{"qs":213,"through2":244,"vinyl":268}],279:[function(require,module,exports){
+},{"qs":213,"through2":244,"vinyl":268}],280:[function(require,module,exports){
 (function (Buffer){
 let Vinyl = require('vinyl');
 let base64 = require('base64-js');
@@ -46596,7 +46601,7 @@ exports.rimraf = async dirPath => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../helper/fromFile":283,"base64-js":22,"buffer":33,"localforage":156,"minimatch":157,"path":206,"through2":244,"vinyl":268}],280:[function(require,module,exports){
+},{"../helper/fromFile":284,"base64-js":22,"buffer":33,"localforage":156,"minimatch":157,"path":206,"through2":244,"vinyl":268}],281:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let minimatch = require('minimatch');
 let through2 = require('through2');
@@ -46718,10 +46723,10 @@ exports.src = (glob, opt) => {
   return ret;
 };
 
-},{"./backendAdapter":278,"./browserAdapter":279,"gulp-debug":88,"gulp-unzip":89,"gulp-zip":113,"minimatch":157,"through2":244,"vinyl":268}],281:[function(require,module,exports){
+},{"./backendAdapter":279,"./browserAdapter":280,"gulp-debug":88,"gulp-unzip":89,"gulp-zip":113,"minimatch":157,"through2":244,"vinyl":268}],282:[function(require,module,exports){
 module.exports = div.allFromStream = require('stream-to-array');
 
-},{"stream-to-array":240}],282:[function(require,module,exports){
+},{"stream-to-array":240}],283:[function(require,module,exports){
 (function (Buffer){
 let allFromStream = require('./allFromStream');
 
@@ -46744,7 +46749,7 @@ module.exports = div.bufFromStream = async stream => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./allFromStream":281,"buffer":33}],283:[function(require,module,exports){
+},{"./allFromStream":282,"buffer":33}],284:[function(require,module,exports){
 let bufFromStream = require('./bufFromStream');
 
 module.exports = div.fromFile = async (file, enc) => {
@@ -46765,13 +46770,13 @@ function decode(buf, enc) {
   return new TextDecoder(enc).decode(buf);
 }
 
-},{"./bufFromStream":282}],284:[function(require,module,exports){
+},{"./bufFromStream":283}],285:[function(require,module,exports){
 let allFromStream = require('./allFromStream');
 
 module.exports = div.oneFromStream =
   stream => allFromStream(stream).then(xs => xs[0]);
 
-},{"./allFromStream":281}],285:[function(require,module,exports){
+},{"./allFromStream":282}],286:[function(require,module,exports){
 exports.clickOutside = async el => {
   let ev;
 
@@ -46806,7 +46811,7 @@ exports.nextFrame = () => new Promise(resolve => {
   requestAnimationFrame(resolve);
 });
 
-},{}],286:[function(require,module,exports){
+},{}],287:[function(require,module,exports){
 let promises = require('./helper/promises');
 
 div.launcher = exports;
@@ -46926,7 +46931,7 @@ exports.selectResult = async result => {
   }
 };
 
-},{"./helper/promises":285}],287:[function(require,module,exports){
+},{"./helper/promises":286}],288:[function(require,module,exports){
 require('junior-ui/browserGlobal');
 
 window.div = exports;
@@ -46963,6 +46968,7 @@ div.through2 = require('through2');
 
 // Non-UI modules.
 require('./apps');
+require('./eventBus');
 require('./fs');
 require('./helper/allFromStream');
 require('./helper/bufFromStream');
@@ -46997,7 +47003,7 @@ require('./workspaceManager');
 })()
 .catch(err => console.error(err));
 
-},{"./apps":276,"./env":277,"./fs":280,"./helper/allFromStream":281,"./helper/bufFromStream":282,"./helper/fromFile":283,"./helper/oneFromStream":284,"./launcher":286,"./scriptManager":288,"./windowManager":289,"./workspaceManager":290,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":244}],288:[function(require,module,exports){
+},{"./apps":276,"./env":277,"./eventBus":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./windowManager":290,"./workspaceManager":291,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":244}],289:[function(require,module,exports){
 div.scriptManager = exports;
 
 exports.tryGetBySrc = src => {
@@ -47051,7 +47057,7 @@ exports.loadStylesheet = async href => {
   return link;
 };
 
-},{}],289:[function(require,module,exports){
+},{}],290:[function(require,module,exports){
 div.windowManager = module.exports = exports = {
   defaultFloatingWidth: 600,
   defaultFloatingHeight: 400,
@@ -47242,7 +47248,7 @@ document.addEventListener('mousedown', ev => {
   }
 });
 
-},{"resizable":232}],290:[function(require,module,exports){
+},{"resizable":232}],291:[function(require,module,exports){
 div.workspaceManager = module.exports = exports = {
   all: [
     { id: 'web', icon: 'world', highlight: true },
@@ -47284,4 +47290,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 },{}],"browserify-fs":[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}]},{},[287]);
+},{"dup":27}]},{},[288]);
