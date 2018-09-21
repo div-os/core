@@ -1,13 +1,52 @@
+.termApp {
+  border-top: 1px solid #acacac21;
+  background-color: #292929f0;
+  color: white;
+}
+
+.termApp.window--floating {
+  border: 1px solid #acacac21;
+  border-radius: 7px;
+}
+
+.termApp_wndHeader {
+  display: flex;
+  height: 30px;
+  border-bottom: 1px solid #acacac21;
+  padding: 6px 15px;
+  background-color: #2d2d2dd4;
+}
+
+.termApp_wndHeader-icon {
+  position: relative;
+  top: 1px;
+  width: 16px;
+  height: 16px;
+}
+
+.termApp_wndContent {
+  padding: 2px;
+  padding-top: 8px;
+}
+
 .termApp_outerContainer {
   display: flex;
   width: 100%;
   overflow: hidden;
   justify-content: center;
-  align-items: center;
-  background-color: #263342;
+}
+
+.termApp .xterm .xterm-screen {
+  width: auto !important;
+  height: auto !important;
 }
 
 .termApp .xterm .xterm-viewport {
   overflow: hidden;
+  background-color: transparent !important;
+}
+
+.termApp .xterm .xterm-rows {
+  font-family: 'Source Code Pro', monospace;
   background-color: transparent !important;
 }

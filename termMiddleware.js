@@ -1,6 +1,6 @@
 let pty = require('node-pty');
-let prefix = '/api/terms';
 
+let prefix = '/api/terms';
 let terms = exports.terms = {};
 
 exports.register = app => {
@@ -72,11 +72,26 @@ exports.register = app => {
       proc.write(d);
     });
 
+    proc.on('close', () => {
+      if (!terms[pid]) {
+        return;
+      }
+
+      ws.close();
+      delete terms[pid];
+
+      console.log(`Closed pty (PID: ${pid}).`);
+    });
+
     ws.on('close', () => {
+      if (!terms[pid]) {
+        return;
+      }
+
       proc.kill();
       delete terms[pid];
 
-      console.log(`Killed pty (PID: ${pid}).`);
+      console.log(`Closed pty (PID: ${pid}).`);
     });
 
     console.log(

@@ -299,13 +299,14 @@
   div.windowManager.decorators.push(wnd => {
     wnd = jr(wnd);
 
-    wnd.jr.findFirst('.window-header').classList.add(
+    let wndHeader = wnd.jr.findFirst('.window-header');
+    let wndTitle = wnd.jr.findFirst('.window-title');
+
+    wndHeader && wndHeader.classList.add(
       'toolbar', 'toolbar-header',
     );
 
-    wnd.jr.findFirst('.window-title').classList.add(
-      'title',
-    );
+    wndTitle && wndTitle.classList.add('title');
   });
 
   div.workspaceManager.update();

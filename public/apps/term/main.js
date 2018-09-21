@@ -14,12 +14,17 @@ async function launch(...args) {
 class TermApp {
   constructor() {
     this.fit = throttle(this.fit.bind(this), 200);
+    this.appPath = appCtrl.appPath;
   }
 
   async launch(...args) {
     let xtermPath = 'node_modules/xterm/dist';
 
     await Promise.all([
+      div.scriptManager.loadStylesheet(
+        'https://fonts.googleapis.com/css?family=Source+Code+Pro',
+      ),
+
       div.scriptManager.loadStylesheet(
         `${xtermPath}/xterm.css`,
       ),
@@ -49,11 +54,31 @@ class TermApp {
 
   async openNewTab(path) {
     this.ctrl = new Terminal();
-    this.ctrl.setOption('allowTransparency', true);
 
     this.ctrl.open(
       this.wnd.jr.findFirst('.termApp_innerContainer'),
     );
+
+    this.ctrl.setOption('rendererType', 'dom');
+
+    this.ctrl.setOption('theme', {
+      black: '#7F7F7F',
+      red: '#E15A60',
+      green: '#99C794',
+      yellow: '#ffe2a9',
+      blue: '#6796e6',
+      magenta: '#C594C5',
+      cyan: '#5FB3B3',
+      white: '#d0d0d0',
+      brightBlack: '#808080',
+      brightRed: '#f1a5ab',
+      brightGreen: '#a9cfa4',
+      brightYellow: '#ffe2a9',
+      brightBlue: '#6699CC',
+      brightMagenta: '#C594C5',
+      brightCyan: '#91c5d3',
+      brightWhite: '#d4d4d4',
+    });
 
     this.fit();
 
@@ -106,13 +131,25 @@ class TermApp {
 
   createWindow() {
     let wnd = div.windowManager.create({
-      title: 'Terminal Emulator',
+      stdHeader: false,
     });
 
     wnd.classList.add('termApp');
 
     wnd.appendChild(jr.createElement(`
-      <div class="window-content">
+      <div
+        class="termApp_wndHeader window-handle"
+        jr-on-dblclick="termApp.wnd.div.wm.toggleZoom()"
+      >
+        <img
+          class="termApp_wndHeader-icon"
+          jr-src="{{termApp.appPath}}/headerIcon.svg"
+        >
+      </div>
+    `));
+
+    wnd.appendChild(jr.createElement(`
+      <div class="termApp_wndContent window-content">
         <div class="termApp_outerContainer">
           <div class="termApp_innerContainer">
           </div>
@@ -186,6 +223,10 @@ class TermApp {
         socket.removeEventListener(evName, listener);
       }
     }
+
+    socket.addEventListener('close', () => {
+      this.wnd.remove();
+    });
   }
 
   fit() {

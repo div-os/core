@@ -47239,10 +47239,9 @@ div.windowManager = module.exports = exports = {
     }
 
     jr.findFirst('.windowManager').appendChild(wnd);
+    this.wnds.add(wnd);
 
     requestAnimationFrame(() => exports.update());
-
-    this.wnds.add(wnd);
 
     return wnd;
   },
