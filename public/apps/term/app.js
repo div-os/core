@@ -132,22 +132,14 @@ class TermApp {
 
   createWindow() {
     let wnd = div.windowManager.create({
-      stdHeader: false,
+      title: 'Terminal Emulator',
     });
 
     wnd.classList.add('termApp');
 
-    wnd.appendChild(jr.createElement(`
-      <div
-        class="termApp_wndHeader window-handle"
-        jr-on-dblclick="termApp.wnd.div.wm.toggleZoom()"
-      >
-        <img
-          class="termApp_wndHeader-icon"
-          jr-src="{{termApp.appPath}}/headerIcon.svg"
-        >
-      </div>
-    `));
+    wnd.div.wm.stdHeader.getEl().classList.add(
+      'termApp_wndHeader',
+    );
 
     wnd.appendChild(jr.createElement(`
       <div class="termApp_wndContent window-content">

@@ -1,27 +1,39 @@
 .termApp {
   border-top: 1px solid #acacac21;
   background-color: #292929f0;
-  color: white;
 }
 
 .termApp.window--floating {
-  border: 1px solid #acacac21;
-  border-radius: 7px;
+  border: 1px solid #141414;
 }
 
 .termApp_wndHeader {
-  display: flex;
-  height: 30px;
-  border-bottom: 1px solid #acacac21;
-  padding: 6px 15px;
-  background-color: #2d2d2dd4;
+  border-bottom: 1px solid #222426;
+  color: #acb3b1;
+  background-color: #3a4144;
+
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
+
+  background-image: linear-gradient(
+    to bottom, #3a4144, #323739
+  );
 }
 
-.termApp_wndHeader-icon {
-  position: relative;
-  top: 1px;
-  width: 16px;
-  height: 16px;
+.window--floating .termApp_wndHeader {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+
+  box-shadow:
+    inset 1px 0px 0px 0 rgba(255, 255, 255, 0.1),
+    inset -1px 0px 0px 0 rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.termApp_wndHeader .window-stdTitle {
+  color: inherit;
 }
 
 .termApp_wndContent {
