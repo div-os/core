@@ -48,85 +48,64 @@ class TermApp {
     Terminal.applyAddon(attach);
 
     this.wnd = jr(this.createWindow());
-    this.wnd.jr.scope.termApp = this;
 
-    this.openNewTab().catch(err => console.error(err));
-  }
+    try {
+      this.wnd.jr.scope.termApp = this;
 
-  async openNewTab(path) {
-    this.ctrl = new Terminal();
+      this.ctrl = new Terminal();
 
-    this.ctrl.open(
-      this.wnd.jr.findFirst('.termApp_innerContainer'),
-    );
+      this.ctrl.open(
+        this.wnd.jr.findFirst('.termApp_innerContainer'),
+      );
 
-    this.ctrl.setOption('rendererType', 'dom');
+      this.ctrl.setOption('rendererType', 'dom');
 
-    this.ctrl.setOption('theme', {
-      black: '#7F7F7F',
-      red: '#E15A60',
-      green: '#99C794',
-      yellow: '#ffe2a9',
-      blue: '#6796e6',
-      magenta: '#C594C5',
-      cyan: '#5FB3B3',
-      white: '#d0d0d0',
-      brightBlack: '#808080',
-      brightRed: '#f1a5ab',
-      brightGreen: '#a9cfa4',
-      brightYellow: '#ffe2a9',
-      brightBlue: '#6699CC',
-      brightMagenta: '#C594C5',
-      brightCyan: '#91c5d3',
-      brightWhite: '#d4d4d4',
-    });
+      this.ctrl.setOption('theme', {
+        black: '#7F7F7F',
+        red: '#E15A60',
+        green: '#99C794',
+        yellow: '#ffe2a9',
+        blue: '#6796e6',
+        magenta: '#C594C5',
+        cyan: '#5FB3B3',
+        white: '#d0d0d0',
+        brightBlack: '#808080',
+        brightRed: '#f1a5ab',
+        brightGreen: '#a9cfa4',
+        brightYellow: '#ffe2a9',
+        brightBlue: '#6699CC',
+        brightMagenta: '#C594C5',
+        brightCyan: '#91c5d3',
+        brightWhite: '#d4d4d4',
+      });
 
-    this.fit();
+      this.fit();
 
-    await new Promise(
-      resolve => requestAnimationFrame(resolve),
-    );
+      await new Promise(
+        resolve => requestAnimationFrame(resolve),
+      );
 
-    await this.connect();
+      await this.connect();
 
-    // FIXME: Use this.socket instead to decrease
-    // latency and eliminate race conditions.
-    this.ctrl.on('resize', ({ cols, rows }) => {
-      if (this.socket.readyState !== 1) {
-        return;
-      }
+      // FIXME: Use this.socket instead to decrease
+      // latency and eliminate race conditions.
+      this.ctrl.on('resize', ({ cols, rows }) => {
+        if (this.socket.readyState !== 1) {
+          return;
+        }
 
-      fetch([
-        'api/terms/', this.remotePid,
-        '/size?cols=', cols, '&rows=', rows,
-      ].join(''), {
-        method: 'POST',
-      })
-      .catch(err => console.error(err));
-    });
-  }
-
-  isActiveTab(tab) {
-    return this.activeTab === tab;
-  }
-
-  switchToTab(tab) {
-    this.activeTab = tab;
-  }
-
-  closeTab(tab) {
-    let isActiveTab = this.isActiveTab(tab);
-    let i = this.tabs.indexOf(tab);
-
-    if (i === -1) {
-      throw new Error(`No such tab`);
+        fetch([
+          'api/terms/', this.remotePid,
+          '/size?cols=', cols, '&rows=', rows,
+        ].join(''), {
+          method: 'POST',
+        })
+        .catch(err => console.error(err));
+      });
     }
-
-    this.tabs.splice(i, 1);
-
-    if (isActiveTab) {
-      this.activeTab =
-        this.tabs[i] || this.tabs[i - 1] || null;
+    catch (err) {
+      this.close();
+      throw err;
     }
   }
 
@@ -223,6 +202,7 @@ class TermApp {
     }
 
     socket.addEventListener('close', () => {
+      this.socket = null;
       this.close();
     });
   }
@@ -232,8 +212,8 @@ class TermApp {
       return;
     }
 
-    this.socket.close();
-    this.wnd.remove();
+    this.socket && this.socket.close();
+    this.wnd && this.wnd.remove();
 
     this.isClosed = true;
   }
