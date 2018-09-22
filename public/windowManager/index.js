@@ -40,6 +40,16 @@ div.windowManager = module.exports = exports = {
         exports.defaultFloatingHeight,
 
       close() {
+        let ev = new CustomEvent('div:wm:wndClose', {
+          bubbles: true,
+        });
+
+        wnd.dispatchEvent(ev);
+
+        if (ev.defaultPrevented) {
+          return;
+        }
+
         wnd.remove();
       },
 

@@ -151,6 +151,11 @@ class TermApp {
 
     wnd.addEventListener('resize', () => this.fit());
 
+    wnd.addEventListener('div:wm:wndClose', ev => {
+      ev.preventDefault();
+      this.close();
+    });
+
     return wnd;
   }
 
@@ -217,8 +222,19 @@ class TermApp {
     }
 
     socket.addEventListener('close', () => {
-      this.wnd.remove();
+      this.close();
     });
+  }
+
+  close() {
+    if (this.isClosed) {
+      return;
+    }
+
+    this.socket.close();
+    this.wnd.remove();
+
+    this.isClosed = true;
   }
 
   fit() {
