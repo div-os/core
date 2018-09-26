@@ -46980,6 +46980,7 @@ require('./viewportManager');
 // UI modules.
 require('./env');
 require('./launcher');
+require('./shortcutManager');
 require('./windowManager');
 require('./workspaceManager');
 
@@ -47004,7 +47005,7 @@ require('./workspaceManager');
 })()
 .catch(err => console.error(err));
 
-},{"./apps":276,"./env":277,"./eventBus":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./viewportManager":290,"./windowManager":291,"./workspaceManager":292,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":244}],289:[function(require,module,exports){
+},{"./apps":276,"./env":277,"./eventBus":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./shortcutManager":290,"./viewportManager":291,"./windowManager":292,"./workspaceManager":293,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":244}],289:[function(require,module,exports){
 div.scriptManager = exports;
 
 exports.tryGetBySrc = src => {
@@ -47061,6 +47062,83 @@ exports.loadStylesheet = async href => {
 },{}],290:[function(require,module,exports){
 let eventBus = require('./eventBus');
 
+div.shortcutManager = exports;
+
+exports.state = 'idle';
+
+document.addEventListener('keydown', ev => {
+  // Cancel shortcut if Escape is pressed.
+  if (ev.code === 'Escape' && exports.state !== 'idle') {
+    exports.state = 'idle';
+
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    return;
+  }
+
+  // Ignore non-alphanumeric keys.
+  if (!ev.code.startsWith('Key')) {
+    return;
+  }
+
+  // If the prefix shortcut is pressed...
+  if (ev.ctrlKey && ev.key === 'b') {
+    switch (exports.state) {
+      // And the state is prefixOverflow, let the keyboard
+      // event dispatch normally.
+      case 'prefixOverflow':
+        return;
+
+      // And the state is prefixed, enter prefixOverflow
+      // state and let the keyboard event dispatch
+      // normally.
+      case 'prefixed':
+        exports.state = 'prefixOverflow';
+        return;
+
+      // Otherwise, enter prefixed state and block this
+      // keyboard event's further dispatch.
+      default:
+        exports.state = 'prefixed';
+
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        return;
+    }
+  }
+
+  // Otherwise (if any other non-alphanumeric key is
+  // pressed...)
+  switch (exports.state) {
+    // And the state is prefixOverflow, enter idle state
+    // and let the keyboard event dispatch normally.
+    case 'prefixOverflow':
+      exports.state = 'idle';
+      return;
+
+    // And the state is prefixed, enter idle state, block
+    // this keyboard event's further dispatch, and emit
+    // the div:shortcutKeyDown event on the desktop event
+    // bus.
+    case 'prefixed':
+      exports.state = 'idle';
+
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      eventBus.emit('div:shortcutKeyDown', ev);
+
+      return;
+  }
+}, {
+  capture: true,
+});
+
+},{"./eventBus":278}],291:[function(require,module,exports){
+let eventBus = require('./eventBus');
+
 div.viewportManager = exports;
 
 let monitorSize = () => {
@@ -47086,7 +47164,7 @@ let monitorSize = () => {
 
 monitorSize();
 
-},{"./eventBus":278}],291:[function(require,module,exports){
+},{"./eventBus":278}],292:[function(require,module,exports){
 let eventBus = require('../eventBus');
 
 div.windowManager = module.exports = exports = {
@@ -47251,6 +47329,8 @@ div.windowManager = module.exports = exports = {
     jr.findFirst('.windowManager').appendChild(wnd);
     this.wnds.add(wnd);
 
+    exports.activeWnd = wnd;
+
     requestAnimationFrame(() => exports.update());
 
     return wnd;
@@ -47287,6 +47367,8 @@ eventBus.on('viewport:resize', () => {
 document.addEventListener('mousedown', ev => {
   let wnd = ev.target.closest('.window');
 
+  exports.activeWnd = wnd;
+
   if (!wnd) {
     return;
   }
@@ -47299,7 +47381,25 @@ document.addEventListener('mousedown', ev => {
   }
 });
 
-},{"../eventBus":278,"resizable":232}],292:[function(require,module,exports){
+eventBus.on('div:shortcutKeyDown', ev => {
+  let wnd = exports.activeWnd;
+
+  if (!wnd || !document.contains(wnd)) {
+    return;
+  }
+
+  switch (ev.key) {
+    case 'x':
+      wnd.div.wm.close();
+      break;
+
+    case 'z':
+      wnd.div.wm.toggleZoom();
+      break;
+  }
+});
+
+},{"../eventBus":278,"resizable":232}],293:[function(require,module,exports){
 div.workspaceManager = module.exports = exports = {
   all: [
     { id: 'web', icon: 'world', highlight: true },
