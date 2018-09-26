@@ -162,6 +162,8 @@ div.windowManager = module.exports = exports = {
     jr.findFirst('.windowManager').appendChild(wnd);
     this.wnds.add(wnd);
 
+    exports.activeWnd = wnd;
+
     requestAnimationFrame(() => exports.update());
 
     return wnd;
@@ -198,6 +200,8 @@ eventBus.on('viewport:resize', () => {
 document.addEventListener('mousedown', ev => {
   let wnd = ev.target.closest('.window');
 
+  exports.activeWnd = wnd;
+
   if (!wnd) {
     return;
   }
@@ -207,5 +211,23 @@ document.addEventListener('mousedown', ev => {
     Number(wnd.style.zIndex) < exports.lastZIndex
   ) {
     wnd.style.zIndex = ++exports.lastZIndex;
+  }
+});
+
+eventBus.on('div:shortcutKeyDown', ev => {
+  let wnd = exports.activeWnd;
+
+  if (!wnd || !document.contains(wnd)) {
+    return;
+  }
+
+  switch (ev.key) {
+    case 'x':
+      wnd.div.wm.close();
+      break;
+
+    case 'z':
+      wnd.div.wm.toggleZoom();
+      break;
   }
 });
