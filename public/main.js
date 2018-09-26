@@ -46,6 +46,7 @@ require('./viewportManager');
 // UI modules.
 require('./env');
 require('./launcher');
+require('./shortcutManager');
 require('./windowManager');
 require('./workspaceManager');
 
