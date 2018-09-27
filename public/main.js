@@ -44,6 +44,7 @@ require('./scriptManager');
 require('./viewportManager');
 
 // UI modules.
+require('./desktopMenu');
 require('./env');
 require('./launcher');
 require('./shortcutManager');

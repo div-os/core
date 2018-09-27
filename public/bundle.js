@@ -46293,6 +46293,21 @@ exports.reloadAndLaunch = async (appPath, ...appArgs) => {
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":33,"through2":244,"vinyl":268}],277:[function(require,module,exports){
+let eventBus = require('./eventBus');
+
+div.desktopMenu = exports;
+
+exports.isHidden = false;
+
+eventBus.on('div:shortcutKeyDown', ev => {
+  if (ev.ctrlKey || ev.altKey || ev.key !== 'b') {
+    return;
+  }
+
+  exports.isHidden = !exports.isHidden;
+});
+
+},{"./eventBus":279}],278:[function(require,module,exports){
 div.env = exports;
 
 exports.get = async k => {
@@ -46323,12 +46338,12 @@ exports.get = async k => {
   return fullEnv;
 };
 
-},{}],278:[function(require,module,exports){
+},{}],279:[function(require,module,exports){
 let EventEmitter = require('events');
 
 div.eventBus = module.exports = new EventEmitter();
 
-},{"events":60}],279:[function(require,module,exports){
+},{"events":60}],280:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let qs = require('qs');
 let through2 = require('through2');
@@ -46470,7 +46485,7 @@ async function getContentsStream(filePath) {
   return ret;
 }
 
-},{"qs":213,"through2":244,"vinyl":268}],280:[function(require,module,exports){
+},{"qs":213,"through2":244,"vinyl":268}],281:[function(require,module,exports){
 (function (Buffer){
 let Vinyl = require('vinyl');
 let base64 = require('base64-js');
@@ -46604,7 +46619,7 @@ exports.rimraf = async dirPath => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../helper/fromFile":284,"base64-js":22,"buffer":33,"localforage":156,"minimatch":157,"path":206,"through2":244,"vinyl":268}],281:[function(require,module,exports){
+},{"../helper/fromFile":285,"base64-js":22,"buffer":33,"localforage":156,"minimatch":157,"path":206,"through2":244,"vinyl":268}],282:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let minimatch = require('minimatch');
 let through2 = require('through2');
@@ -46726,10 +46741,10 @@ exports.src = (glob, opt) => {
   return ret;
 };
 
-},{"./backendAdapter":279,"./browserAdapter":280,"gulp-debug":88,"gulp-unzip":89,"gulp-zip":113,"minimatch":157,"through2":244,"vinyl":268}],282:[function(require,module,exports){
+},{"./backendAdapter":280,"./browserAdapter":281,"gulp-debug":88,"gulp-unzip":89,"gulp-zip":113,"minimatch":157,"through2":244,"vinyl":268}],283:[function(require,module,exports){
 module.exports = div.allFromStream = require('stream-to-array');
 
-},{"stream-to-array":240}],283:[function(require,module,exports){
+},{"stream-to-array":240}],284:[function(require,module,exports){
 (function (Buffer){
 let allFromStream = require('./allFromStream');
 
@@ -46752,7 +46767,7 @@ module.exports = div.bufFromStream = async stream => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./allFromStream":282,"buffer":33}],284:[function(require,module,exports){
+},{"./allFromStream":283,"buffer":33}],285:[function(require,module,exports){
 let bufFromStream = require('./bufFromStream');
 
 module.exports = div.fromFile = async (file, enc) => {
@@ -46773,13 +46788,13 @@ function decode(buf, enc) {
   return new TextDecoder(enc).decode(buf);
 }
 
-},{"./bufFromStream":283}],285:[function(require,module,exports){
+},{"./bufFromStream":284}],286:[function(require,module,exports){
 let allFromStream = require('./allFromStream');
 
 module.exports = div.oneFromStream =
   stream => allFromStream(stream).then(xs => xs[0]);
 
-},{"./allFromStream":282}],286:[function(require,module,exports){
+},{"./allFromStream":283}],287:[function(require,module,exports){
 exports.clickOutside = async el => {
   let ev;
 
@@ -46814,7 +46829,7 @@ exports.nextFrame = () => new Promise(resolve => {
   requestAnimationFrame(resolve);
 });
 
-},{}],287:[function(require,module,exports){
+},{}],288:[function(require,module,exports){
 let promises = require('./helper/promises');
 
 div.launcher = exports;
@@ -46934,7 +46949,7 @@ exports.selectResult = async result => {
   }
 };
 
-},{"./helper/promises":286}],288:[function(require,module,exports){
+},{"./helper/promises":287}],289:[function(require,module,exports){
 require('junior-ui/browserGlobal');
 
 window.div = exports;
@@ -46981,6 +46996,7 @@ require('./scriptManager');
 require('./viewportManager');
 
 // UI modules.
+require('./desktopMenu');
 require('./env');
 require('./launcher');
 require('./shortcutManager');
@@ -47008,7 +47024,7 @@ require('./workspaceManager');
 })()
 .catch(err => console.error(err));
 
-},{"./apps":276,"./env":277,"./eventBus":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./shortcutManager":290,"./viewportManager":291,"./windowManager":292,"./workspaceManager":293,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":244}],289:[function(require,module,exports){
+},{"./apps":276,"./desktopMenu":277,"./env":278,"./eventBus":279,"./fs":282,"./helper/allFromStream":283,"./helper/bufFromStream":284,"./helper/fromFile":285,"./helper/oneFromStream":286,"./launcher":288,"./scriptManager":290,"./shortcutManager":291,"./viewportManager":292,"./windowManager":293,"./workspaceManager":294,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":244}],290:[function(require,module,exports){
 div.scriptManager = exports;
 
 exports.tryGetBySrc = src => {
@@ -47062,7 +47078,7 @@ exports.loadStylesheet = async href => {
   return link;
 };
 
-},{}],290:[function(require,module,exports){
+},{}],291:[function(require,module,exports){
 let eventBus = require('./eventBus');
 
 div.shortcutManager = exports;
@@ -47140,7 +47156,7 @@ document.addEventListener('keydown', ev => {
   capture: true,
 });
 
-},{"./eventBus":278}],291:[function(require,module,exports){
+},{"./eventBus":279}],292:[function(require,module,exports){
 let eventBus = require('./eventBus');
 
 div.viewportManager = exports;
@@ -47168,7 +47184,7 @@ let monitorSize = () => {
 
 monitorSize();
 
-},{"./eventBus":278}],292:[function(require,module,exports){
+},{"./eventBus":279}],293:[function(require,module,exports){
 let eventBus = require('../eventBus');
 
 div.windowManager = module.exports = exports = {
@@ -47403,7 +47419,7 @@ eventBus.on('div:shortcutKeyDown', ev => {
   }
 });
 
-},{"../eventBus":278,"resizable":232}],293:[function(require,module,exports){
+},{"../eventBus":279,"resizable":232}],294:[function(require,module,exports){
 div.workspaceManager = module.exports = exports = {
   all: [
     { id: 'web', icon: 'world', highlight: true },
@@ -47445,4 +47461,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 },{}],"browserify-fs":[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}]},{},[288]);
+},{"dup":27}]},{},[289]);

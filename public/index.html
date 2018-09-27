@@ -63,6 +63,10 @@
     color: white;
   }
 
+  .desktopMenu--hidden {
+    display: none;
+  }
+
   .desktopMenu-leftBox,
   .desktopMenu-rightBox {
     flex-grow: 1;
@@ -200,7 +204,12 @@
     flex-direction: column;
     height: 100%;
   ">
-    <div class="desktopMenu">
+    <div jr-class="
+      desktopMenu
+
+      {{div.desktopMenu.isHidden
+        ? 'desktopMenu--hidden' : ''}}
+    ">
       <div class="desktopMenu-leftBox">
         <button
           class="desktopMenu-launcherBtn"
