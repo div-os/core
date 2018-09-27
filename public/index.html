@@ -229,7 +229,13 @@
               Applications
             </div>
 
+            <div jr-if="!div.launcher.results">
+              Loading...
+            </div>
+
             <div
+              jr-if="div.launcher.results"
+
               class="launcher-results"
               jr-list="for result of div.launcher.results"
             >
@@ -248,7 +254,7 @@
               >
                 <img
                   class="launcher-resultIcon"
-                  jr-src.bind="result.iconSrc"
+                  jr-src="{{result.path}}/{{result.icon}}"
                 >
 
                 <span

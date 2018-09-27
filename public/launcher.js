@@ -1,3 +1,4 @@
+let apps = require('./apps');
 let promises = require('./helper/promises');
 
 div.launcher = exports;
@@ -20,7 +21,9 @@ Object.defineProperty(exports, 'isOpen', {
       ++pvt.openingProcedures;
 
       try {
-        exports.makeActive(exports.results[0]);
+        exports.makeActive(
+          exports.results && exports.results[0],
+        );
 
         await promises.nextFrame();
         exports.findSearchFormInputEl().focus();
@@ -69,34 +72,20 @@ exports.toggle = () => {
   jr.update();
 };
 
-exports.results = [
-  {
-    name: 'Hello SVG',
-    iconSrc: 'apps/helloSvg/icon.svg',
-    appPath: 'apps/helloSvg',
-    appArgs: ['World'],
-  },
+exports.results = null;
 
-  {
-    name: 'Terminal Emulator',
-    iconSrc: 'apps/term/icon.svg',
-    appPath: 'apps/term',
-  },
-
-  {
-    name: 'Files',
-    iconSrc: 'apps/files/icon.svg',
-    appPath: 'apps/files',
-  },
-
-  {
-    name: 'Metal Web Browser',
-    iconSrc: 'apps/metal/icon.svg',
-    appPath: 'apps/metal',
-  },
-];
+apps.enumerate()
+  .then(xs => {
+    exports.results = xs;
+    jr.update();
+  })
+  .catch(err => console.error(err));
 
 exports.makeActive = result => {
+  if (!exports.results) {
+    return;
+  }
+
   for (let another of exports.results) {
     another.isActive = another === result;
   }
@@ -109,7 +98,7 @@ exports.selectResult = async result => {
     exports.close();
 
     await div.apps.launch(
-      result.appPath, ...result.appArgs || [],
+      result.path, ...result.appArgs || [],
     );
   }
   catch (err) {

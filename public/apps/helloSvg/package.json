@@ -1,0 +1,20 @@
+{
+  "name": "divos-hello-svg",
+  "version": "1.0.0",
+  "author": "Gui Prá (super.driver.512@gmail.com)",
+  "license": "AGPL-3.0+",
+
+  "scripts": {
+    "build": "bash build.sh"
+  },
+
+  "divApp": {
+    "name": "Hello SVG",
+    "icon": "appIcon.svg",
+    "main": "app.js",
+
+    "launcher": {
+      "appArgs": ["World"]
+    }
+  }
+}

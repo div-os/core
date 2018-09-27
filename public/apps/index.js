@@ -3,6 +3,10 @@ let t2 = require('through2');
 
 div.apps = exports;
 
+exports.enumerate = async () => {
+  return [];
+};
+
 exports.install = pkg => {
 };
 
