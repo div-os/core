@@ -4,63 +4,19 @@
   document.currentScript.div.load.resolve(appCtrl);
 
   async function launch(...args) {
-    let app = new MetalApp();
+    let app = new HelloWorldApp();
     await app.launch(...args);
 
     return app;
   }
-
-  class MetalApp {
-    async launch(url) {
-      await div.scriptManager.loadStylesheet(
-        `${appCtrl.appPath}/styles.css`,
-      );
-
-      let wnd = this.wnd = jr(div.windowManager.create({
-        title: 'Metal Web Browser',
-        iframeSrc: url || 'https://suckless.org',
-      }));
-
-      let urlInputEl = this.urlInputEl = jr.createElement(`
-        <input
-          class="metalApp_urlInput title"
-          placeholder="Metal Web Browser"
-          spellcheck="false"
-        >
-      `);
-
-      urlInputEl.addEventListener('keyup', ev => {
-        if (ev.key !== 'Enter') {
-          return;
-        }
-
-        this.navigate(ev.target.value);
-        ev.target.blur();
-      });
-
-      {
-        let titleEl = wnd.jr.findFirst('.title');
-
-        titleEl.parentElement.replaceChild(
-          urlInputEl, titleEl,
-        );
-      }
-
-      this.iframeEl = wnd.jr.findFirst('iframe');
-
-      wnd.jr.scope.metalApp = this;
-
-      window.addEventListener('message', ev => {
-        let { data } = ev;
-
-        if (data.docLocation) {
-          this.urlInputEl.value = data.docLocation;
-        }
-      });
+  
+  class HelloWorldApp {
+  
+    constructor() {
     }
 
-    navigate(url) {
-      this.iframeEl.src = url;
+    async launch(...args) {
+      console.log("Hello World!");
     }
   }
 })();

@@ -1,3 +1,9 @@
+let fs = require('fs');
+
+for(let k of ['ReadStream', 'WriteStream']){
+  fs[k] = {prototype: {} };
+}
+
 require('junior-ui/browserGlobal');
 
 window.div = exports;

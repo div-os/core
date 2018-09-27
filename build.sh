@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e
 
-rm -rf node_modules/graceful-fs
-ln -s @n2liquid/graceful-fs node_modules
-
 mkdir -p public/deps
 cp node_modules/sw-toolbox/sw-toolbox.js public/deps
 
