@@ -47132,6 +47132,7 @@ document.addEventListener('keydown', ev => {
       ev.stopPropagation();
 
       eventBus.emit('div:shortcutKeyDown', ev);
+      jr.update();
 
       return;
   }
