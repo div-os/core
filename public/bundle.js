@@ -25144,6 +25144,8 @@ jr.init = () => {
     }
 
     for (let [el, attrs] of dirtyAttrs.entries()) {
+      jr.initEl(el);
+
       let indexEntry = jr.index.get(el);
       let indexAttrs = indexEntry.attrs;
 
@@ -25671,6 +25673,7 @@ jr.updateEl = el => {
 
       if (attr.name.startsWith('jr-on-')) {
         jr.updateEventAttr(el, attr.name);
+        continue;
       }
 
       let computed = attr.value =
