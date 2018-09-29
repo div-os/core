@@ -53,18 +53,66 @@ div.windowManager = module.exports = exports = {
         wnd.remove();
       },
 
-      toggleZoom() {
-        wnd.classList.toggle('window--zoomed');
-        wnd.classList.toggle('window--floating');
+      toggleFullscreen() {
+        wnd.div.wm.fullscreen = !wnd.div.wm.fullscreen;
+
+        this.updateClassList();
 
         wnd.dispatchEvent(new CustomEvent('resize', {
           bubbles: true,
         }));
       },
+
+      toggleZoom() {
+        let wndWmState = wnd.div.wm;
+
+        if (!wndWmState.fullscreen) {
+          for (let k of ['zoomed', 'floating']) {
+            wndWmState[k] = !wndWmState[k];
+          }
+        }
+        else {
+          wndWmState.fullscreen = false;
+
+          wndWmState.zoomed = true;
+          wndWmState.floating = false;
+        }
+
+        this.updateClassList();
+
+        wnd.dispatchEvent(new CustomEvent('resize', {
+          bubbles: true,
+        }));
+      },
+
+      updateClassList() {
+        let classKeys = [
+          'fullscreen',
+          'zoomed',
+          'floating',
+        ];
+
+        wnd.classList.remove(
+          ...classKeys.map(k => `window--${k}`),
+        );
+
+        for (let k of classKeys) {
+          if (!wnd.div.wm[k]) {
+            continue;
+          }
+
+          wnd.classList.add(`window--${k}`);
+
+          if (k === 'fullscreen') {
+            break;
+          }
+        }
+      },
     };
 
     if (opt.floating) {
-      wnd.classList.add('window--floating');
+      wnd.div.wm.floating = true;
+      wnd.div.wm.updateClassList();
 
       wnd.style.left = '60px';
       wnd.style.top = '50px';
@@ -224,6 +272,10 @@ eventBus.on('div:shortcutKeyDown', ev => {
   switch (ev.key) {
     case 'x':
       wnd.div.wm.close();
+      break;
+
+    case 'f':
+      wnd.div.wm.toggleFullscreen();
       break;
 
     case 'z':

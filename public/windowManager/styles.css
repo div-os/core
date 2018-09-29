@@ -11,6 +11,7 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.window--fullscreen,
 .window--zoomed {
   left: 0 !important;
   right: 0 !important;
@@ -18,8 +19,20 @@
   bottom: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  border-top: 1px solid #9d9d9d;
   transform: none !important;
+}
+
+.window--fullscreen .resizable-handle,
+.window--zoomed .resizable-handle {
+  display: none;
+}
+
+.window--fullscreen {
+  position: fixed;
+}
+
+.window--zoomed {
+  border-top: 1px solid #9d9d9d;
 }
 
 .window--floating {
