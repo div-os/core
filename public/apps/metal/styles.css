@@ -4,13 +4,13 @@
 }
 
 .metalApp_contentarea {
+  flex-grow: 1;
   display: flex;
-  justify-content: stretch;
-  align-items: stretch;
   background-color: red;
 }
 
 .metalApp_contentframe {
+  width: 100%;
   border: none;
 }
 
