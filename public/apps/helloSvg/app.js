@@ -1,13 +1,13 @@
 (() => {
-  let appCtrl = { launch };
+  let { appCtrl } = document.currentScript.div;
 
-  document.currentScript.div.load.resolve(appCtrl);
-
-  function launch(...args) {
+  appCtrl.launch = (...args) => {
     div.windowManager.create({
       args,
       title: 'Hello SVG',
-      iframeSrc: `${appCtrl.appPath}/index.html`,
+      iframeSrc: `${appCtrl.path}/index.html`,
     });
-  }
+  };
+
+  appCtrl.scriptAttached.resolve();
 })();

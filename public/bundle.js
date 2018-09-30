@@ -46127,83 +46127,17 @@ Crc32Watcher.prototype._transform = function(chunk, encoding, cb) {
 
 }).call(this,require("buffer").Buffer,require("timers").setImmediate)
 },{"buffer":33,"buffer-crc32":30,"events":60,"fs":"browserify-fs","stream":239,"timers":247,"util":267,"zlib":29}],276:[function(require,module,exports){
-(function (Buffer){
-let Vinyl = require('vinyl');
-let t2 = require('through2');
-
 div.apps = exports;
 
-exports.loaded = [];
+exports.appCtrls = {};
 
-exports.enumerate = async () => {
-  return [];
+exports.findAppCtrlByPath = path => {
+  return Object.values(exports.appCtrls).find(
+    app => app.path === path,
+  );
 };
 
-exports.install = pkg => {
-};
-
-exports.installArchive = async archive => {
-  let stream = t2.obj();
-  let destPath = `/apps/${archive.stem}`;
-
-  await div.fs.browser.rimraf(destPath);
-
-  let pipeline = stream
-    .pipe(div.fs.gulpUnzip())
-    .pipe(div.fs.gulpDebug({
-      logger: console.log.bind(console),
-    }))
-    .pipe(div.fs.browser.dest(destPath));
-
-  stream.push(archive);
-  stream.end();
-
-  await new Promise((resolve, reject) => {
-    pipeline.on('error', reject);
-    pipeline.on('end', resolve);
-  });
-};
-
-exports.fetchAndInstall = async path => {
-  let res = await fetch(path);
-
-  if (!res.ok) {
-    throw new Error(
-      `Fetch error: ${res.status} ${res.statusText}`,
-    );
-  }
-
-  let buf = Buffer.from(await (async () => {
-    let reader = new FileReader();
-
-    let readPromise = new Promise((resolve, reject) => {
-      reader.onerror = reject;
-      reader.onload = ev => resolve(ev.target.result);
-    });
-
-    reader.readAsArrayBuffer(await res.blob());
-
-    return await readPromise;
-  })());
-
-  return await exports.installArchive(new Vinyl({
-    path,
-    contents: buf,
-
-    pipe: target => {
-      let stream = t2.obj();
-      stream.push(buf);
-
-      return stream.pipe(target);
-    },
-  }));
-};
-
-exports.loaded.findByPath = appPath => exports.loaded.find(
-  app => app.path === appPath,
-);
-
-exports.loadPkgMeta = async appPath => {
+exports.fetchPkgMeta = async appPath => {
   let res = await fetch(`${appPath}/package.json`);
 
   if (!res.ok) {
@@ -46216,14 +46150,15 @@ exports.loadPkgMeta = async appPath => {
 };
 
 exports.load = async appPath => {
-  let appCtrl = exports.loaded.findByPath(appPath);
+  let appCtrl = exports.findAppCtrlByPath(appPath);
 
   if (appCtrl) {
     return appCtrl;
   }
 
-  let meta = await exports.loadPkgMeta(appPath);
-  let { divApp } = meta;
+  let pkgMeta = await exports.fetchPkgMeta(appPath);
+
+  let { divApp } = pkgMeta;
 
   if (!divApp) {
     throw new Error(
@@ -46231,7 +46166,11 @@ exports.load = async appPath => {
     );
   }
 
-  appCtrl = { path: appPath, meta };
+  appCtrl = {
+    id: `${pkgMeta.name}@${pkgMeta.version}`,
+    path: appPath,
+    pkgMeta,
+  };
 
   let script = document.createElement('script');
   script.src = `${appPath}/${divApp.main}`;
@@ -46270,28 +46209,9 @@ exports.load = async appPath => {
     throw new Error(`${appPath} failed to load`);
   }
 
-  exports.loaded.push(appCtrl);
+  exports.appCtrls[appCtrl.id] = appCtrl;
 
   return appCtrl;
-};
-
-exports.unload = async appPath => {
-  let scriptPath = `${appPath}/app.js`;
-  let script = jr.findFirst(`script[src="${scriptPath}"]`);
-
-  if (!script) {
-    throw new Error(`${appPath} is not loaded`);
-  }
-
-  script.remove();
-};
-
-exports.reload = async appPath => {
-  if (exports.loaded.findByPath(appPath)) {
-    await exports.unload(appPath);
-  }
-
-  return await exports.load(appPath);
 };
 
 exports.launch = async (appPath, ...appArgs) => {
@@ -46299,13 +46219,7 @@ exports.launch = async (appPath, ...appArgs) => {
   return await appCtrl.launch(...appArgs);
 };
 
-exports.reloadAndLaunch = async (appPath, ...appArgs) => {
-  await exports.reload(appPath);
-  return await exports.launch(appPath, ...appArgs);
-};
-
-}).call(this,require("buffer").Buffer)
-},{"buffer":33,"through2":244,"vinyl":268}],277:[function(require,module,exports){
+},{}],277:[function(require,module,exports){
 div.env = exports;
 
 exports.get = async k => {
@@ -46904,13 +46818,6 @@ exports.toggle = () => {
 
 exports.results = null;
 
-apps.enumerate()
-  .then(xs => {
-    exports.results = xs;
-    jr.update();
-  })
-  .catch(err => console.error(err));
-
 exports.makeActive = result => {
   if (!exports.results) {
     return;
@@ -46987,27 +46894,6 @@ require('./env');
 require('./launcher');
 require('./windowManager');
 require('./workspaceManager');
-
-(async () => {
-  for (let name of [
-    'files',
-    'helloSvg',
-    'metal',
-  ]) {
-    try {
-      let path = `apps/${name}/${name}.zip`;
-
-      console.warn(`Fetching and installing ${path}...`);
-      await div.apps.fetchAndInstall(path);
-
-      console.warn(`Installed: /browser/apps/${name}`);
-    }
-    catch (err) {
-      console.error(err);
-    }
-  }
-})()
-.catch(err => console.error(err));
 
 },{"./apps":276,"./env":277,"./eventBus":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./viewportManager":290,"./windowManager":291,"./workspaceManager":292,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":244}],289:[function(require,module,exports){
 div.scriptManager = exports;

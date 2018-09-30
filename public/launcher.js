@@ -74,13 +74,6 @@ exports.toggle = () => {
 
 exports.results = null;
 
-apps.enumerate()
-  .then(xs => {
-    exports.results = xs;
-    jr.update();
-  })
-  .catch(err => console.error(err));
-
 exports.makeActive = result => {
   if (!exports.results) {
     return;

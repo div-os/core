@@ -1,19 +1,19 @@
 (() => {
-  let appCtrl = { launch };
+  let { appCtrl } = document.currentScript.div;
 
-  document.currentScript.div.load.resolve(appCtrl);
-
-  async function launch(...args) {
+  appCtrl.launch = async function (...args) {
     let app = new MetalApp();
     await app.launch(...args);
 
     return app;
-  }
+  };
+
+  appCtrl.scriptAttached.resolve();
 
   class MetalApp {
     async launch(url) {
       await div.scriptManager.loadStylesheet(
-        `${appCtrl.appPath}/styles.css`,
+        `${appCtrl.path}/styles.css`,
       );
 
       let wnd = this.wnd = jr(div.windowManager.create({

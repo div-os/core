@@ -1,14 +1,14 @@
 (() => {
-  let appCtrl = { launch };
+  let { appCtrl } = document.currentScript.div;
 
-  document.currentScript.div.load.resolve(appCtrl);
-
-  async function launch(...args) {
+  appCtrl.launch = async function (...args) {
     let app = new FilesApp();
     await app.launch(...args);
 
     return app;
-  }
+  };
+
+  appCtrl.scriptAttached.resolve();
 
   class FilesApp {
     constructor() {
@@ -49,11 +49,11 @@
 
     async launch(...args) {
       await div.scriptManager.loadStylesheet(
-        `${appCtrl.appPath}/icons.css`,
+        `${appCtrl.path}/icons.css`,
       );
 
       await div.scriptManager.loadStylesheet(
-        `${appCtrl.appPath}/styles.css`,
+        `${appCtrl.path}/styles.css`,
       );
 
       await this.updateHomePath();

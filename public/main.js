@@ -48,24 +48,3 @@ require('./env');
 require('./launcher');
 require('./windowManager');
 require('./workspaceManager');
-
-(async () => {
-  for (let name of [
-    'files',
-    'helloSvg',
-    'metal',
-  ]) {
-    try {
-      let path = `apps/${name}/${name}.zip`;
-
-      console.warn(`Fetching and installing ${path}...`);
-      await div.apps.fetchAndInstall(path);
-
-      console.warn(`Installed: /browser/apps/${name}`);
-    }
-    catch (err) {
-      console.error(err);
-    }
-  }
-})()
-.catch(err => console.error(err));

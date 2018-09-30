@@ -1,76 +1,14 @@
-let Vinyl = require('vinyl');
-let t2 = require('through2');
-
 div.apps = exports;
 
-exports.loaded = [];
+exports.appCtrls = {};
 
-exports.loaded.findByPath = appPath => exports.loaded.find(
-  app => app.path === appPath,
-);
-
-exports.enumerate = async () => {
-  return [];
+exports.findAppCtrlByPath = path => {
+  return Object.values(exports.appCtrls).find(
+    app => app.path === path,
+  );
 };
 
-exports.installArchive = async archive => {
-  let stream = t2.obj();
-  let destPath = `/apps/${archive.stem}`;
-
-  await div.fs.browser.rimraf(destPath);
-
-  let pipeline = stream
-    .pipe(div.fs.gulpUnzip())
-    .pipe(div.fs.gulpDebug({
-      logger: console.log.bind(console),
-    }))
-    .pipe(div.fs.browser.dest(destPath));
-
-  stream.push(archive);
-  stream.end();
-
-  await new Promise((resolve, reject) => {
-    pipeline.on('error', reject);
-    pipeline.on('end', resolve);
-  });
-};
-
-exports.fetchAndInstall = async path => {
-  let res = await fetch(path);
-
-  if (!res.ok) {
-    throw new Error(
-      `Fetch error: ${res.status} ${res.statusText}`,
-    );
-  }
-
-  let buf = Buffer.from(await (async () => {
-    let reader = new FileReader();
-
-    let readPromise = new Promise((resolve, reject) => {
-      reader.onerror = reject;
-      reader.onload = ev => resolve(ev.target.result);
-    });
-
-    reader.readAsArrayBuffer(await res.blob());
-
-    return await readPromise;
-  })());
-
-  return await exports.installArchive(new Vinyl({
-    path,
-    contents: buf,
-
-    pipe: target => {
-      let stream = t2.obj();
-      stream.push(buf);
-
-      return stream.pipe(target);
-    },
-  }));
-};
-
-exports.loadPkgMeta = async appPath => {
+exports.fetchPkgMeta = async appPath => {
   let res = await fetch(`${appPath}/package.json`);
 
   if (!res.ok) {
@@ -83,14 +21,15 @@ exports.loadPkgMeta = async appPath => {
 };
 
 exports.load = async appPath => {
-  let appCtrl = exports.loaded.findByPath(appPath);
+  let appCtrl = exports.findAppCtrlByPath(appPath);
 
   if (appCtrl) {
     return appCtrl;
   }
 
-  let meta = await exports.loadPkgMeta(appPath);
-  let { divApp } = meta;
+  let pkgMeta = await exports.fetchPkgMeta(appPath);
+
+  let { divApp } = pkgMeta;
 
   if (!divApp) {
     throw new Error(
@@ -98,7 +37,11 @@ exports.load = async appPath => {
     );
   }
 
-  appCtrl = { path: appPath, meta };
+  appCtrl = {
+    id: `${pkgMeta.name}@${pkgMeta.version}`,
+    path: appPath,
+    pkgMeta,
+  };
 
   let script = document.createElement('script');
   script.src = `${appPath}/${divApp.main}`;
@@ -137,7 +80,7 @@ exports.load = async appPath => {
     throw new Error(`${appPath} failed to load`);
   }
 
-  exports.loaded.push(appCtrl);
+  exports.appCtrls[appCtrl.id] = appCtrl;
 
   return appCtrl;
 };
