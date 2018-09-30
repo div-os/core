@@ -3,11 +3,14 @@ let t2 = require('through2');
 
 div.apps = exports;
 
+exports.loaded = [];
+
+exports.loaded.findByPath = appPath => exports.loaded.find(
+  app => app.path === appPath,
+);
+
 exports.enumerate = async () => {
   return [];
-};
-
-exports.install = pkg => {
 };
 
 exports.installArchive = async archive => {
@@ -67,100 +70,79 @@ exports.fetchAndInstall = async path => {
   }));
 };
 
-exports.makeScriptPath = appPath => `${appPath}/app.js`;
+exports.loadPkgMeta = async appPath => {
+  let res = await fetch(`${appPath}/package.json`);
 
-exports.tryGetScript = appPath => {
-  let script = jr.findFirst(
-    `script[src="${exports.makeScriptPath(appPath)}"]`,
-  );
-
-  if (!script || !script.div || !script.div.appCtrl) {
-    return null;
+  if (!res.ok) {
+    throw new Error(
+      `Fetch error: ${res.status} ${res.statusText}`,
+    );
   }
 
-  return script;
+  return await res.json();
 };
-
-exports.getScript = appPath => {
-  let script = exports.tryGetScript(appPath);
-
-  if (!script) {
-    throw new Error(`${appPath} is not loaded`);
-  }
-
-  return script;
-};
-
-exports.isLoaded =
-  appPath => !!exports.tryGetScript(appPath);
 
 exports.load = async appPath => {
-  let script = exports.tryGetScript(appPath);
+  let appCtrl = exports.loaded.findByPath(appPath);
 
-  if (script) {
-    return script.div.appCtrl;
+  if (appCtrl) {
+    return appCtrl;
   }
 
-  script = document.createElement('script');
-  script.src = exports.makeScriptPath(appPath);
+  let meta = await exports.loadPkgMeta(appPath);
+  let { divApp } = meta;
 
-  script.div = {};
+  if (!divApp) {
+    throw new Error(
+      `${appPath} is not a divOS application`,
+    );
+  }
 
-  let appLoadPromise = new Promise((resolve, reject) => {
-    script.div.load = { resolve, reject };
-  });
+  appCtrl = { path: appPath, meta };
+
+  let script = document.createElement('script');
+  script.src = `${appPath}/${divApp.main}`;
+
+  script.div = { appCtrl };
+  appCtrl.script = script;
+
+  let scriptAttachedPromise = new Promise(
+    (resolve, reject) => {
+      appCtrl.scriptAttached = { resolve, reject };
+    },
+  );
 
   document.head.append(script);
 
   // Awaits async script loading.
   await new Promise((resolve, reject) => {
-    script.addEventListener('error', ev => reject(ev.error));
+    script.addEventListener(
+      'error', ev => reject(ev.error),
+    );
+
     script.addEventListener('load', resolve);
   });
 
-  // Awaits at most 250ms for app load / appCtrl callback.
-  let appCtrl = await Promise.race([
-    appLoadPromise,
-    new Promise(r => setTimeout(r), 250),
-  ])
-  .catch(err => console.error(err));
-
-  // appCtrl is falsy in case of errors or callback timeout.
-  if (!appCtrl) {
+  try {
+    // Awaits at most 250ms for script attachment callback.
+    await Promise.race([
+      scriptAttachedPromise,
+      new Promise(r => setTimeout(r), 250),
+    ]);
+  }
+  catch (err) {
+    console.error(err);
     script.remove();
+
     throw new Error(`${appPath} failed to load`);
   }
 
-  appCtrl.appPath = appPath;
+  exports.loaded.push(appCtrl);
 
-  return script.div.appCtrl = appCtrl;
-};
-
-exports.unload = async appPath => {
-  let scriptPath = `${appPath}/app.js`;
-  let script = jr.findFirst(`script[src="${scriptPath}"]`);
-
-  if (!script) {
-    throw new Error(`${appPath} is not loaded`);
-  }
-
-  script.remove();
-};
-
-exports.reload = async appPath => {
-  if (exports.isLoaded(appPath)) {
-    await exports.unload(appPath);
-  }
-
-  return await exports.load(appPath);
+  return appCtrl;
 };
 
 exports.launch = async (appPath, ...appArgs) => {
   let appCtrl = await exports.load(appPath);
   return await appCtrl.launch(...appArgs);
-};
-
-exports.reloadAndLaunch = async (appPath, ...appArgs) => {
-  await exports.reload(appPath);
-  return await exports.launch(appPath, ...appArgs);
 };

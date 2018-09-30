@@ -1,4 +1,752 @@
 require=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+'use strict'
+
+var fs = require('fs')
+
+module.exports = clone(fs)
+
+function clone (obj) {
+  if (obj === null || typeof obj !== 'object')
+    return obj
+
+  if (obj instanceof Object)
+    var copy = { __proto__: obj.__proto__ }
+  else
+    var copy = Object.create(null)
+
+  Object.getOwnPropertyNames(obj).forEach(function (key) {
+    Object.defineProperty(copy, key, Object.getOwnPropertyDescriptor(obj, key))
+  })
+
+  return copy
+}
+
+},{"fs":"browserify-fs"}],2:[function(require,module,exports){
+(function (process){
+var fs = require('fs')
+var polyfills = require('./polyfills.js')
+var legacy = require('./legacy-streams.js')
+var queue = []
+
+var util = require('util')
+
+function noop () {}
+
+var debug = noop
+if (util.debuglog)
+  debug = util.debuglog('gfs4')
+else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
+  debug = function() {
+    var m = util.format.apply(util, arguments)
+    m = 'GFS4: ' + m.split(/\n/).join('\nGFS4: ')
+    console.error(m)
+  }
+
+if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
+  process.on('exit', function() {
+    debug(queue)
+    require('assert').equal(queue.length, 0)
+  })
+}
+
+module.exports = patch(require('./fs.js'))
+if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH) {
+  module.exports = patch(fs)
+}
+
+// Always patch fs.close/closeSync, because we want to
+// retry() whenever a close happens *anywhere* in the program.
+// This is essential when multiple graceful-fs instances are
+// in play at the same time.
+module.exports.close =
+fs.close = (function (fs$close) { return function (fd, cb) {
+  return fs$close.call(fs, fd, function (err) {
+    if (!err)
+      retry()
+
+    if (typeof cb === 'function')
+      cb.apply(this, arguments)
+  })
+}})(fs.close)
+
+module.exports.closeSync =
+fs.closeSync = (function (fs$closeSync) { return function (fd) {
+  // Note that graceful-fs also retries when fs.closeSync() fails.
+  // Looks like a bug to me, although it's probably a harmless one.
+  var rval = fs$closeSync.apply(fs, arguments)
+  retry()
+  return rval
+}})(fs.closeSync)
+
+function patch (fs) {
+  // Everything that references the open() function needs to be in here
+  polyfills(fs)
+  fs.gracefulify = patch
+  fs.FileReadStream = ReadStream;  // Legacy name.
+  fs.FileWriteStream = WriteStream;  // Legacy name.
+  fs.createReadStream = createReadStream
+  fs.createWriteStream = createWriteStream
+  var fs$readFile = fs.readFile
+  fs.readFile = readFile
+  function readFile (path, options, cb) {
+    if (typeof options === 'function')
+      cb = options, options = null
+
+    return go$readFile(path, options, cb)
+
+    function go$readFile (path, options, cb) {
+      return fs$readFile(path, options, function (err) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$readFile, [path, options, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
+    }
+  }
+
+  var fs$writeFile = fs.writeFile
+  fs.writeFile = writeFile
+  function writeFile (path, data, options, cb) {
+    if (typeof options === 'function')
+      cb = options, options = null
+
+    return go$writeFile(path, data, options, cb)
+
+    function go$writeFile (path, data, options, cb) {
+      return fs$writeFile(path, data, options, function (err) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$writeFile, [path, data, options, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
+    }
+  }
+
+  var fs$appendFile = fs.appendFile
+  if (fs$appendFile)
+    fs.appendFile = appendFile
+  function appendFile (path, data, options, cb) {
+    if (typeof options === 'function')
+      cb = options, options = null
+
+    return go$appendFile(path, data, options, cb)
+
+    function go$appendFile (path, data, options, cb) {
+      return fs$appendFile(path, data, options, function (err) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$appendFile, [path, data, options, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
+    }
+  }
+
+  var fs$readdir = fs.readdir
+  fs.readdir = readdir
+  function readdir (path, options, cb) {
+    var args = [path]
+    if (typeof options !== 'function') {
+      args.push(options)
+    } else {
+      cb = options
+    }
+    args.push(go$readdir$cb)
+
+    return go$readdir(args)
+
+    function go$readdir$cb (err, files) {
+      if (files && files.sort)
+        files.sort()
+
+      if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+        enqueue([go$readdir, [args]])
+      else {
+        if (typeof cb === 'function')
+          cb.apply(this, arguments)
+        retry()
+      }
+    }
+  }
+
+  function go$readdir (args) {
+    return fs$readdir.apply(fs, args)
+  }
+
+  if (process.version.substr(0, 4) === 'v0.8') {
+    var legStreams = legacy(fs)
+    ReadStream = legStreams.ReadStream
+    WriteStream = legStreams.WriteStream
+  }
+
+  // Avoid throwing on startup if browserify-fs is replacing fs.
+  if (fs.ReadStream) {
+    var fs$ReadStream = fs.ReadStream
+    ReadStream.prototype = Object.create(fs$ReadStream.prototype)
+    ReadStream.prototype.open = ReadStream$open
+
+    var fs$WriteStream = fs.WriteStream
+    WriteStream.prototype = Object.create(fs$WriteStream.prototype)
+    WriteStream.prototype.open = WriteStream$open
+
+    fs.ReadStream = ReadStream
+    fs.WriteStream = WriteStream
+  }
+
+  function ReadStream (path, options) {
+    if (this instanceof ReadStream)
+      return fs$ReadStream.apply(this, arguments), this
+    else
+      return ReadStream.apply(Object.create(ReadStream.prototype), arguments)
+  }
+
+  function ReadStream$open () {
+    var that = this
+    open(that.path, that.flags, that.mode, function (err, fd) {
+      if (err) {
+        if (that.autoClose)
+          that.destroy()
+
+        that.emit('error', err)
+      } else {
+        that.fd = fd
+        that.emit('open', fd)
+        that.read()
+      }
+    })
+  }
+
+  function WriteStream (path, options) {
+    if (this instanceof WriteStream)
+      return fs$WriteStream.apply(this, arguments), this
+    else
+      return WriteStream.apply(Object.create(WriteStream.prototype), arguments)
+  }
+
+  function WriteStream$open () {
+    var that = this
+    open(that.path, that.flags, that.mode, function (err, fd) {
+      if (err) {
+        that.destroy()
+        that.emit('error', err)
+      } else {
+        that.fd = fd
+        that.emit('open', fd)
+      }
+    })
+  }
+
+  function createReadStream (path, options) {
+    return new ReadStream(path, options)
+  }
+
+  function createWriteStream (path, options) {
+    return new WriteStream(path, options)
+  }
+
+  var fs$open = fs.open
+  fs.open = open
+  function open (path, flags, mode, cb) {
+    if (typeof mode === 'function')
+      cb = mode, mode = null
+
+    return go$open(path, flags, mode, cb)
+
+    function go$open (path, flags, mode, cb) {
+      return fs$open(path, flags, mode, function (err, fd) {
+        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+          enqueue([go$open, [path, flags, mode, cb]])
+        else {
+          if (typeof cb === 'function')
+            cb.apply(this, arguments)
+          retry()
+        }
+      })
+    }
+  }
+
+  return fs
+}
+
+function enqueue (elem) {
+  debug('ENQUEUE', elem[0].name, elem[1])
+  queue.push(elem)
+}
+
+function retry () {
+  var elem = queue.shift()
+  if (elem) {
+    debug('RETRY', elem[0].name, elem[1])
+    elem[0].apply(null, elem[1])
+  }
+}
+
+}).call(this,require('_process'))
+},{"./fs.js":1,"./legacy-streams.js":3,"./polyfills.js":4,"_process":211,"assert":17,"fs":"browserify-fs","util":267}],3:[function(require,module,exports){
+(function (process){
+var Stream = require('stream').Stream
+
+module.exports = legacy
+
+function legacy (fs) {
+  return {
+    ReadStream: ReadStream,
+    WriteStream: WriteStream
+  }
+
+  function ReadStream (path, options) {
+    if (!(this instanceof ReadStream)) return new ReadStream(path, options);
+
+    Stream.call(this);
+
+    var self = this;
+
+    this.path = path;
+    this.fd = null;
+    this.readable = true;
+    this.paused = false;
+
+    this.flags = 'r';
+    this.mode = 438; /*=0666*/
+    this.bufferSize = 64 * 1024;
+
+    options = options || {};
+
+    // Mixin options into this
+    var keys = Object.keys(options);
+    for (var index = 0, length = keys.length; index < length; index++) {
+      var key = keys[index];
+      this[key] = options[key];
+    }
+
+    if (this.encoding) this.setEncoding(this.encoding);
+
+    if (this.start !== undefined) {
+      if ('number' !== typeof this.start) {
+        throw TypeError('start must be a Number');
+      }
+      if (this.end === undefined) {
+        this.end = Infinity;
+      } else if ('number' !== typeof this.end) {
+        throw TypeError('end must be a Number');
+      }
+
+      if (this.start > this.end) {
+        throw new Error('start must be <= end');
+      }
+
+      this.pos = this.start;
+    }
+
+    if (this.fd !== null) {
+      process.nextTick(function() {
+        self._read();
+      });
+      return;
+    }
+
+    fs.open(this.path, this.flags, this.mode, function (err, fd) {
+      if (err) {
+        self.emit('error', err);
+        self.readable = false;
+        return;
+      }
+
+      self.fd = fd;
+      self.emit('open', fd);
+      self._read();
+    })
+  }
+
+  function WriteStream (path, options) {
+    if (!(this instanceof WriteStream)) return new WriteStream(path, options);
+
+    Stream.call(this);
+
+    this.path = path;
+    this.fd = null;
+    this.writable = true;
+
+    this.flags = 'w';
+    this.encoding = 'binary';
+    this.mode = 438; /*=0666*/
+    this.bytesWritten = 0;
+
+    options = options || {};
+
+    // Mixin options into this
+    var keys = Object.keys(options);
+    for (var index = 0, length = keys.length; index < length; index++) {
+      var key = keys[index];
+      this[key] = options[key];
+    }
+
+    if (this.start !== undefined) {
+      if ('number' !== typeof this.start) {
+        throw TypeError('start must be a Number');
+      }
+      if (this.start < 0) {
+        throw new Error('start must be >= zero');
+      }
+
+      this.pos = this.start;
+    }
+
+    this.busy = false;
+    this._queue = [];
+
+    if (this.fd === null) {
+      this._open = fs.open;
+      this._queue.push([this._open, this.path, this.flags, this.mode, undefined]);
+      this.flush();
+    }
+  }
+}
+
+}).call(this,require('_process'))
+},{"_process":211,"stream":239}],4:[function(require,module,exports){
+(function (process){
+var fs = require('./fs.js')
+var constants = require('constants')
+
+var origCwd = process.cwd
+var cwd = null
+
+var platform = process.env.GRACEFUL_FS_PLATFORM || process.platform
+
+process.cwd = function() {
+  if (!cwd)
+    cwd = origCwd.call(process)
+  return cwd
+}
+try {
+  process.cwd()
+} catch (er) {}
+
+var chdir = process.chdir
+process.chdir = function(d) {
+  cwd = null
+  chdir.call(process, d)
+}
+
+module.exports = patch
+
+function patch (fs) {
+  // (re-)implement some things that are known busted or missing.
+
+  // lchmod, broken prior to 0.6.2
+  // back-port the fix here.
+  if (constants.hasOwnProperty('O_SYMLINK') &&
+      process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
+    patchLchmod(fs)
+  }
+
+  // lutimes implementation, or no-op
+  if (!fs.lutimes) {
+    patchLutimes(fs)
+  }
+
+  // https://github.com/isaacs/node-graceful-fs/issues/4
+  // Chown should not fail on einval or eperm if non-root.
+  // It should not fail on enosys ever, as this just indicates
+  // that a fs doesn't support the intended operation.
+
+  fs.chown = chownFix(fs.chown)
+  fs.fchown = chownFix(fs.fchown)
+  fs.lchown = chownFix(fs.lchown)
+
+  fs.chmod = chmodFix(fs.chmod)
+  fs.fchmod = chmodFix(fs.fchmod)
+  fs.lchmod = chmodFix(fs.lchmod)
+
+  fs.chownSync = chownFixSync(fs.chownSync)
+  fs.fchownSync = chownFixSync(fs.fchownSync)
+  fs.lchownSync = chownFixSync(fs.lchownSync)
+
+  fs.chmodSync = chmodFixSync(fs.chmodSync)
+  fs.fchmodSync = chmodFixSync(fs.fchmodSync)
+  fs.lchmodSync = chmodFixSync(fs.lchmodSync)
+
+  fs.stat = statFix(fs.stat)
+  fs.fstat = statFix(fs.fstat)
+  fs.lstat = statFix(fs.lstat)
+
+  fs.statSync = statFixSync(fs.statSync)
+  fs.fstatSync = statFixSync(fs.fstatSync)
+  fs.lstatSync = statFixSync(fs.lstatSync)
+
+  // if lchmod/lchown do not exist, then make them no-ops
+  if (!fs.lchmod) {
+    fs.lchmod = function (path, mode, cb) {
+      if (cb) process.nextTick(cb)
+    }
+    fs.lchmodSync = function () {}
+  }
+  if (!fs.lchown) {
+    fs.lchown = function (path, uid, gid, cb) {
+      if (cb) process.nextTick(cb)
+    }
+    fs.lchownSync = function () {}
+  }
+
+  // on Windows, A/V software can lock the directory, causing this
+  // to fail with an EACCES or EPERM if the directory contains newly
+  // created files.  Try again on failure, for up to 60 seconds.
+
+  // Set the timeout this long because some Windows Anti-Virus, such as Parity
+  // bit9, may lock files for up to a minute, causing npm package install
+  // failures. Also, take care to yield the scheduler. Windows scheduling gives
+  // CPU to a busy looping process, which can cause the program causing the lock
+  // contention to be starved of CPU by node, so the contention doesn't resolve.
+  if (platform === "win32") {
+    fs.rename = (function (fs$rename) { return function (from, to, cb) {
+      var start = Date.now()
+      var backoff = 0;
+      fs$rename(from, to, function CB (er) {
+        if (er
+            && (er.code === "EACCES" || er.code === "EPERM")
+            && Date.now() - start < 60000) {
+          setTimeout(function() {
+            fs.stat(to, function (stater, st) {
+              if (stater && stater.code === "ENOENT")
+                fs$rename(from, to, CB);
+              else
+                cb(er)
+            })
+          }, backoff)
+          if (backoff < 100)
+            backoff += 10;
+          return;
+        }
+        if (cb) cb(er)
+      })
+    }})(fs.rename)
+  }
+
+  // if read() returns EAGAIN, then just try it again.
+  fs.read = (function (fs$read) { return function (fd, buffer, offset, length, position, callback_) {
+    var callback
+    if (callback_ && typeof callback_ === 'function') {
+      var eagCounter = 0
+      callback = function (er, _, __) {
+        if (er && er.code === 'EAGAIN' && eagCounter < 10) {
+          eagCounter ++
+          return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+        }
+        callback_.apply(this, arguments)
+      }
+    }
+    return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+  }})(fs.read)
+
+  fs.readSync = (function (fs$readSync) { return function (fd, buffer, offset, length, position) {
+    var eagCounter = 0
+    while (true) {
+      try {
+        return fs$readSync.call(fs, fd, buffer, offset, length, position)
+      } catch (er) {
+        if (er.code === 'EAGAIN' && eagCounter < 10) {
+          eagCounter ++
+          continue
+        }
+        throw er
+      }
+    }
+  }})(fs.readSync)
+}
+
+function patchLchmod (fs) {
+  fs.lchmod = function (path, mode, callback) {
+    fs.open( path
+           , constants.O_WRONLY | constants.O_SYMLINK
+           , mode
+           , function (err, fd) {
+      if (err) {
+        if (callback) callback(err)
+        return
+      }
+      // prefer to return the chmod error, if one occurs,
+      // but still try to close, and report closing errors if they occur.
+      fs.fchmod(fd, mode, function (err) {
+        fs.close(fd, function(err2) {
+          if (callback) callback(err || err2)
+        })
+      })
+    })
+  }
+
+  fs.lchmodSync = function (path, mode) {
+    var fd = fs.openSync(path, constants.O_WRONLY | constants.O_SYMLINK, mode)
+
+    // prefer to return the chmod error, if one occurs,
+    // but still try to close, and report closing errors if they occur.
+    var threw = true
+    var ret
+    try {
+      ret = fs.fchmodSync(fd, mode)
+      threw = false
+    } finally {
+      if (threw) {
+        try {
+          fs.closeSync(fd)
+        } catch (er) {}
+      } else {
+        fs.closeSync(fd)
+      }
+    }
+    return ret
+  }
+}
+
+function patchLutimes (fs) {
+  if (constants.hasOwnProperty("O_SYMLINK")) {
+    fs.lutimes = function (path, at, mt, cb) {
+      fs.open(path, constants.O_SYMLINK, function (er, fd) {
+        if (er) {
+          if (cb) cb(er)
+          return
+        }
+        fs.futimes(fd, at, mt, function (er) {
+          fs.close(fd, function (er2) {
+            if (cb) cb(er || er2)
+          })
+        })
+      })
+    }
+
+    fs.lutimesSync = function (path, at, mt) {
+      var fd = fs.openSync(path, constants.O_SYMLINK)
+      var ret
+      var threw = true
+      try {
+        ret = fs.futimesSync(fd, at, mt)
+        threw = false
+      } finally {
+        if (threw) {
+          try {
+            fs.closeSync(fd)
+          } catch (er) {}
+        } else {
+          fs.closeSync(fd)
+        }
+      }
+      return ret
+    }
+
+  } else {
+    fs.lutimes = function (_a, _b, _c, cb) { if (cb) process.nextTick(cb) }
+    fs.lutimesSync = function () {}
+  }
+}
+
+function chmodFix (orig) {
+  if (!orig) return orig
+  return function (target, mode, cb) {
+    return orig.call(fs, target, mode, function (er) {
+      if (chownErOk(er)) er = null
+      if (cb) cb.apply(this, arguments)
+    })
+  }
+}
+
+function chmodFixSync (orig) {
+  if (!orig) return orig
+  return function (target, mode) {
+    try {
+      return orig.call(fs, target, mode)
+    } catch (er) {
+      if (!chownErOk(er)) throw er
+    }
+  }
+}
+
+
+function chownFix (orig) {
+  if (!orig) return orig
+  return function (target, uid, gid, cb) {
+    return orig.call(fs, target, uid, gid, function (er) {
+      if (chownErOk(er)) er = null
+      if (cb) cb.apply(this, arguments)
+    })
+  }
+}
+
+function chownFixSync (orig) {
+  if (!orig) return orig
+  return function (target, uid, gid) {
+    try {
+      return orig.call(fs, target, uid, gid)
+    } catch (er) {
+      if (!chownErOk(er)) throw er
+    }
+  }
+}
+
+
+function statFix (orig) {
+  if (!orig) return orig
+  // Older versions of Node erroneously returned signed integers for
+  // uid + gid.
+  return function (target, cb) {
+    return orig.call(fs, target, function (er, stats) {
+      if (!stats) return cb.apply(this, arguments)
+      if (stats.uid < 0) stats.uid += 0x100000000
+      if (stats.gid < 0) stats.gid += 0x100000000
+      if (cb) cb.apply(this, arguments)
+    })
+  }
+}
+
+function statFixSync (orig) {
+  if (!orig) return orig
+  // Older versions of Node erroneously returned signed integers for
+  // uid + gid.
+  return function (target) {
+    var stats = orig.call(fs, target)
+    if (stats.uid < 0) stats.uid += 0x100000000
+    if (stats.gid < 0) stats.gid += 0x100000000
+    return stats;
+  }
+}
+
+// ENOSYS means that the fs doesn't support the op. Just ignore
+// that, because it doesn't matter.
+//
+// if there's no getuid, or if getuid() is something other
+// than 0, and the error is EINVAL or EPERM, then just ignore
+// it.
+//
+// This specific case is a silent failure in cp, install, tar,
+// and most other unix tools that manage permissions.
+//
+// When running as root, or if other types of errors are
+// encountered, then it's strict.
+function chownErOk (er) {
+  if (!er)
+    return true
+
+  if (er.code === "ENOSYS")
+    return true
+
+  var nonroot = !process.getuid || process.getuid() !== 0
+  if (nonroot) {
+    if (er.code === "EINVAL" || er.code === "EPERM")
+      return true
+  }
+
+  return false
+}
+
+}).call(this,require('_process'))
+},{"./fs.js":1,"_process":211,"constants":48}],5:[function(require,module,exports){
 /*!
  * ansi-cyan <https://github.com/jonschlinkert/ansi-cyan>
  *
@@ -14,7 +762,7 @@ module.exports = function cyan(message) {
   return wrap(36, 39, message);
 };
 
-},{"ansi-wrap":5}],2:[function(require,module,exports){
+},{"ansi-wrap":9}],6:[function(require,module,exports){
 /*!
  * ansi-gray <https://github.com/jonschlinkert/ansi-gray>
  *
@@ -30,7 +778,7 @@ module.exports = function gray(message) {
   return wrap(90, 39, message);
 };
 
-},{"ansi-wrap":5}],3:[function(require,module,exports){
+},{"ansi-wrap":9}],7:[function(require,module,exports){
 /*!
  * ansi-red <https://github.com/jonschlinkert/ansi-red>
  *
@@ -46,7 +794,7 @@ module.exports = function red(message) {
   return wrap(31, 39, message);
 };
 
-},{"ansi-wrap":5}],4:[function(require,module,exports){
+},{"ansi-wrap":9}],8:[function(require,module,exports){
 'use strict';
 const colorConvert = require('color-convert');
 
@@ -213,17 +961,17 @@ Object.defineProperty(module, 'exports', {
 	get: assembleStyles
 });
 
-},{"color-convert":39}],5:[function(require,module,exports){
+},{"color-convert":43}],9:[function(require,module,exports){
 'use strict';
 
 module.exports = function(a, b, msg) {
   return '\u001b['+ a + 'm' + msg + '\u001b[' + b + 'm';
 };
 
-},{}],6:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = require('./register')().Promise
 
-},{"./register":8}],7:[function(require,module,exports){
+},{"./register":12}],11:[function(require,module,exports){
 "use strict"
     // global key for user preferred registration
 var REGISTRATION_KEY = '@@any-promise/REGISTRATION',
@@ -303,7 +1051,7 @@ module.exports = function(root, loadImplementation){
   }
 }
 
-},{}],8:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 module.exports = require('./loader')(window, loadImplementation)
 
@@ -323,7 +1071,7 @@ function loadImplementation(){
   }
 }
 
-},{"./loader":7}],9:[function(require,module,exports){
+},{"./loader":11}],13:[function(require,module,exports){
 /*!
  * arr-diff <https://github.com/jonschlinkert/arr-diff>
  *
@@ -383,7 +1131,7 @@ function diff(arr, arrays) {
 
 module.exports = diff;
 
-},{"arr-flatten":10,"array-slice":12}],10:[function(require,module,exports){
+},{"arr-flatten":14,"array-slice":16}],14:[function(require,module,exports){
 /*!
  * arr-flatten <https://github.com/jonschlinkert/arr-flatten>
  *
@@ -407,7 +1155,7 @@ function flat(arr, res) {
   return res;
 }
 
-},{}],11:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*!
  * arr-union <https://github.com/jonschlinkert/arr-union>
  *
@@ -439,7 +1187,7 @@ function arrayify(val) {
   return Array.isArray(val) ? val : [val];
 }
 
-},{}],12:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /*!
  * array-slice <https://github.com/jonschlinkert/array-slice>
  *
@@ -476,7 +1224,7 @@ function idx(arr, pos, end) {
 
   return pos;
 }
-},{}],13:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -970,7 +1718,7 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"util/":16}],14:[function(require,module,exports){
+},{"util/":20}],18:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -995,14 +1743,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],15:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],16:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1592,7 +2340,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":15,"_process":211,"inherits":14}],17:[function(require,module,exports){
+},{"./support/isBuffer":19,"_process":211,"inherits":18}],21:[function(require,module,exports){
 'use strict';
 module.exports = balanced;
 function balanced(a, b, str) {
@@ -1653,7 +2401,7 @@ function range(a, b, str) {
   return result;
 }
 
-},{}],18:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -1806,7 +2554,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],19:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (Buffer){
 var Chainsaw = require('chainsaw');
 var EventEmitter = require('events').EventEmitter;
@@ -2207,7 +2955,7 @@ function words (decode) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./lib/vars.js":20,"buffer":29,"buffers":30,"chainsaw":31,"events":56,"stream":239}],20:[function(require,module,exports){
+},{"./lib/vars.js":24,"buffer":33,"buffers":34,"chainsaw":35,"events":60,"stream":239}],24:[function(require,module,exports){
 module.exports = function (store) {
     function getset (name, value) {
         var node = vars.store;
@@ -2237,7 +2985,7 @@ module.exports = function (store) {
     return vars;
 };
 
-},{}],21:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 (function (process,global,setImmediate){
 /* @preserve
  * The MIT License (MIT)
@@ -7821,7 +8569,7 @@ module.exports = ret;
 },{"./es5":13}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
-},{"_process":211,"timers":247}],22:[function(require,module,exports){
+},{"_process":211,"timers":247}],26:[function(require,module,exports){
 var concatMap = require('concat-map');
 var balanced = require('balanced-match');
 
@@ -8024,9 +8772,9 @@ function expand(str, isTop) {
 }
 
 
-},{"balanced-match":17,"concat-map":43}],23:[function(require,module,exports){
+},{"balanced-match":21,"concat-map":47}],27:[function(require,module,exports){
 
-},{}],24:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 (function (process,Buffer){
 'use strict';
 /* eslint camelcase: "off" */
@@ -8438,7 +9186,7 @@ Zlib.prototype._reset = function () {
 
 exports.Zlib = Zlib;
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":211,"assert":13,"buffer":29,"pako/lib/zlib/constants":197,"pako/lib/zlib/deflate.js":199,"pako/lib/zlib/inflate.js":201,"pako/lib/zlib/zstream":205}],25:[function(require,module,exports){
+},{"_process":211,"assert":17,"buffer":33,"pako/lib/zlib/constants":197,"pako/lib/zlib/deflate.js":199,"pako/lib/zlib/inflate.js":201,"pako/lib/zlib/zstream":205}],29:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -9050,7 +9798,7 @@ util.inherits(DeflateRaw, Zlib);
 util.inherits(InflateRaw, Zlib);
 util.inherits(Unzip, Zlib);
 }).call(this,require('_process'))
-},{"./binding":24,"_process":211,"assert":13,"buffer":29,"stream":239,"util":267}],26:[function(require,module,exports){
+},{"./binding":28,"_process":211,"assert":17,"buffer":33,"stream":239,"util":267}],30:[function(require,module,exports){
 var Buffer = require('buffer').Buffer;
 
 var CRC_TABLE = [
@@ -9163,7 +9911,7 @@ crc32.unsigned = function () {
 
 module.exports = crc32;
 
-},{"buffer":29}],27:[function(require,module,exports){
+},{"buffer":33}],31:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 
@@ -9239,7 +9987,7 @@ if (Buffer.prototype.lastIndexOf) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":29}],28:[function(require,module,exports){
+},{"buffer":33}],32:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -9351,7 +10099,7 @@ exports.allocUnsafeSlow = function allocUnsafeSlow(size) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"buffer":29}],29:[function(require,module,exports){
+},{"buffer":33}],33:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -11130,7 +11878,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":18,"ieee754":115}],30:[function(require,module,exports){
+},{"base64-js":22,"ieee754":115}],34:[function(require,module,exports){
 (function (Buffer){
 module.exports = Buffers;
 
@@ -11403,7 +12151,7 @@ Buffers.prototype.toString = function(encoding, start, end) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":29}],31:[function(require,module,exports){
+},{"buffer":33}],35:[function(require,module,exports){
 (function (process){
 var Traverse = require('traverse');
 var EventEmitter = require('events').EventEmitter;
@@ -11552,7 +12300,7 @@ function upgradeChainsaw(saw) {
 };
 
 }).call(this,require('_process'))
-},{"_process":211,"events":56,"traverse":248}],32:[function(require,module,exports){
+},{"_process":211,"events":60,"traverse":248}],36:[function(require,module,exports){
 (function (process){
 'use strict';
 const escapeStringRegexp = require('escape-string-regexp');
@@ -11784,7 +12532,7 @@ module.exports.supportsColor = stdoutColor;
 module.exports.default = module.exports; // For TypeScript
 
 }).call(this,require('_process'))
-},{"./templates.js":33,"_process":211,"ansi-styles":4,"escape-string-regexp":55,"supports-color":243}],33:[function(require,module,exports){
+},{"./templates.js":37,"_process":211,"ansi-styles":8,"escape-string-regexp":59,"supports-color":243}],37:[function(require,module,exports){
 'use strict';
 const TEMPLATE_REGEX = /(?:\\(u[a-f\d]{4}|x[a-f\d]{2}|.))|(?:\{(~)?(\w+(?:\([^)]*\))?(?:\.\w+(?:\([^)]*\))?)*)(?:[ \t]|(?=\r?\n)))|(\})|((?:.|[\r\n\f])+?)/gi;
 const STYLE_REGEX = /(?:^|\.)(\w+)(?:\(([^)]*)\))?/g;
@@ -11914,7 +12662,7 @@ module.exports = (chalk, tmp) => {
 	return chunks.join('');
 };
 
-},{}],34:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 var Buffer = require('buffer').Buffer;
@@ -11944,7 +12692,7 @@ cloneBuffer.hasFrom = hasFrom;
 
 module.exports = cloneBuffer;
 
-},{"buffer":29}],35:[function(require,module,exports){
+},{"buffer":33}],39:[function(require,module,exports){
 var Stat = require('fs').Stats
 
 module.exports = cloneStats
@@ -11959,7 +12707,7 @@ function cloneStats(stats) {
   return replacement
 }
 
-},{"fs":"browserify-fs"}],36:[function(require,module,exports){
+},{"fs":"browserify-fs"}],40:[function(require,module,exports){
 (function (Buffer){
 var clone = (function() {
 'use strict';
@@ -12220,7 +12968,7 @@ if (typeof module === 'object' && module.exports) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":29}],37:[function(require,module,exports){
+},{"buffer":33}],41:[function(require,module,exports){
 'use strict'
 
 var PassThrough = require('readable-stream').PassThrough
@@ -12374,7 +13122,7 @@ Clone.prototype._destroy = function (err, cb) {
 
 module.exports = Cloneable
 
-},{"inherits":117,"process-nextick-args":210,"readable-stream":227}],38:[function(require,module,exports){
+},{"inherits":117,"process-nextick-args":210,"readable-stream":227}],42:[function(require,module,exports){
 /* MIT license */
 var cssKeywords = require('color-name');
 
@@ -13244,7 +13992,7 @@ convert.rgb.gray = function (rgb) {
 	return [val / 255 * 100];
 };
 
-},{"color-name":41}],39:[function(require,module,exports){
+},{"color-name":45}],43:[function(require,module,exports){
 var conversions = require('./conversions');
 var route = require('./route');
 
@@ -13324,7 +14072,7 @@ models.forEach(function (fromModel) {
 
 module.exports = convert;
 
-},{"./conversions":38,"./route":40}],40:[function(require,module,exports){
+},{"./conversions":42,"./route":44}],44:[function(require,module,exports){
 var conversions = require('./conversions');
 
 /*
@@ -13423,7 +14171,7 @@ module.exports = function (fromModel) {
 };
 
 
-},{"./conversions":38}],41:[function(require,module,exports){
+},{"./conversions":42}],45:[function(require,module,exports){
 module.exports = {
 	"aliceblue": [240, 248, 255],
 	"antiquewhite": [250, 235, 215],
@@ -13574,7 +14322,7 @@ module.exports = {
 	"yellow": [255, 255, 0],
 	"yellowgreen": [154, 205, 50]
 };
-},{}],42:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = colorSupport({ alwaysReturn: true }, colorSupport)
 
 function colorSupport(options, obj) {
@@ -13590,7 +14338,7 @@ function colorSupport(options, obj) {
   return obj
 }
 
-},{}],43:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function (xs, fn) {
     var res = [];
     for (var i = 0; i < xs.length; i++) {
@@ -13605,7 +14353,7 @@ var isArray = Array.isArray || function (xs) {
     return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],44:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports={
   "O_RDONLY": 0,
   "O_WRONLY": 1,
@@ -13816,7 +14564,7 @@ module.exports={
   "UV_UDP_REUSEADDR": 4
 }
 
-},{}],45:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -13927,7 +14675,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":144}],46:[function(require,module,exports){
+},{"../../is-buffer/index.js":144}],50:[function(require,module,exports){
 var clone = require('clone');
 
 module.exports = function(options, defaults) {
@@ -13941,7 +14689,7 @@ module.exports = function(options, defaults) {
 
   return options;
 };
-},{"clone":47}],47:[function(require,module,exports){
+},{"clone":51}],51:[function(require,module,exports){
 (function (Buffer){
 var clone = (function() {
 'use strict';
@@ -14111,7 +14859,7 @@ if (typeof module === 'object' && module.exports) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":29}],48:[function(require,module,exports){
+},{"buffer":33}],52:[function(require,module,exports){
 /**
  * Define stateful property on an object
  */
@@ -14159,7 +14907,7 @@ function defineState (target, property, descriptor, isFn) {
 
 	return target;
 }
-},{"st8":238}],49:[function(require,module,exports){
+},{"st8":238}],53:[function(require,module,exports){
 /**
  * Simple draggable component
  *
@@ -15136,7 +15884,7 @@ function q (str) {
 
 
 module.exports = Draggable;
-},{"define-state":48,"emmy/emit":51,"emmy/off":53,"emmy/on":54,"events":56,"get-client-xy":76,"get-uid":80,"inherits":117,"intersects":118,"mucss/css":160,"mucss/is-fixed":163,"mucss/offset":165,"mucss/parse-value":167,"mucss/selection":171,"mucss/translate":172,"mumath/clamp":173,"mumath/mod":174,"mumath/round":176,"mutype/is-array":181,"mutype/is-fn":185,"mutype/is-number":186,"mutype/is-string":191,"xtend/mutable":274}],50:[function(require,module,exports){
+},{"define-state":52,"emmy/emit":55,"emmy/off":57,"emmy/on":58,"events":60,"get-client-xy":80,"get-uid":84,"inherits":117,"intersects":118,"mucss/css":160,"mucss/is-fixed":163,"mucss/offset":165,"mucss/parse-value":167,"mucss/selection":171,"mucss/translate":172,"mumath/clamp":173,"mumath/mod":174,"mumath/round":176,"mutype/is-array":181,"mutype/is-fn":185,"mutype/is-number":186,"mutype/is-string":191,"xtend/mutable":274}],54:[function(require,module,exports){
 "use strict";
 
 var stream = require("readable-stream");
@@ -15214,7 +15962,7 @@ module.exports = function duplex2(options, writable, readable) {
 
 module.exports.DuplexWrapper = DuplexWrapper;
 
-},{"readable-stream":227}],51:[function(require,module,exports){
+},{"readable-stream":227}],55:[function(require,module,exports){
 /**
  * @module emmy/emit
  */
@@ -15333,7 +16081,7 @@ function emit(target, eventName, data, bubbles){
 	return target;
 }
 
-},{"./listeners":52,"icicle":114,"is-browser":143,"sliced":236}],52:[function(require,module,exports){
+},{"./listeners":56,"icicle":114,"is-browser":143,"sliced":236}],56:[function(require,module,exports){
 /**
  * A storage of per-target callbacks.
  * WeakMap is the most safe solution.
@@ -15467,7 +16215,7 @@ function hasTags(cb, tags){
 
 
 module.exports = listeners;
-},{}],53:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
  * @module emmy/off
  */
@@ -15575,7 +16323,7 @@ function off(target, evt, fn) {
 	return target;
 }
 
-},{"./listeners":52,"icicle":114,"sliced":236}],54:[function(require,module,exports){
+},{"./listeners":56,"icicle":114,"sliced":236}],58:[function(require,module,exports){
 /**
  * @module emmy/on
  */
@@ -15661,7 +16409,7 @@ on.wrap = function(target, evt, fn, condition){
 	return cb;
 };
 
-},{"./listeners":52,"icicle":114,"is-plain-obj":146}],55:[function(require,module,exports){
+},{"./listeners":56,"icicle":114,"is-plain-obj":146}],59:[function(require,module,exports){
 'use strict';
 
 var matchOperatorsRe = /[|\\{}()[\]^$+*?.]/g;
@@ -15674,7 +16422,7 @@ module.exports = function (str) {
 	return str.replace(matchOperatorsRe, '\\$&');
 };
 
-},{}],56:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -16199,7 +16947,7 @@ function functionBindPolyfill(context) {
   };
 }
 
-},{}],57:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 'use strict';
 
 var typeOf = require('kind-of');
@@ -16237,7 +16985,7 @@ function extend(o) {
   return o;
 };
 
-},{"kind-of":154}],58:[function(require,module,exports){
+},{"kind-of":154}],62:[function(require,module,exports){
 (function (process){
 'use strict';
 /*
@@ -16313,7 +17061,7 @@ module.exports.warn = warn;
 module.exports.error = error;
 
 }).call(this,require('_process'))
-},{"_process":211,"ansi-gray":2,"color-support":42,"time-stamp":246}],59:[function(require,module,exports){
+},{"_process":211,"ansi-gray":6,"color-support":46,"time-stamp":246}],63:[function(require,module,exports){
 (function (process){
 module.exports = realpath
 realpath.realpath = realpath
@@ -16383,7 +17131,7 @@ function unmonkeypatch () {
 }
 
 }).call(this,require('_process'))
-},{"./old.js":60,"_process":211,"fs":"browserify-fs"}],60:[function(require,module,exports){
+},{"./old.js":64,"_process":211,"fs":"browserify-fs"}],64:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -16690,7 +17438,7 @@ exports.realpath = function realpath(p, cache, cb) {
 };
 
 }).call(this,require('_process'))
-},{"_process":211,"fs":"browserify-fs","path":206}],61:[function(require,module,exports){
+},{"_process":211,"fs":"browserify-fs","path":206}],65:[function(require,module,exports){
 exports.Abstract = require('./lib/abstract.js')
 exports.Reader = require('./lib/reader.js')
 exports.Writer = require('./lib/writer.js')
@@ -16727,7 +17475,7 @@ exports.Writer.Proxy = exports.ProxyWriter = exports.Proxy.Writer
 
 exports.collect = require('./lib/collect.js')
 
-},{"./lib/abstract.js":62,"./lib/collect.js":63,"./lib/dir-reader.js":64,"./lib/dir-writer.js":65,"./lib/file-reader.js":66,"./lib/file-writer.js":67,"./lib/link-reader.js":69,"./lib/link-writer.js":70,"./lib/proxy-reader.js":71,"./lib/proxy-writer.js":72,"./lib/reader.js":73,"./lib/writer.js":75}],62:[function(require,module,exports){
+},{"./lib/abstract.js":66,"./lib/collect.js":67,"./lib/dir-reader.js":68,"./lib/dir-writer.js":69,"./lib/file-reader.js":70,"./lib/file-writer.js":71,"./lib/link-reader.js":73,"./lib/link-writer.js":74,"./lib/proxy-reader.js":75,"./lib/proxy-writer.js":76,"./lib/reader.js":77,"./lib/writer.js":79}],66:[function(require,module,exports){
 (function (process){
 // the parent class for all fstreams.
 
@@ -16816,7 +17564,7 @@ function decorate (er, code, self) {
 }
 
 }).call(this,require('_process'))
-},{"_process":211,"inherits":117,"stream":239}],63:[function(require,module,exports){
+},{"_process":211,"inherits":117,"stream":239}],67:[function(require,module,exports){
 (function (Buffer){
 module.exports = collect
 
@@ -16890,7 +17638,7 @@ function collect (stream) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":29}],64:[function(require,module,exports){
+},{"buffer":33}],68:[function(require,module,exports){
 // A thing that emits "entry" events with Reader objects
 // Pausing it causes it to stop emitting entry events, and also
 // pauses the current entry if there is one.
@@ -17144,7 +17892,7 @@ DirReader.prototype.emitEntry = function (entry) {
   this.emit('child', entry)
 }
 
-},{"./reader.js":73,"assert":13,"graceful-fs":85,"inherits":117,"path":206}],65:[function(require,module,exports){
+},{"./reader.js":77,"assert":17,"graceful-fs":2,"inherits":117,"path":206}],69:[function(require,module,exports){
 // It is expected that, when .add() returns false, the consumer
 // of the DirWriter will pause until a "drain" event occurs. Note
 // that this is *almost always going to be the case*, unless the
@@ -17320,7 +18068,7 @@ DirWriter.prototype._process = function () {
   }
 }
 
-},{"./collect.js":63,"./writer.js":75,"inherits":117,"mkdirp":158,"path":206}],66:[function(require,module,exports){
+},{"./collect.js":67,"./writer.js":79,"inherits":117,"mkdirp":158,"path":206}],70:[function(require,module,exports){
 // Basically just a wrapper around an fs.ReadStream
 
 module.exports = FileReader
@@ -17472,7 +18220,7 @@ FileReader.prototype.resume = function (who) {
   self._read()
 }
 
-},{"./reader.js":73,"graceful-fs":85,"inherits":117}],67:[function(require,module,exports){
+},{"./reader.js":77,"graceful-fs":2,"inherits":117}],71:[function(require,module,exports){
 (function (Buffer){
 module.exports = FileWriter
 
@@ -17583,7 +18331,7 @@ FileWriter.prototype._finish = function () {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":144,"./writer.js":75,"graceful-fs":85,"inherits":117}],68:[function(require,module,exports){
+},{"../../is-buffer/index.js":144,"./writer.js":79,"graceful-fs":2,"inherits":117}],72:[function(require,module,exports){
 module.exports = getType
 
 function getType (st) {
@@ -17618,7 +18366,7 @@ function getType (st) {
   return null
 }
 
-},{}],69:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 // Basically just a wrapper around an fs.readlink
 //
 // XXX: Enhance this to support the Link type, by keeping
@@ -17673,7 +18421,7 @@ LinkReader.prototype._read = function () {
   }
 }
 
-},{"./reader.js":73,"graceful-fs":85,"inherits":117}],70:[function(require,module,exports){
+},{"./reader.js":77,"graceful-fs":2,"inherits":117}],74:[function(require,module,exports){
 (function (process){
 module.exports = LinkWriter
 
@@ -17772,7 +18520,7 @@ LinkWriter.prototype.end = function () {
 }
 
 }).call(this,require('_process'))
-},{"./writer.js":75,"_process":211,"graceful-fs":85,"inherits":117,"path":206,"rimraf":233}],71:[function(require,module,exports){
+},{"./writer.js":79,"_process":211,"graceful-fs":2,"inherits":117,"path":206,"rimraf":233}],75:[function(require,module,exports){
 // A reader for when we don't yet know what kind of thing
 // the thing is.
 
@@ -17869,7 +18617,7 @@ ProxyReader.prototype.resume = function () {
   return this._proxyTarget ? this._proxyTarget.resume() : false
 }
 
-},{"./get-type.js":68,"./reader.js":73,"graceful-fs":85,"inherits":117}],72:[function(require,module,exports){
+},{"./get-type.js":72,"./reader.js":77,"graceful-fs":2,"inherits":117}],76:[function(require,module,exports){
 // A writer for when we don't know what kind of thing
 // the thing is.  That is, it's not explicitly set,
 // so we're going to make it whatever the thing already
@@ -17982,7 +18730,7 @@ ProxyWriter.prototype.end = function (c) {
   return this._proxy.end(c)
 }
 
-},{"./collect.js":63,"./get-type.js":68,"./writer.js":75,"fs":"browserify-fs","inherits":117}],73:[function(require,module,exports){
+},{"./collect.js":67,"./get-type.js":72,"./writer.js":79,"fs":"browserify-fs","inherits":117}],77:[function(require,module,exports){
 (function (process){
 module.exports = Reader
 
@@ -18241,7 +18989,7 @@ Reader.prototype._read = function () {
 }
 
 }).call(this,require('_process'))
-},{"./abstract.js":62,"./dir-reader.js":64,"./file-reader.js":66,"./get-type.js":68,"./link-reader.js":69,"./proxy-reader.js":71,"./socket-reader.js":74,"_process":211,"graceful-fs":85,"inherits":117,"path":206,"stream":239}],74:[function(require,module,exports){
+},{"./abstract.js":66,"./dir-reader.js":68,"./file-reader.js":70,"./get-type.js":72,"./link-reader.js":73,"./proxy-reader.js":75,"./socket-reader.js":78,"_process":211,"graceful-fs":2,"inherits":117,"path":206,"stream":239}],78:[function(require,module,exports){
 // Just get the stats, and then don't do anything.
 // You can't really "read" from a socket.  You "connect" to it.
 // Mostly, this is here so that reading a dir with a socket in it
@@ -18279,7 +19027,7 @@ SocketReader.prototype._read = function () {
   }
 }
 
-},{"./reader.js":73,"inherits":117}],75:[function(require,module,exports){
+},{"./reader.js":77,"inherits":117}],79:[function(require,module,exports){
 (function (process){
 module.exports = Writer
 
@@ -18673,7 +19421,7 @@ function isDate (d) {
 }
 
 }).call(this,require('_process'))
-},{"./abstract.js":62,"./dir-writer.js":65,"./file-writer.js":67,"./get-type.js":68,"./link-writer.js":70,"./proxy-writer.js":72,"_process":211,"graceful-fs":85,"inherits":117,"mkdirp":158,"path":206,"rimraf":233}],76:[function(require,module,exports){
+},{"./abstract.js":66,"./dir-writer.js":69,"./file-writer.js":71,"./get-type.js":72,"./link-writer.js":74,"./proxy-writer.js":76,"_process":211,"graceful-fs":2,"inherits":117,"mkdirp":158,"path":206,"rimraf":233}],80:[function(require,module,exports){
 /**
  * Get clientY/clientY from an event.
  * If index is passed, treat it as index of global touches, not the targetTouches.
@@ -18732,14 +19480,14 @@ getClientXY.y = getClientY;
 getClientXY.findTouch = findTouch;
 
 module.exports = getClientXY;
-},{}],77:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = function (object) { return Object
     .getOwnPropertySymbols(object)
     .filter(function (keySymbol) { return object.propertyIsEnumerable(keySymbol); }); };
 
-},{}],78:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 const PassThrough = require('stream').PassThrough;
@@ -18794,7 +19542,7 @@ module.exports = opts => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":29,"stream":239}],79:[function(require,module,exports){
+},{"buffer":33,"stream":239}],83:[function(require,module,exports){
 'use strict';
 const bufferStream = require('./buffer-stream');
 
@@ -18847,14 +19595,14 @@ module.exports = getStream;
 module.exports.buffer = (stream, opts) => getStream(stream, Object.assign({}, opts, {encoding: 'buffer'}));
 module.exports.array = (stream, opts) => getStream(stream, Object.assign({}, opts, {array: true}));
 
-},{"./buffer-stream":78}],80:[function(require,module,exports){
+},{"./buffer-stream":82}],84:[function(require,module,exports){
 /** generate unique id for selector */
 var counter = Date.now() % 1e9;
 
 module.exports = function getUid(){
 	return (Math.random() * 1e9 >>> 0) + (counter++);
 };
-},{}],81:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 (function (process){
 exports.alphasort = alphasort
 exports.alphasorti = alphasorti
@@ -19098,7 +19846,7 @@ function childrenIgnored (self, path) {
 }
 
 }).call(this,require('_process'))
-},{"_process":211,"minimatch":157,"path":206,"path-is-absolute":207}],82:[function(require,module,exports){
+},{"_process":211,"minimatch":157,"path":206,"path-is-absolute":207}],86:[function(require,module,exports){
 (function (process){
 // Approach:
 //
@@ -19892,7 +20640,7 @@ Glob.prototype._stat2 = function (f, abs, er, stat, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./common.js":81,"./sync.js":83,"_process":211,"assert":13,"events":56,"fs":"browserify-fs","fs.realpath":59,"inflight":116,"inherits":117,"minimatch":157,"once":192,"path":206,"path-is-absolute":207,"util":267}],83:[function(require,module,exports){
+},{"./common.js":85,"./sync.js":87,"_process":211,"assert":17,"events":60,"fs":"browserify-fs","fs.realpath":63,"inflight":116,"inherits":117,"minimatch":157,"once":192,"path":206,"path-is-absolute":207,"util":267}],87:[function(require,module,exports){
 (function (process){
 module.exports = globSync
 globSync.GlobSync = GlobSync
@@ -20382,752 +21130,7 @@ GlobSync.prototype._makeAbs = function (f) {
 }
 
 }).call(this,require('_process'))
-},{"./common.js":81,"./glob.js":82,"_process":211,"assert":13,"fs":"browserify-fs","fs.realpath":59,"minimatch":157,"path":206,"path-is-absolute":207,"util":267}],84:[function(require,module,exports){
-'use strict'
-
-var fs = require('fs')
-
-module.exports = clone(fs)
-
-function clone (obj) {
-  if (obj === null || typeof obj !== 'object')
-    return obj
-
-  if (obj instanceof Object)
-    var copy = { __proto__: obj.__proto__ }
-  else
-    var copy = Object.create(null)
-
-  Object.getOwnPropertyNames(obj).forEach(function (key) {
-    Object.defineProperty(copy, key, Object.getOwnPropertyDescriptor(obj, key))
-  })
-
-  return copy
-}
-
-},{"fs":"browserify-fs"}],85:[function(require,module,exports){
-(function (process){
-var fs = require('fs')
-var polyfills = require('./polyfills.js')
-var legacy = require('./legacy-streams.js')
-var queue = []
-
-var util = require('util')
-
-function noop () {}
-
-var debug = noop
-if (util.debuglog)
-  debug = util.debuglog('gfs4')
-else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
-  debug = function() {
-    var m = util.format.apply(util, arguments)
-    m = 'GFS4: ' + m.split(/\n/).join('\nGFS4: ')
-    console.error(m)
-  }
-
-if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
-  process.on('exit', function() {
-    debug(queue)
-    require('assert').equal(queue.length, 0)
-  })
-}
-
-module.exports = patch(require('./fs.js'))
-if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH) {
-  module.exports = patch(fs)
-}
-
-// Always patch fs.close/closeSync, because we want to
-// retry() whenever a close happens *anywhere* in the program.
-// This is essential when multiple graceful-fs instances are
-// in play at the same time.
-module.exports.close =
-fs.close = (function (fs$close) { return function (fd, cb) {
-  return fs$close.call(fs, fd, function (err) {
-    if (!err)
-      retry()
-
-    if (typeof cb === 'function')
-      cb.apply(this, arguments)
-  })
-}})(fs.close)
-
-module.exports.closeSync =
-fs.closeSync = (function (fs$closeSync) { return function (fd) {
-  // Note that graceful-fs also retries when fs.closeSync() fails.
-  // Looks like a bug to me, although it's probably a harmless one.
-  var rval = fs$closeSync.apply(fs, arguments)
-  retry()
-  return rval
-}})(fs.closeSync)
-
-function patch (fs) {
-  // Everything that references the open() function needs to be in here
-  polyfills(fs)
-  fs.gracefulify = patch
-  fs.FileReadStream = ReadStream;  // Legacy name.
-  fs.FileWriteStream = WriteStream;  // Legacy name.
-  fs.createReadStream = createReadStream
-  fs.createWriteStream = createWriteStream
-  var fs$readFile = fs.readFile
-  fs.readFile = readFile
-  function readFile (path, options, cb) {
-    if (typeof options === 'function')
-      cb = options, options = null
-
-    return go$readFile(path, options, cb)
-
-    function go$readFile (path, options, cb) {
-      return fs$readFile(path, options, function (err) {
-        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-          enqueue([go$readFile, [path, options, cb]])
-        else {
-          if (typeof cb === 'function')
-            cb.apply(this, arguments)
-          retry()
-        }
-      })
-    }
-  }
-
-  var fs$writeFile = fs.writeFile
-  fs.writeFile = writeFile
-  function writeFile (path, data, options, cb) {
-    if (typeof options === 'function')
-      cb = options, options = null
-
-    return go$writeFile(path, data, options, cb)
-
-    function go$writeFile (path, data, options, cb) {
-      return fs$writeFile(path, data, options, function (err) {
-        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-          enqueue([go$writeFile, [path, data, options, cb]])
-        else {
-          if (typeof cb === 'function')
-            cb.apply(this, arguments)
-          retry()
-        }
-      })
-    }
-  }
-
-  var fs$appendFile = fs.appendFile
-  if (fs$appendFile)
-    fs.appendFile = appendFile
-  function appendFile (path, data, options, cb) {
-    if (typeof options === 'function')
-      cb = options, options = null
-
-    return go$appendFile(path, data, options, cb)
-
-    function go$appendFile (path, data, options, cb) {
-      return fs$appendFile(path, data, options, function (err) {
-        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-          enqueue([go$appendFile, [path, data, options, cb]])
-        else {
-          if (typeof cb === 'function')
-            cb.apply(this, arguments)
-          retry()
-        }
-      })
-    }
-  }
-
-  var fs$readdir = fs.readdir
-  fs.readdir = readdir
-  function readdir (path, options, cb) {
-    var args = [path]
-    if (typeof options !== 'function') {
-      args.push(options)
-    } else {
-      cb = options
-    }
-    args.push(go$readdir$cb)
-
-    return go$readdir(args)
-
-    function go$readdir$cb (err, files) {
-      if (files && files.sort)
-        files.sort()
-
-      if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-        enqueue([go$readdir, [args]])
-      else {
-        if (typeof cb === 'function')
-          cb.apply(this, arguments)
-        retry()
-      }
-    }
-  }
-
-  function go$readdir (args) {
-    return fs$readdir.apply(fs, args)
-  }
-
-  if (process.version.substr(0, 4) === 'v0.8') {
-    var legStreams = legacy(fs)
-    ReadStream = legStreams.ReadStream
-    WriteStream = legStreams.WriteStream
-  }
-
-  var fs$ReadStream = fs.ReadStream
-  ReadStream.prototype = Object.create(fs$ReadStream.prototype)
-  ReadStream.prototype.open = ReadStream$open
-
-  var fs$WriteStream = fs.WriteStream
-  WriteStream.prototype = Object.create(fs$WriteStream.prototype)
-  WriteStream.prototype.open = WriteStream$open
-
-  fs.ReadStream = ReadStream
-  fs.WriteStream = WriteStream
-
-  function ReadStream (path, options) {
-    if (this instanceof ReadStream)
-      return fs$ReadStream.apply(this, arguments), this
-    else
-      return ReadStream.apply(Object.create(ReadStream.prototype), arguments)
-  }
-
-  function ReadStream$open () {
-    var that = this
-    open(that.path, that.flags, that.mode, function (err, fd) {
-      if (err) {
-        if (that.autoClose)
-          that.destroy()
-
-        that.emit('error', err)
-      } else {
-        that.fd = fd
-        that.emit('open', fd)
-        that.read()
-      }
-    })
-  }
-
-  function WriteStream (path, options) {
-    if (this instanceof WriteStream)
-      return fs$WriteStream.apply(this, arguments), this
-    else
-      return WriteStream.apply(Object.create(WriteStream.prototype), arguments)
-  }
-
-  function WriteStream$open () {
-    var that = this
-    open(that.path, that.flags, that.mode, function (err, fd) {
-      if (err) {
-        that.destroy()
-        that.emit('error', err)
-      } else {
-        that.fd = fd
-        that.emit('open', fd)
-      }
-    })
-  }
-
-  function createReadStream (path, options) {
-    return new ReadStream(path, options)
-  }
-
-  function createWriteStream (path, options) {
-    return new WriteStream(path, options)
-  }
-
-  var fs$open = fs.open
-  fs.open = open
-  function open (path, flags, mode, cb) {
-    if (typeof mode === 'function')
-      cb = mode, mode = null
-
-    return go$open(path, flags, mode, cb)
-
-    function go$open (path, flags, mode, cb) {
-      return fs$open(path, flags, mode, function (err, fd) {
-        if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
-          enqueue([go$open, [path, flags, mode, cb]])
-        else {
-          if (typeof cb === 'function')
-            cb.apply(this, arguments)
-          retry()
-        }
-      })
-    }
-  }
-
-  return fs
-}
-
-function enqueue (elem) {
-  debug('ENQUEUE', elem[0].name, elem[1])
-  queue.push(elem)
-}
-
-function retry () {
-  var elem = queue.shift()
-  if (elem) {
-    debug('RETRY', elem[0].name, elem[1])
-    elem[0].apply(null, elem[1])
-  }
-}
-
-}).call(this,require('_process'))
-},{"./fs.js":84,"./legacy-streams.js":86,"./polyfills.js":87,"_process":211,"assert":13,"fs":"browserify-fs","util":267}],86:[function(require,module,exports){
-(function (process){
-var Stream = require('stream').Stream
-
-module.exports = legacy
-
-function legacy (fs) {
-  return {
-    ReadStream: ReadStream,
-    WriteStream: WriteStream
-  }
-
-  function ReadStream (path, options) {
-    if (!(this instanceof ReadStream)) return new ReadStream(path, options);
-
-    Stream.call(this);
-
-    var self = this;
-
-    this.path = path;
-    this.fd = null;
-    this.readable = true;
-    this.paused = false;
-
-    this.flags = 'r';
-    this.mode = 438; /*=0666*/
-    this.bufferSize = 64 * 1024;
-
-    options = options || {};
-
-    // Mixin options into this
-    var keys = Object.keys(options);
-    for (var index = 0, length = keys.length; index < length; index++) {
-      var key = keys[index];
-      this[key] = options[key];
-    }
-
-    if (this.encoding) this.setEncoding(this.encoding);
-
-    if (this.start !== undefined) {
-      if ('number' !== typeof this.start) {
-        throw TypeError('start must be a Number');
-      }
-      if (this.end === undefined) {
-        this.end = Infinity;
-      } else if ('number' !== typeof this.end) {
-        throw TypeError('end must be a Number');
-      }
-
-      if (this.start > this.end) {
-        throw new Error('start must be <= end');
-      }
-
-      this.pos = this.start;
-    }
-
-    if (this.fd !== null) {
-      process.nextTick(function() {
-        self._read();
-      });
-      return;
-    }
-
-    fs.open(this.path, this.flags, this.mode, function (err, fd) {
-      if (err) {
-        self.emit('error', err);
-        self.readable = false;
-        return;
-      }
-
-      self.fd = fd;
-      self.emit('open', fd);
-      self._read();
-    })
-  }
-
-  function WriteStream (path, options) {
-    if (!(this instanceof WriteStream)) return new WriteStream(path, options);
-
-    Stream.call(this);
-
-    this.path = path;
-    this.fd = null;
-    this.writable = true;
-
-    this.flags = 'w';
-    this.encoding = 'binary';
-    this.mode = 438; /*=0666*/
-    this.bytesWritten = 0;
-
-    options = options || {};
-
-    // Mixin options into this
-    var keys = Object.keys(options);
-    for (var index = 0, length = keys.length; index < length; index++) {
-      var key = keys[index];
-      this[key] = options[key];
-    }
-
-    if (this.start !== undefined) {
-      if ('number' !== typeof this.start) {
-        throw TypeError('start must be a Number');
-      }
-      if (this.start < 0) {
-        throw new Error('start must be >= zero');
-      }
-
-      this.pos = this.start;
-    }
-
-    this.busy = false;
-    this._queue = [];
-
-    if (this.fd === null) {
-      this._open = fs.open;
-      this._queue.push([this._open, this.path, this.flags, this.mode, undefined]);
-      this.flush();
-    }
-  }
-}
-
-}).call(this,require('_process'))
-},{"_process":211,"stream":239}],87:[function(require,module,exports){
-(function (process){
-var fs = require('./fs.js')
-var constants = require('constants')
-
-var origCwd = process.cwd
-var cwd = null
-
-var platform = process.env.GRACEFUL_FS_PLATFORM || process.platform
-
-process.cwd = function() {
-  if (!cwd)
-    cwd = origCwd.call(process)
-  return cwd
-}
-try {
-  process.cwd()
-} catch (er) {}
-
-var chdir = process.chdir
-process.chdir = function(d) {
-  cwd = null
-  chdir.call(process, d)
-}
-
-module.exports = patch
-
-function patch (fs) {
-  // (re-)implement some things that are known busted or missing.
-
-  // lchmod, broken prior to 0.6.2
-  // back-port the fix here.
-  if (constants.hasOwnProperty('O_SYMLINK') &&
-      process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-    patchLchmod(fs)
-  }
-
-  // lutimes implementation, or no-op
-  if (!fs.lutimes) {
-    patchLutimes(fs)
-  }
-
-  // https://github.com/isaacs/node-graceful-fs/issues/4
-  // Chown should not fail on einval or eperm if non-root.
-  // It should not fail on enosys ever, as this just indicates
-  // that a fs doesn't support the intended operation.
-
-  fs.chown = chownFix(fs.chown)
-  fs.fchown = chownFix(fs.fchown)
-  fs.lchown = chownFix(fs.lchown)
-
-  fs.chmod = chmodFix(fs.chmod)
-  fs.fchmod = chmodFix(fs.fchmod)
-  fs.lchmod = chmodFix(fs.lchmod)
-
-  fs.chownSync = chownFixSync(fs.chownSync)
-  fs.fchownSync = chownFixSync(fs.fchownSync)
-  fs.lchownSync = chownFixSync(fs.lchownSync)
-
-  fs.chmodSync = chmodFixSync(fs.chmodSync)
-  fs.fchmodSync = chmodFixSync(fs.fchmodSync)
-  fs.lchmodSync = chmodFixSync(fs.lchmodSync)
-
-  fs.stat = statFix(fs.stat)
-  fs.fstat = statFix(fs.fstat)
-  fs.lstat = statFix(fs.lstat)
-
-  fs.statSync = statFixSync(fs.statSync)
-  fs.fstatSync = statFixSync(fs.fstatSync)
-  fs.lstatSync = statFixSync(fs.lstatSync)
-
-  // if lchmod/lchown do not exist, then make them no-ops
-  if (!fs.lchmod) {
-    fs.lchmod = function (path, mode, cb) {
-      if (cb) process.nextTick(cb)
-    }
-    fs.lchmodSync = function () {}
-  }
-  if (!fs.lchown) {
-    fs.lchown = function (path, uid, gid, cb) {
-      if (cb) process.nextTick(cb)
-    }
-    fs.lchownSync = function () {}
-  }
-
-  // on Windows, A/V software can lock the directory, causing this
-  // to fail with an EACCES or EPERM if the directory contains newly
-  // created files.  Try again on failure, for up to 60 seconds.
-
-  // Set the timeout this long because some Windows Anti-Virus, such as Parity
-  // bit9, may lock files for up to a minute, causing npm package install
-  // failures. Also, take care to yield the scheduler. Windows scheduling gives
-  // CPU to a busy looping process, which can cause the program causing the lock
-  // contention to be starved of CPU by node, so the contention doesn't resolve.
-  if (platform === "win32") {
-    fs.rename = (function (fs$rename) { return function (from, to, cb) {
-      var start = Date.now()
-      var backoff = 0;
-      fs$rename(from, to, function CB (er) {
-        if (er
-            && (er.code === "EACCES" || er.code === "EPERM")
-            && Date.now() - start < 60000) {
-          setTimeout(function() {
-            fs.stat(to, function (stater, st) {
-              if (stater && stater.code === "ENOENT")
-                fs$rename(from, to, CB);
-              else
-                cb(er)
-            })
-          }, backoff)
-          if (backoff < 100)
-            backoff += 10;
-          return;
-        }
-        if (cb) cb(er)
-      })
-    }})(fs.rename)
-  }
-
-  // if read() returns EAGAIN, then just try it again.
-  fs.read = (function (fs$read) { return function (fd, buffer, offset, length, position, callback_) {
-    var callback
-    if (callback_ && typeof callback_ === 'function') {
-      var eagCounter = 0
-      callback = function (er, _, __) {
-        if (er && er.code === 'EAGAIN' && eagCounter < 10) {
-          eagCounter ++
-          return fs$read.call(fs, fd, buffer, offset, length, position, callback)
-        }
-        callback_.apply(this, arguments)
-      }
-    }
-    return fs$read.call(fs, fd, buffer, offset, length, position, callback)
-  }})(fs.read)
-
-  fs.readSync = (function (fs$readSync) { return function (fd, buffer, offset, length, position) {
-    var eagCounter = 0
-    while (true) {
-      try {
-        return fs$readSync.call(fs, fd, buffer, offset, length, position)
-      } catch (er) {
-        if (er.code === 'EAGAIN' && eagCounter < 10) {
-          eagCounter ++
-          continue
-        }
-        throw er
-      }
-    }
-  }})(fs.readSync)
-}
-
-function patchLchmod (fs) {
-  fs.lchmod = function (path, mode, callback) {
-    fs.open( path
-           , constants.O_WRONLY | constants.O_SYMLINK
-           , mode
-           , function (err, fd) {
-      if (err) {
-        if (callback) callback(err)
-        return
-      }
-      // prefer to return the chmod error, if one occurs,
-      // but still try to close, and report closing errors if they occur.
-      fs.fchmod(fd, mode, function (err) {
-        fs.close(fd, function(err2) {
-          if (callback) callback(err || err2)
-        })
-      })
-    })
-  }
-
-  fs.lchmodSync = function (path, mode) {
-    var fd = fs.openSync(path, constants.O_WRONLY | constants.O_SYMLINK, mode)
-
-    // prefer to return the chmod error, if one occurs,
-    // but still try to close, and report closing errors if they occur.
-    var threw = true
-    var ret
-    try {
-      ret = fs.fchmodSync(fd, mode)
-      threw = false
-    } finally {
-      if (threw) {
-        try {
-          fs.closeSync(fd)
-        } catch (er) {}
-      } else {
-        fs.closeSync(fd)
-      }
-    }
-    return ret
-  }
-}
-
-function patchLutimes (fs) {
-  if (constants.hasOwnProperty("O_SYMLINK")) {
-    fs.lutimes = function (path, at, mt, cb) {
-      fs.open(path, constants.O_SYMLINK, function (er, fd) {
-        if (er) {
-          if (cb) cb(er)
-          return
-        }
-        fs.futimes(fd, at, mt, function (er) {
-          fs.close(fd, function (er2) {
-            if (cb) cb(er || er2)
-          })
-        })
-      })
-    }
-
-    fs.lutimesSync = function (path, at, mt) {
-      var fd = fs.openSync(path, constants.O_SYMLINK)
-      var ret
-      var threw = true
-      try {
-        ret = fs.futimesSync(fd, at, mt)
-        threw = false
-      } finally {
-        if (threw) {
-          try {
-            fs.closeSync(fd)
-          } catch (er) {}
-        } else {
-          fs.closeSync(fd)
-        }
-      }
-      return ret
-    }
-
-  } else {
-    fs.lutimes = function (_a, _b, _c, cb) { if (cb) process.nextTick(cb) }
-    fs.lutimesSync = function () {}
-  }
-}
-
-function chmodFix (orig) {
-  if (!orig) return orig
-  return function (target, mode, cb) {
-    return orig.call(fs, target, mode, function (er) {
-      if (chownErOk(er)) er = null
-      if (cb) cb.apply(this, arguments)
-    })
-  }
-}
-
-function chmodFixSync (orig) {
-  if (!orig) return orig
-  return function (target, mode) {
-    try {
-      return orig.call(fs, target, mode)
-    } catch (er) {
-      if (!chownErOk(er)) throw er
-    }
-  }
-}
-
-
-function chownFix (orig) {
-  if (!orig) return orig
-  return function (target, uid, gid, cb) {
-    return orig.call(fs, target, uid, gid, function (er) {
-      if (chownErOk(er)) er = null
-      if (cb) cb.apply(this, arguments)
-    })
-  }
-}
-
-function chownFixSync (orig) {
-  if (!orig) return orig
-  return function (target, uid, gid) {
-    try {
-      return orig.call(fs, target, uid, gid)
-    } catch (er) {
-      if (!chownErOk(er)) throw er
-    }
-  }
-}
-
-
-function statFix (orig) {
-  if (!orig) return orig
-  // Older versions of Node erroneously returned signed integers for
-  // uid + gid.
-  return function (target, cb) {
-    return orig.call(fs, target, function (er, stats) {
-      if (!stats) return cb.apply(this, arguments)
-      if (stats.uid < 0) stats.uid += 0x100000000
-      if (stats.gid < 0) stats.gid += 0x100000000
-      if (cb) cb.apply(this, arguments)
-    })
-  }
-}
-
-function statFixSync (orig) {
-  if (!orig) return orig
-  // Older versions of Node erroneously returned signed integers for
-  // uid + gid.
-  return function (target) {
-    var stats = orig.call(fs, target)
-    if (stats.uid < 0) stats.uid += 0x100000000
-    if (stats.gid < 0) stats.gid += 0x100000000
-    return stats;
-  }
-}
-
-// ENOSYS means that the fs doesn't support the op. Just ignore
-// that, because it doesn't matter.
-//
-// if there's no getuid, or if getuid() is something other
-// than 0, and the error is EINVAL or EPERM, then just ignore
-// it.
-//
-// This specific case is a silent failure in cp, install, tar,
-// and most other unix tools that manage permissions.
-//
-// When running as root, or if other types of errors are
-// encountered, then it's strict.
-function chownErOk (er) {
-  if (!er)
-    return true
-
-  if (er.code === "ENOSYS")
-    return true
-
-  var nonroot = !process.getuid || process.getuid() !== 0
-  if (nonroot) {
-    if (er.code === "EINVAL" || er.code === "EPERM")
-      return true
-  }
-
-  return false
-}
-
-}).call(this,require('_process'))
-},{"./fs.js":84,"_process":211,"constants":44}],88:[function(require,module,exports){
+},{"./common.js":85,"./glob.js":86,"_process":211,"assert":17,"fs":"browserify-fs","fs.realpath":63,"minimatch":157,"path":206,"path-is-absolute":207,"util":267}],88:[function(require,module,exports){
 (function (process){
 'use strict';
 const path = require('path');
@@ -21185,7 +21188,7 @@ module.exports = options => {
 };
 
 }).call(this,require('_process'))
-},{"_process":211,"chalk":32,"fancy-log":58,"path":206,"plur":209,"stringify-object":242,"through2":244,"tildify":245}],89:[function(require,module,exports){
+},{"_process":211,"chalk":36,"fancy-log":62,"path":206,"plur":209,"stringify-object":242,"through2":244,"tildify":245}],89:[function(require,module,exports){
 (function (Buffer){
 var through = require('through2');
 var unzip = require('unzipper')
@@ -21239,11 +21242,11 @@ module.exports = function(options){
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":29,"defaults":46,"fancy-log":58,"fs":"browserify-fs","through2":104,"unzipper":264,"vinyl":105}],90:[function(require,module,exports){
-arguments[4][35][0].apply(exports,arguments)
-},{"dup":35,"fs":"browserify-fs"}],91:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"buffer":29,"dup":47}],92:[function(require,module,exports){
+},{"buffer":33,"defaults":50,"fancy-log":62,"fs":"browserify-fs","through2":104,"unzipper":264,"vinyl":105}],90:[function(require,module,exports){
+arguments[4][39][0].apply(exports,arguments)
+},{"dup":39,"fs":"browserify-fs"}],91:[function(require,module,exports){
+arguments[4][51][0].apply(exports,arguments)
+},{"buffer":33,"dup":51}],92:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
@@ -21469,7 +21472,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":98,"./_stream_writable":100,"_process":211,"core-util-is":45,"inherits":117}],98:[function(require,module,exports){
+},{"./_stream_readable":98,"./_stream_writable":100,"_process":211,"core-util-is":49,"inherits":117}],98:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -22455,7 +22458,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"_process":211,"buffer":29,"core-util-is":45,"events":56,"inherits":117,"isarray":92,"stream":239,"string_decoder/":103}],99:[function(require,module,exports){
+},{"_process":211,"buffer":33,"core-util-is":49,"events":60,"inherits":117,"isarray":92,"stream":239,"string_decoder/":103}],99:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22667,7 +22670,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":97,"core-util-is":45,"inherits":117}],100:[function(require,module,exports){
+},{"./_stream_duplex":97,"core-util-is":49,"inherits":117}],100:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -23057,7 +23060,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":97,"_process":211,"buffer":29,"core-util-is":45,"inherits":117,"stream":239}],101:[function(require,module,exports){
+},{"./_stream_duplex":97,"_process":211,"buffer":33,"core-util-is":49,"inherits":117,"stream":239}],101:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
 },{"./lib/_stream_transform.js":99}],102:[function(require,module,exports){
@@ -23293,7 +23296,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":29}],104:[function(require,module,exports){
+},{"buffer":33}],104:[function(require,module,exports){
 var Transform = require('readable-stream/transform')
   , inherits  = require('util').inherits
   , xtend     = require('xtend')
@@ -23656,7 +23659,7 @@ module.exports = function(buf) {
   return out;
 };
 
-},{"buffer":29}],107:[function(require,module,exports){
+},{"buffer":33}],107:[function(require,module,exports){
 var isStream = require('./isStream');
 
 module.exports = function(stream) {
@@ -23676,7 +23679,7 @@ module.exports = function(stream) {
 },{"./isStream":110}],108:[function(require,module,exports){
 module.exports = require('buffer').Buffer.isBuffer;
 
-},{"buffer":29}],109:[function(require,module,exports){
+},{"buffer":33}],109:[function(require,module,exports){
 module.exports = function(v) {
   return v === null;
 };
@@ -23801,7 +23804,7 @@ module.exports = (filename, opts) => {
 	});
 };
 
-},{"get-stream":79,"path":206,"plugin-error":208,"through2":244,"vinyl":268,"yazl":275}],114:[function(require,module,exports){
+},{"get-stream":83,"path":206,"plugin-error":208,"through2":244,"vinyl":268,"yazl":275}],114:[function(require,module,exports){
 /**
  * @module Icicle
  */
@@ -24018,8 +24021,8 @@ function slice (args) {
 
 }).call(this,require('_process'))
 },{"_process":211,"once":192,"wrappy":272}],117:[function(require,module,exports){
-arguments[4][14][0].apply(exports,arguments)
-},{"dup":14}],118:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"dup":18}],118:[function(require,module,exports){
 'use strict'
 
 module.exports = {
@@ -25141,6 +25144,8 @@ jr.init = () => {
     }
 
     for (let [el, attrs] of dirtyAttrs.entries()) {
+      jr.initEl(el);
+
       let indexEntry = jr.index.get(el);
       let indexAttrs = indexEntry.attrs;
 
@@ -25668,6 +25673,7 @@ jr.updateEl = el => {
 
       if (attr.name.startsWith('jr-on-')) {
         jr.updateEventAttr(el, attr.name);
+        continue;
       }
 
       let computed = attr.value =
@@ -25810,7 +25816,7 @@ module.exports = function kindOf(val) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":29}],155:[function(require,module,exports){
+},{"buffer":33}],155:[function(require,module,exports){
 'use strict'
 
 var listenerCount = require('events').listenerCount
@@ -25828,7 +25834,7 @@ listenerCount = listenerCount || function (ee, event) {
 
 module.exports = listenerCount
 
-},{"events":56}],156:[function(require,module,exports){
+},{"events":60}],156:[function(require,module,exports){
 (function (global){
 /*!
     localForage -- Offline Storage, Improved
@@ -29554,7 +29560,7 @@ function regExpEscape (s) {
   return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
 
-},{"brace-expansion":22,"path":206}],158:[function(require,module,exports){
+},{"brace-expansion":26,"path":206}],158:[function(require,module,exports){
 (function (process){
 var path = require('path');
 var fs = require('fs');
@@ -36690,7 +36696,7 @@ function defaults(opts) {
 
 module.exports = PluginError;
 
-},{"ansi-cyan":1,"ansi-red":3,"arr-diff":9,"arr-union":11,"extend-shallow":57,"util":267}],209:[function(require,module,exports){
+},{"ansi-cyan":5,"ansi-red":7,"arr-diff":13,"arr-union":15,"extend-shallow":61,"util":267}],209:[function(require,module,exports){
 'use strict';
 const irregularPlurals = require('irregular-plurals');
 
@@ -37728,7 +37734,7 @@ Duplex.prototype._destroy = function (err, cb) {
 
   pna.nextTick(cb, err);
 };
-},{"./_stream_readable":220,"./_stream_writable":222,"core-util-is":45,"inherits":117,"process-nextick-args":210}],219:[function(require,module,exports){
+},{"./_stream_readable":220,"./_stream_writable":222,"core-util-is":49,"inherits":117,"process-nextick-args":210}],219:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -37776,7 +37782,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":221,"core-util-is":45,"inherits":117}],220:[function(require,module,exports){
+},{"./_stream_transform":221,"core-util-is":49,"inherits":117}],220:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -38798,7 +38804,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":218,"./internal/streams/BufferList":223,"./internal/streams/destroy":224,"./internal/streams/stream":225,"_process":211,"core-util-is":45,"events":56,"inherits":117,"isarray":149,"process-nextick-args":210,"safe-buffer":234,"string_decoder/":241,"util":23}],221:[function(require,module,exports){
+},{"./_stream_duplex":218,"./internal/streams/BufferList":223,"./internal/streams/destroy":224,"./internal/streams/stream":225,"_process":211,"core-util-is":49,"events":60,"inherits":117,"isarray":149,"process-nextick-args":210,"safe-buffer":234,"string_decoder/":241,"util":27}],221:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -39013,7 +39019,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":218,"core-util-is":45,"inherits":117}],222:[function(require,module,exports){
+},{"./_stream_duplex":218,"core-util-is":49,"inherits":117}],222:[function(require,module,exports){
 (function (process,global,setImmediate){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -39703,7 +39709,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
-},{"./_stream_duplex":218,"./internal/streams/destroy":224,"./internal/streams/stream":225,"_process":211,"core-util-is":45,"inherits":117,"process-nextick-args":210,"safe-buffer":234,"timers":247,"util-deprecate":265}],223:[function(require,module,exports){
+},{"./_stream_duplex":218,"./internal/streams/destroy":224,"./internal/streams/stream":225,"_process":211,"core-util-is":49,"inherits":117,"process-nextick-args":210,"safe-buffer":234,"timers":247,"util-deprecate":265}],223:[function(require,module,exports){
 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -39783,7 +39789,7 @@ if (util && util.inspect && util.inspect.custom) {
     return this.constructor.name + ' ' + obj;
   };
 }
-},{"safe-buffer":234,"util":23}],224:[function(require,module,exports){
+},{"safe-buffer":234,"util":27}],224:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -39861,7 +39867,7 @@ module.exports = {
 },{"process-nextick-args":210}],225:[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":56}],226:[function(require,module,exports){
+},{"events":60}],226:[function(require,module,exports){
 module.exports = require('./readable').PassThrough
 
 },{"./readable":227}],227:[function(require,module,exports){
@@ -40431,7 +40437,7 @@ var handleStyles = splitKeys({
  * @module resizable
  */
 module.exports = Resizable;
-},{"draggy":49,"emmy/emit":51,"emmy/on":54,"events":56,"inherits":117,"mucss/border":159,"mucss/css":160,"mucss/margin":164,"mucss/offset":165,"mucss/padding":166,"mumath/clamp":173,"mutype/is-array":181,"mutype/is-object":187,"mutype/is-string":191,"split-keys":237,"xtend/mutable":274}],233:[function(require,module,exports){
+},{"draggy":53,"emmy/emit":55,"emmy/on":58,"events":60,"inherits":117,"mucss/border":159,"mucss/css":160,"mucss/margin":164,"mucss/offset":165,"mucss/padding":166,"mumath/clamp":173,"mutype/is-array":181,"mutype/is-object":187,"mutype/is-string":191,"split-keys":237,"xtend/mutable":274}],233:[function(require,module,exports){
 (function (process){
 module.exports = rimraf
 rimraf.sync = rimrafSync
@@ -40799,7 +40805,7 @@ function rmkidsSync (p, options) {
 }
 
 }).call(this,require('_process'))
-},{"_process":211,"assert":13,"fs":"browserify-fs","glob":82,"path":206}],234:[function(require,module,exports){
+},{"_process":211,"assert":17,"fs":"browserify-fs","glob":86,"path":206}],234:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -40863,7 +40869,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":29}],235:[function(require,module,exports){
+},{"buffer":33}],235:[function(require,module,exports){
 (function (process,global){
 (function (global, undefined) {
     "use strict";
@@ -41332,7 +41338,7 @@ function getValue(holder, meth, ctx){
 
 
 module.exports = State;
-},{"events":56,"is-plain-object":147}],239:[function(require,module,exports){
+},{"events":60,"is-plain-object":147}],239:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -41461,7 +41467,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":56,"inherits":117,"readable-stream/duplex.js":217,"readable-stream/passthrough.js":226,"readable-stream/readable.js":227,"readable-stream/transform.js":228,"readable-stream/writable.js":229}],240:[function(require,module,exports){
+},{"events":60,"inherits":117,"readable-stream/duplex.js":217,"readable-stream/passthrough.js":226,"readable-stream/readable.js":227,"readable-stream/transform.js":228,"readable-stream/writable.js":229}],240:[function(require,module,exports){
 (function (process){
 
 var Promise = require('any-promise')
@@ -41525,7 +41531,7 @@ module.exports = function (stream, done) {
 }
 
 }).call(this,require('_process'))
-},{"_process":211,"any-promise":6}],241:[function(require,module,exports){
+},{"_process":211,"any-promise":10}],241:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -41955,7 +41961,7 @@ module.exports = (val, opts, pad) => {
 	})(val, opts, pad);
 };
 
-},{"get-own-enumerable-property-symbols":77,"is-obj":145,"is-regexp":148}],243:[function(require,module,exports){
+},{"get-own-enumerable-property-symbols":81,"is-obj":145,"is-regexp":148}],243:[function(require,module,exports){
 'use strict';
 module.exports = {
 	stdout: false,
@@ -42559,7 +42565,7 @@ module.exports = function(entry) {
     entry.pipe(bufferStream);
   });
 };
-},{"bluebird":21,"buffer":29,"readable-stream":262,"stream":239}],250:[function(require,module,exports){
+},{"bluebird":25,"buffer":33,"readable-stream":262,"stream":239}],250:[function(require,module,exports){
 var Stream = require('stream');
 var util = require('util');
 
@@ -42723,7 +42729,7 @@ PullStream.prototype._flush = function(cb) {
 module.exports = PullStream;
 
 }).call(this,require("timers").setImmediate)
-},{"bluebird":21,"buffer":29,"readable-stream":262,"stream":239,"timers":247,"util":267}],252:[function(require,module,exports){
+},{"bluebird":25,"buffer":33,"readable-stream":262,"stream":239,"timers":247,"util":267}],252:[function(require,module,exports){
 module.exports = Extract;
 
 var Parse = require('./parse');
@@ -42752,7 +42758,7 @@ function Extract (opts) {
   });
 }
 
-},{"./parse":253,"fstream":61,"path":206,"util":267}],253:[function(require,module,exports){
+},{"./parse":253,"fstream":65,"path":206,"util":267}],253:[function(require,module,exports){
 (function (Buffer){
 var util = require('util');
 var zlib = require('zlib');
@@ -43000,7 +43006,7 @@ Parse.prototype.promise = function() {
 
 module.exports = Parse;
 }).call(this,require("buffer").Buffer)
-},{"./BufferStream":249,"./NoopStream":250,"./PullStream":251,"binary":19,"bluebird":21,"buffer":29,"readable-stream":262,"stream":239,"util":267,"zlib":25}],254:[function(require,module,exports){
+},{"./BufferStream":249,"./NoopStream":250,"./PullStream":251,"binary":23,"bluebird":25,"buffer":33,"readable-stream":262,"stream":239,"util":267,"zlib":29}],254:[function(require,module,exports){
 var Stream = require('stream');
 var Parse = require('./parse');
 var duplexer2 = require('duplexer2');
@@ -43046,7 +43052,7 @@ function parseOne(match,opts) {
 
 
 module.exports = parseOne;
-},{"./parse":253,"duplexer2":50,"readable-stream":262,"stream":239}],255:[function(require,module,exports){
+},{"./parse":253,"duplexer2":54,"readable-stream":262,"stream":239}],255:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -43169,7 +43175,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":258,"./_stream_writable":260,"core-util-is":45,"inherits":117,"process-nextick-args":255}],257:[function(require,module,exports){
+},{"./_stream_readable":258,"./_stream_writable":260,"core-util-is":49,"inherits":117,"process-nextick-args":255}],257:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -43196,7 +43202,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":259,"core-util-is":45,"inherits":117}],258:[function(require,module,exports){
+},{"./_stream_transform":259,"core-util-is":49,"inherits":117}],258:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -44136,7 +44142,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":256,"./internal/streams/BufferList":261,"_process":211,"buffer":29,"buffer-shims":28,"core-util-is":45,"events":56,"inherits":117,"isarray":149,"process-nextick-args":255,"string_decoder/":263,"util":23}],259:[function(require,module,exports){
+},{"./_stream_duplex":256,"./internal/streams/BufferList":261,"_process":211,"buffer":33,"buffer-shims":32,"core-util-is":49,"events":60,"inherits":117,"isarray":149,"process-nextick-args":255,"string_decoder/":263,"util":27}],259:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -44317,7 +44323,7 @@ function done(stream, er) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":256,"core-util-is":45,"inherits":117}],260:[function(require,module,exports){
+},{"./_stream_duplex":256,"core-util-is":49,"inherits":117}],260:[function(require,module,exports){
 (function (process,setImmediate){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -44846,7 +44852,7 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'),require("timers").setImmediate)
-},{"./_stream_duplex":256,"_process":211,"buffer":29,"buffer-shims":28,"core-util-is":45,"events":56,"inherits":117,"process-nextick-args":255,"timers":247,"util-deprecate":265}],261:[function(require,module,exports){
+},{"./_stream_duplex":256,"_process":211,"buffer":33,"buffer-shims":32,"core-util-is":49,"events":60,"inherits":117,"process-nextick-args":255,"timers":247,"util-deprecate":265}],261:[function(require,module,exports){
 'use strict';
 
 var Buffer = require('buffer').Buffer;
@@ -44911,7 +44917,7 @@ BufferList.prototype.concat = function (n) {
   }
   return ret;
 };
-},{"buffer":29,"buffer-shims":28}],262:[function(require,module,exports){
+},{"buffer":33,"buffer-shims":32}],262:[function(require,module,exports){
 (function (process){
 var Stream = (function (){
   try {
@@ -44933,7 +44939,7 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable' && Stream) {
 }).call(this,require('_process'))
 },{"./lib/_stream_duplex.js":256,"./lib/_stream_passthrough.js":257,"./lib/_stream_readable.js":258,"./lib/_stream_transform.js":259,"./lib/_stream_writable.js":260,"_process":211}],263:[function(require,module,exports){
 arguments[4][103][0].apply(exports,arguments)
-},{"buffer":29,"dup":103}],264:[function(require,module,exports){
+},{"buffer":33,"dup":103}],264:[function(require,module,exports){
 'use strict';
 // Polyfills for node 0.8
 require('listenercount');
@@ -44944,7 +44950,7 @@ require('setimmediate');
 exports.Parse = require('./lib/parse');
 exports.ParseOne = require('./lib/parseOne');
 exports.Extract = require('./lib/extract');
-},{"./lib/extract":252,"./lib/parse":253,"./lib/parseOne":254,"buffer-indexof-polyfill":27,"listenercount":155,"setimmediate":235}],265:[function(require,module,exports){
+},{"./lib/extract":252,"./lib/parse":253,"./lib/parseOne":254,"buffer-indexof-polyfill":31,"listenercount":155,"setimmediate":235}],265:[function(require,module,exports){
 (function (global){
 
 /**
@@ -45016,10 +45022,10 @@ function config (name) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],266:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"dup":15}],267:[function(require,module,exports){
-arguments[4][16][0].apply(exports,arguments)
-},{"./support/isBuffer":266,"_process":211,"dup":16,"inherits":117}],268:[function(require,module,exports){
+arguments[4][19][0].apply(exports,arguments)
+},{"dup":19}],267:[function(require,module,exports){
+arguments[4][20][0].apply(exports,arguments)
+},{"./support/isBuffer":266,"_process":211,"dup":20,"inherits":117}],268:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -45357,7 +45363,7 @@ Object.defineProperty(File.prototype, 'symlink', {
 module.exports = File;
 
 }).call(this,require('_process'))
-},{"./lib/inspect-stream":269,"./lib/is-stream":270,"./lib/normalize":271,"_process":211,"buffer":29,"clone":36,"clone-buffer":34,"clone-stats":35,"cloneable-readable":37,"path":206,"remove-trailing-separator":230,"replace-ext":231,"util":267}],269:[function(require,module,exports){
+},{"./lib/inspect-stream":269,"./lib/is-stream":270,"./lib/normalize":271,"_process":211,"buffer":33,"clone":40,"clone-buffer":38,"clone-stats":39,"cloneable-readable":41,"path":206,"remove-trailing-separator":230,"replace-ext":231,"util":267}],269:[function(require,module,exports){
 'use strict';
 
 function inspectStream(stream) {
@@ -46120,12 +46126,14 @@ Crc32Watcher.prototype._transform = function(chunk, encoding, cb) {
 };
 
 }).call(this,require("buffer").Buffer,require("timers").setImmediate)
-},{"buffer":29,"buffer-crc32":26,"events":56,"fs":"browserify-fs","stream":239,"timers":247,"util":267,"zlib":25}],276:[function(require,module,exports){
+},{"buffer":33,"buffer-crc32":30,"events":60,"fs":"browserify-fs","stream":239,"timers":247,"util":267,"zlib":29}],276:[function(require,module,exports){
 (function (Buffer){
 let Vinyl = require('vinyl');
 let t2 = require('through2');
 
 div.apps = exports;
+
+exports.loaded = [];
 
 exports.enumerate = async () => {
   return [];
@@ -46191,73 +46199,80 @@ exports.fetchAndInstall = async path => {
   }));
 };
 
-exports.makeScriptPath = appPath => `${appPath}/app.js`;
+exports.loaded.findByPath = appPath => exports.loaded.find(
+  app => app.path === appPath,
+);
 
-exports.tryGetScript = appPath => {
-  let script = jr.findFirst(
-    `script[src="${exports.makeScriptPath(appPath)}"]`,
-  );
+exports.loadPkgMeta = async appPath => {
+  let res = await fetch(`${appPath}/package.json`);
 
-  if (!script || !script.div || !script.div.appCtrl) {
-    return null;
+  if (!res.ok) {
+    throw new Error(
+      `Fetch error: ${res.status} ${res.statusText}`,
+    );
   }
 
-  return script;
+  return await res.json();
 };
-
-exports.getScript = appPath => {
-  let script = exports.tryGetScript(appPath);
-
-  if (!script) {
-    throw new Error(`${appPath} is not loaded`);
-  }
-
-  return script;
-};
-
-exports.isLoaded =
-  appPath => !!exports.tryGetScript(appPath);
 
 exports.load = async appPath => {
-  let script = exports.tryGetScript(appPath);
+  let appCtrl = exports.loaded.findByPath(appPath);
 
-  if (script) {
-    return script.div.appCtrl;
+  if (appCtrl) {
+    return appCtrl;
   }
 
-  script = document.createElement('script');
-  script.src = exports.makeScriptPath(appPath);
+  let meta = await exports.loadPkgMeta(appPath);
+  let { divApp } = meta;
 
-  script.div = {};
+  if (!divApp) {
+    throw new Error(
+      `${appPath} is not a divOS application`,
+    );
+  }
 
-  let appLoadPromise = new Promise((resolve, reject) => {
-    script.div.load = { resolve, reject };
-  });
+  appCtrl = { path: appPath, meta };
+
+  let script = document.createElement('script');
+  script.src = `${appPath}/${divApp.main}`;
+
+  script.div = { appCtrl };
+  appCtrl.script = script;
+
+  let scriptAttachedPromise = new Promise(
+    (resolve, reject) => {
+      appCtrl.scriptAttached = { resolve, reject };
+    },
+  );
 
   document.head.append(script);
 
   // Awaits async script loading.
   await new Promise((resolve, reject) => {
-    script.addEventListener('error', ev => reject(ev.error));
+    script.addEventListener(
+      'error', ev => reject(ev.error),
+    );
+
     script.addEventListener('load', resolve);
   });
 
-  // Awaits at most 250ms for app load / appCtrl callback.
-  let appCtrl = await Promise.race([
-    appLoadPromise,
-    new Promise(r => setTimeout(r), 250),
-  ])
-  .catch(err => console.error(err));
-
-  // appCtrl is falsy in case of errors or callback timeout.
-  if (!appCtrl) {
+  try {
+    // Awaits at most 250ms for script attachment callback.
+    await Promise.race([
+      scriptAttachedPromise,
+      new Promise(r => setTimeout(r), 250),
+    ]);
+  }
+  catch (err) {
+    console.error(err);
     script.remove();
+
     throw new Error(`${appPath} failed to load`);
   }
 
-  appCtrl.appPath = appPath;
+  exports.loaded.push(appCtrl);
 
-  return script.div.appCtrl = appCtrl;
+  return appCtrl;
 };
 
 exports.unload = async appPath => {
@@ -46272,7 +46287,7 @@ exports.unload = async appPath => {
 };
 
 exports.reload = async appPath => {
-  if (exports.isLoaded(appPath)) {
+  if (exports.loaded.findByPath(appPath)) {
     await exports.unload(appPath);
   }
 
@@ -46290,7 +46305,7 @@ exports.reloadAndLaunch = async (appPath, ...appArgs) => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":29,"through2":244,"vinyl":268}],277:[function(require,module,exports){
+},{"buffer":33,"through2":244,"vinyl":268}],277:[function(require,module,exports){
 div.env = exports;
 
 exports.get = async k => {
@@ -46326,7 +46341,7 @@ let EventEmitter = require('events');
 
 div.eventBus = module.exports = new EventEmitter();
 
-},{"events":56}],279:[function(require,module,exports){
+},{"events":60}],279:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let qs = require('qs');
 let through2 = require('through2');
@@ -46602,7 +46617,7 @@ exports.rimraf = async dirPath => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../helper/fromFile":284,"base64-js":18,"buffer":29,"localforage":156,"minimatch":157,"path":206,"through2":244,"vinyl":268}],281:[function(require,module,exports){
+},{"../helper/fromFile":284,"base64-js":22,"buffer":33,"localforage":156,"minimatch":157,"path":206,"through2":244,"vinyl":268}],281:[function(require,module,exports){
 let Vinyl = require('vinyl');
 let minimatch = require('minimatch');
 let through2 = require('through2');
@@ -46750,7 +46765,7 @@ module.exports = div.bufFromStream = async stream => {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./allFromStream":282,"buffer":29}],284:[function(require,module,exports){
+},{"./allFromStream":282,"buffer":33}],284:[function(require,module,exports){
 let bufFromStream = require('./bufFromStream');
 
 module.exports = div.fromFile = async (file, enc) => {
@@ -46922,12 +46937,6 @@ exports.selectResult = async result => {
 };
 
 },{"./apps":276,"./helper/promises":286}],288:[function(require,module,exports){
-let fs = require('fs');
-
-for (let k of ['ReadStream', 'WriteStream']) {
-  fs[k] = { prototype: {} };
-}
-
 require('junior-ui/browserGlobal');
 
 window.div = exports;
@@ -47000,7 +47009,7 @@ require('./workspaceManager');
 })()
 .catch(err => console.error(err));
 
-},{"./apps":276,"./env":277,"./eventBus":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./viewportManager":290,"./windowManager":291,"./workspaceManager":292,"base64-js":18,"fs":"browserify-fs","junior-ui/browserGlobal":151,"localforage":156,"through2":244}],289:[function(require,module,exports){
+},{"./apps":276,"./env":277,"./eventBus":278,"./fs":281,"./helper/allFromStream":282,"./helper/bufFromStream":283,"./helper/fromFile":284,"./helper/oneFromStream":285,"./launcher":287,"./scriptManager":289,"./viewportManager":290,"./windowManager":291,"./workspaceManager":292,"base64-js":22,"junior-ui/browserGlobal":151,"localforage":156,"through2":244}],289:[function(require,module,exports){
 div.scriptManager = exports;
 
 exports.tryGetBySrc = src => {
@@ -47336,5 +47345,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 },{}],"browserify-fs":[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"dup":23}]},{},[288]);
+arguments[4][27][0].apply(exports,arguments)
+},{"dup":27}]},{},[288]);
